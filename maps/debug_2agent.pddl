@@ -1,6 +1,6 @@
 (define (problem no-line-1)
     (:domain multi_agent_lines)
-    (:objects tank1 tank2 tank3 tank4 tank5 tank6 - tank well1 well2 well3 well4 well5 well6 well7 well8 well9 well10 - well agent1 - agent finish1 finish2 finish3 finish4 finish5 finish6 finish7 finish8 - finish)
+    (:objects tank1 tank2 tank3 tank4 tank5 tank6 - tank well1 well2 well3 well4 well5 well6 well7 well8 well9 well10 - well agent1 agent2 - agent finish1 finish2 finish3 finish4 finish5 finish6 finish7 finish8 - finish)
     (:init  
         (= (walls)
             (transpose (bit-mat
@@ -55,6 +55,8 @@
 
         (= (xloc agent1) 12)
         (= (yloc agent1) 5)
+        (= (xloc agent2) 11)
+        (= (yloc agent2) 5)
 
 
         (= (xloc finish1) 9) 
@@ -76,6 +78,9 @@
     )
 
     (:goal 
-        (has-completed agent1)
+        (and
+            (has-completed agent1)
+            (has-completed agent2)
+        )
     )
 )

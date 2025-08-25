@@ -13,9 +13,9 @@ const data_save_path = "/Users/joekwon/Desktop/line_modeling/all_data/recursive/
 const problem_path = "/Users/joekwon/Desktop/line_modeling/maps"
 
 #define variables
-const all_maps = ["yes_line_7_test.pddl"]
-const T = 800
-const N = 8
+const all_maps = ["debug_2agent.pddl"]
+const T = 100
+const N = 2
 const num_iterations = 1
 boltzmann_policy_parameters = [0.0]
 PDDL.Arrays.@register() 
@@ -26,8 +26,10 @@ PDDL.Arrays.@register()
 function heuristic_setup()
     # Create a well tank heuristic
     inner_heuristic = WellTankHeuristic() # Optimistic heuristic
-    planner = AStarPlanner(inner_heuristic) # Planner that uses optimistic heuristic
+    planner = AStarPlanner(inner_heuristic, max_nodes=1000) # Planner that uses optimistic heuristic
+    #can set max nodes here, helps with time and also boundedly rational
     heuristic = PlannerHeuristic(planner) # Some exact heuristic
+    #update symbolicplanners, some changes with plannerheuristic
     memoized_h = memoized(heuristic) # Memoized exact heuristic
     return memoized_h
 end
@@ -221,6 +223,9 @@ function initialize(domain_path, problem_path, map)
     problem = load_problem(joinpath(problem_path, map))
     domain = load_domain(joinpath(domain_path, "domain.pddl"))
     state, mal_spec = initialize_state(domain, problem)
+    #using compiled domain and state now
+    # c_domain, c_state = compiled(domain, state)
+    # return c_state, c_domain, mal_spec
     return state, domain, mal_spec
 end
 
@@ -279,19 +284,19 @@ function PDDL.execute(domain::SimulatedDomain, state::State, action::Term; check
         end
         policy = domain.policies[agent_index]
         modified_state = modify_state(state, domain, agent_index)
-        print(agent_index)
-        print("\n")
-        print_ascii(modified_state)
-        print("\n")
+        # print(agent_index)
+        # print("\n")
+        # print_ascii(modified_state)
+        # print("\n")
 
         act = SymbolicPlanners.get_action(policy, modified_state)
         state = transition(domain.domain, state, act)
     end
     # Simulate own action
-    print_ascii(state)
-    print("PDDL TRANSITION IS COMPLETE WITH ONE ITERATION. Now simulating own action \n")
+    # print_ascii(state)
+    # print("PDDL TRANSITION IS COMPLETE WITH ONE ITERATION. Now simulating own action \n")
     state = try_transition(domain.domain, state, action)
-    print_ascii(state)
+    # print_ascii(state)
     return state
 end
 
@@ -308,7 +313,7 @@ function run_simulations(all_maps, boltzmann_policy_parameters, num_iterations, 
 
         for noise in boltzmann_policy_parameters
             for iteration in 1:num_iterations
-                state, domain, mal_spec = initialize(domain_path, problem_path, map)
+                state, domain, mal_spec = initialize(domain_path, problem_path, map) #note: now that i'm compiling the domain and state, maybe I should do this in the noise loop and not the iteration loop
                 state_history = [state]
 
                 level0_policies = create_level0_policies(N, domain, noise)
@@ -322,23 +327,17 @@ function run_simulations(all_maps, boltzmann_policy_parameters, num_iterations, 
                 for t in 1:T
                     #get the actions for each agent, and transition the state
                     for n in 1:N
-                        print("CURRENT ITERATION \n")
-                        print(n)
-                        print("\n")
-                        agent = Const(Symbol("agent$n"))
-
-                        # for level 0 debug testing 
-                        # modified_state = modify_state_level0(state, domain, n)
-                        # act = SymbolicPlanners.get_action(level0_policies[n], modified_state)
-                        # for level 0 debug testing
-
+                        #agent = Const(Symbol("agent$n"))
                         act = SymbolicPlanners.get_action(level1_policies[n], state)
+                        print(act)
                         state = try_transition(domain, state, act)
-                        print("made it past try_transition")
-                        print("\n")
-                        return
+                        # print("executed try_transition for agent $n at time step $t \n")
+                        # print_ascii(state)
+                        # print("\n")
                     end
+                    print("finished all agent actions for time step $t \n")
                     print_ascii(state)
+                    print("\n")
 
                     write_state_history_to_file(joinpath(state_history_path, state_history_name), state, "append")
                     push!(state_history, state)
@@ -376,3 +375,105 @@ run_simulations(all_maps, boltzmann_policy_parameters, num_iterations, T,
     domain_path, problem_path, state_history_path, data_save_path)
 
 
+function modify_state(state::State, domain::SimulatedDomain, agent_index)
+    # Get the object types of the state
+    objtypes = PDDL.get_objtypes(state)
+
+    # Create a dictionary of fluents and loop over all objects to assign their locations
+    fluents = Dict{Term, Any}()
+    for (obj, objtype) in objtypes
+        fluents[Compound(:xloc, Term[obj])] = state[Compound(:xloc, Term[obj])]
+        fluents[Compound(:yloc, Term[obj])] = state[Compound(:yloc, Term[obj])]
+    end
+
+    # Get the old wall matrix and copy it
+    walls = copy(state[pddl"(walls)"])
+    fluents[pddl"(walls)"] = walls
+
+    # Assign the position of all agents
+    for n in 1:N
+        agent = Const(Symbol("agent$n"))
+        fluents[Compound(:xloc, Term[agent])] = state[Compound(:xloc, Term[agent])]
+        fluents[Compound(:yloc, Term[agent])] = state[Compound(:yloc, Term[agent])]
+    end
+
+    # Assign values to boolean fluents for the agent with the given index
+    agent = Const(Symbol("agent$agent_index"))
+    boolean_fluents = [Symbol("has-filled"), Symbol("has-water1"), Symbol("has-water2"), Symbol("has-water3"), Symbol("has-completed")]
+    for boolean_fluent in boolean_fluents
+        fluents[Compound(boolean_fluent, Term[agent])] = state[Compound(boolean_fluent, Term[agent])]
+    end
+
+    return initstate(domain.domain, objtypes, fluents)
+end
+    
+function modify_state_2(state::State, domain::SimulatedDomain)
+    # Get the object types of the state
+    objtypes = PDDL.get_objtypes(state)
+
+    # Get the old wall matrix 
+    walls = copy(state[pddl"(walls)"])
+
+    # Create a dictionary of fluents and loop over non-agents to assign their locations
+    fluents = Dict{Term, Any}()
+    for (obj, objtype) in objtypes
+        if objtype != :agent
+            fluents[Compound(:xloc, Term[obj])] = state[Compound(:xloc, Term[obj])]
+            fluents[Compound(:yloc, Term[obj])] = state[Compound(:yloc, Term[obj])]
+        end
+    end
+
+    # Assign the wall fluent and position of the remaining agent
+    agent = domain.agent
+    fluents[pddl"(walls)"] = walls
+    fluents[Compound(:xloc, Term[agent])] = state[Compound(:xloc, Term[agent])]
+    fluents[Compound(:yloc, Term[agent])] = state[Compound(:yloc, Term[agent])]
+
+    # Assign values to boolean fluents
+    boolean_fluents = [Symbol("has-filled"), Symbol("has-water1"), Symbol("has-water2"), Symbol("has-water3"), Symbol("has-completed")]
+    for boolean_fluent in boolean_fluents
+        fluents[Compound(boolean_fluent, Term[agent])] = state[Compound(boolean_fluent, Term[agent])]
+    end
+
+    return initstate(domain.domain, objtypes, fluents)
+end
+
+
+
+state, domain, mal_spec = initialize(domain_path, problem_path, "debug_2agent.pddl")
+
+state_history = [state]
+agent = Const(Symbol("agent1"))
+spec = MinStepsGoal(Term[Compound(Symbol("has-completed"), Term[agent])])
+lvl0policies = create_level0_policies(2, domain, 0.0)
+inner_heuristic = WellTankHeuristic() # Optimistic heuristic
+planner = AStarPlanner(inner_heuristic)
+
+sim_domain = SimulatedDomain(domain, agent, lvl0policies)
+print_ascii(state)
+
+#instead of lvl0policies, dumb policy where agent just does the first action. but this helps check planning w level 1 agent
+
+
+planner = AStarPlanner(inner_heuristic, max_nodes=100)
+sol = planner(sim_domain, state, spec)
+print(sol)
+print(sol.trajectory)
+for state in sol.trajectory
+    print_ascii(state)
+    print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+    print("\n")
+end
+#compiled domain since level 0 agents are also doing A*
+#state compilation + limit search depth of A*. compilation at the top level cant be in a function.
+#check out tutorial for this. 
+
+
+next_state = PDDL.transition(sim_domain, state, pddl"(right agent1)")
+print_ascii(next_state)
+
+sol.plan
+sol.trajectory 
+print_ascii(sol.trajectory[end])
+
+#A* on compiled domain (not simulated) works? check with one and then two agents. 

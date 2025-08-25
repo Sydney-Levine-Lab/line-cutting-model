@@ -3,6 +3,14 @@ using SymbolicPlanners
 import SymbolicPlanners: precompute!, is_precomputed, compute
 using CSV
 
+# -----------------------------------------------------------------------------
+# Script purpose (older automated runner)
+# -----------------------------------------------------------------------------
+# Batch-run multi-agent line modeling across a set of maps, writing outputs to
+# "oldmodeling" directories. Unlike main_modeling_line, this script computes a
+# vector of actions per step and applies them via a MultiAgentDomain transition
+# that enforces simple collision handling. Iterations are set to 1.
+
 # Load domain and problem
 domain_path = "/Users/joekwon/Desktop/line_modeling"
 state_history_path = "/Users/joekwon/Desktop/line_modeling/oldmodeling_statehistories/"
@@ -11,8 +19,12 @@ multi_agent_lines = load_domain(joinpath(domain_path, "domain.pddl"))
 problem_path = "/Users/joekwon/Desktop/line_modeling/maps"
 domain = multi_agent_lines
 
+# Experiment set: legacy list of maps used for the automated run.
 all_problems = ["no_line_1_test.pddl", "no_line_2_test.pddl", "no_line_3_test.pddl", "yes_line_7_test.pddl", "yes_line_8_test.pddl", "yes_line_9_test.pddl", "yes_line_10_test.pddl", "7esque_test.pddl", "9esque_test.pddl", "10esque_test.pddl", "maybe_4.pddl", "maybe_5.pddl", "maybe_6.pddl", "new_maybe_1.pddl", "new_maybe_2.pddl", "new_maybe_3.pddl", "new_maybe_4.pddl", "new_maybe_5.pddl", "new_maybe_6.pddl", "no_line_A.pddl", "no_line_B.pddl", "no_line_C.pddl", "no_line_D.pddl", "yes_line_A.pddl", "yes_line_B.pddl", "yes_line_C.pddl", "yes_line_D.pddl", "yes_line_E.pddl", "yes_line_F.pddl"]
 
+# Helper: project a multi-agent state to a single-agent view for agent k by
+# deleting other agents and marking their last locations as walls. Used to
+# evaluate each agent's policy independently before a simultaneous rollout.
 # define function to modify state to be a single agent state (turning all other agents into walls)
 function modify_state(state::State, k::Integer)
     # define objects and their types
@@ -77,6 +89,7 @@ planner = AStarPlanner(inner_heuristic) # Planner that uses optimistic heuristic
 heuristic = PlannerHeuristic(planner) # Some exact heuristic
 memoized_h = memoized(heuristic) # Memoized exact heuristic
 
+# Number of agents configured in the maps
 N=8 
 
 #define multi agent domain
@@ -121,9 +134,10 @@ for problem in all_problems
     state = mal_state
     domain = multi_agent_lines
 
-    T=1000 #500 time steps
+    T=1000 # Upper bound on timesteps per run
     boltzmann_policy_parameters = [0.0001]
 
+    # Nested: data[noise][iteration] = Dict(agent_id => first_fill_timestep | -1)
     data = Dict()
     for parameter in boltzmann_policy_parameters
         data[parameter] = Dict{Int64, Dict{Int64, Int64}}()
@@ -132,7 +146,7 @@ for problem in all_problems
     #iterating over all the boltzmann_policy_parameter values
     for noise in boltzmann_policy_parameters
         #iterate loop on each boltzmann_policy_parameter value 5 times each
-        for iteration in 1:1
+        for iteration in 1:1 # legacy runner executes a single iteration per noise
             #print("noise: ", noise, " iteration: ", iteration, "\n")
 
             state = initstate(domain, mal_problem)
@@ -157,7 +171,7 @@ for problem in all_problems
             close(file)
 
             for t in 1:T
-                actions = Term[]
+                actions = Term[] # build simultaneous action vector
                 for n in 1:N
                     agent = Const(Symbol("agent$n"))
                     modified_state = modify_state(state, n) # Change other agents into walls
@@ -202,6 +216,7 @@ for problem in all_problems
             data[noise][iteration] = agent_filled
             #print(data[noise][iteration], "\n")
         end
+        # Save per-(map, noise) results under oldmodeling_data
         csv_name = string(data_save_path, problem, "_", noise, ".csv")
         CSV.write(csv_name, data, append=true)
     end

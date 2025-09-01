@@ -1,6 +1,5 @@
 [deps]
 CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
 GLMakie = "e9467ef8-e4e7-5192-8a1a-b1aee30e663a"
-PDDL = "2c8894f9-daa1-498a-9e3a-26edd9623db8"
+PDDLViz = "8f72e95f-8ea1-4af3-8b89-086f52abff52"
 PlanningDomains = "34fa33c8-33e3-4e77-bac8-de592315aba2"
-SymbolicPlanners = "b6fe5377-9711-4fad-95b0-be4eed71ecbb"

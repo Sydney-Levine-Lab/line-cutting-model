@@ -156,17 +156,17 @@ end
 
 # Load domain and problem - (local file names)
 domain_path = "."
-state_history_path = "./state_histories"
-data_save_path = "./maps/data/"
+state_history_path = "./state_histories/level-1/"
+data_save_path = "./maps/data/level-1/"
 multi_agent_lines = load_domain(joinpath(domain_path, "domain.pddl"))
 problem_path = "./maps"
 #mal_problem = load_problem(joinpath(problem_path, "new_maybe_3.pddl"))
 domain = multi_agent_lines
 
 # The experiment set: names correspond to files under maps/.
-#all_problems = ["no_line_1_test.pddl", "yes_line_F.pddl"]
+all_problems = ["no_line_1_test.pddl", "yes_line_10_test.pddl", "maybe_6.pddl"]
 #all_problems = ["no_line_1_test.pddl", "no_line_2_test.pddl", "no_line_3_test.pddl", "yes_line_7_test.pddl", "yes_line_8_test.pddl", "yes_line_9_test.pddl", "yes_line_10_test.pddl", "7esque_test.pddl", "9esque_test.pddl", "10esque_test.pddl", "maybe_4.pddl", "maybe_5.pddl", "maybe_6.pddl", "new_maybe_1.pddl", "new_maybe_2.pddl", "new_maybe_3.pddl", "new_maybe_4.pddl", "new_maybe_5.pddl", "new_maybe_6.pddl", "no_line_A.pddl", "no_line_B.pddl", "no_line_C.pddl", "no_line_D.pddl", "yes_line_A.pddl", "yes_line_B.pddl", "yes_line_C.pddl", "yes_line_D.pddl", "yes_line_E.pddl", "yes_line_F.pddl"]
-all_problems = ["no_line_2_test.pddl", "no_line_3_test.pddl", "yes_line_7_test.pddl", "yes_line_8_test.pddl", "yes_line_9_test.pddl", "yes_line_10_test.pddl", "7esque_test.pddl", "9esque_test.pddl", "10esque_test.pddl", "maybe_4.pddl", "maybe_5.pddl", "maybe_6.pddl", "new_maybe_1.pddl", "new_maybe_2.pddl", "new_maybe_3.pddl", "new_maybe_4.pddl", "new_maybe_5.pddl", "new_maybe_6.pddl", "no_line_A.pddl", "no_line_B.pddl", "no_line_C.pddl", "no_line_D.pddl", "yes_line_A.pddl", "yes_line_B.pddl", "yes_line_C.pddl", "yes_line_D.pddl", "yes_line_E.pddl"]
+#all_problems = ["no_line_2_test.pddl", "no_line_3_test.pddl", "yes_line_7_test.pddl", "yes_line_8_test.pddl", "yes_line_9_test.pddl", "yes_line_10_test.pddl", "7esque_test.pddl", "9esque_test.pddl", "10esque_test.pddl", "maybe_4.pddl", "maybe_5.pddl", "maybe_6.pddl", "new_maybe_1.pddl", "new_maybe_2.pddl", "new_maybe_3.pddl", "new_maybe_4.pddl", "new_maybe_5.pddl", "new_maybe_6.pddl", "no_line_A.pddl", "no_line_B.pddl", "no_line_C.pddl", "no_line_D.pddl", "yes_line_A.pddl", "yes_line_B.pddl", "yes_line_C.pddl", "yes_line_D.pddl", "yes_line_E.pddl"]
 
 # Helper: project to a single-agent view for agent k by deleting other agents
 # and turning their last positions into walls.
@@ -402,10 +402,10 @@ for problem in all_problems
             #print(data[noise][iteration], "\n")
         end
         # Save per-(map, noise) results. CSV will be appended to if rerun.
-        csv_name = string(data_save_path, problem, "_", noise, ".csv")
+        csv_name = string(data_save_path, problem, "_", noise, "_5.csv")
         CSV.write(csv_name, data, append=true)
 
-        collision_csv_name = string(data_save_path, "collisions_", problem, "_", noise, ".csv")
+        collision_csv_name = string(data_save_path, "collisions_", problem, "_", noise, "_5.csv")
         CSV.write(collision_csv_name, collision_data[noise], append=true)   
     end
 end

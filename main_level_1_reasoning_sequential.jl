@@ -164,7 +164,8 @@ problem_path = "./maps"
 domain = multi_agent_lines
 
 # The experiment set: names correspond to files under maps/.
-all_problems = ["no_line_1_test.pddl", "yes_line_10_test.pddl", "maybe_6.pddl"]
+#all_problems = ["yes_line_10_test.pddl", "maybe_6.pddl"]
+all_problems = ["no_line_2_test.pddl", "no_line_3_test.pddl", "yes_line_7_test.pddl", "yes_line_8_test.pddl", "yes_line_9_test.pddl", "7esque_test.pddl", "9esque_test.pddl", "10esque_test.pddl", "maybe_4.pddl", "maybe_5.pddl", "new_maybe_1.pddl", "new_maybe_2.pddl", "new_maybe_3.pddl", "new_maybe_4.pddl", "new_maybe_5.pddl", "new_maybe_6.pddl", "no_line_A.pddl", "no_line_B.pddl", "no_line_C.pddl", "no_line_D.pddl", "yes_line_A.pddl", "yes_line_B.pddl", "yes_line_C.pddl", "yes_line_D.pddl", "yes_line_E.pddl", "yes_line_F.pddl"]
 #all_problems = ["no_line_1_test.pddl", "no_line_2_test.pddl", "no_line_3_test.pddl", "yes_line_7_test.pddl", "yes_line_8_test.pddl", "yes_line_9_test.pddl", "yes_line_10_test.pddl", "7esque_test.pddl", "9esque_test.pddl", "10esque_test.pddl", "maybe_4.pddl", "maybe_5.pddl", "maybe_6.pddl", "new_maybe_1.pddl", "new_maybe_2.pddl", "new_maybe_3.pddl", "new_maybe_4.pddl", "new_maybe_5.pddl", "new_maybe_6.pddl", "no_line_A.pddl", "no_line_B.pddl", "no_line_C.pddl", "no_line_D.pddl", "yes_line_A.pddl", "yes_line_B.pddl", "yes_line_C.pddl", "yes_line_D.pddl", "yes_line_E.pddl", "yes_line_F.pddl"]
 #all_problems = ["no_line_2_test.pddl", "no_line_3_test.pddl", "yes_line_7_test.pddl", "yes_line_8_test.pddl", "yes_line_9_test.pddl", "yes_line_10_test.pddl", "7esque_test.pddl", "9esque_test.pddl", "10esque_test.pddl", "maybe_4.pddl", "maybe_5.pddl", "maybe_6.pddl", "new_maybe_1.pddl", "new_maybe_2.pddl", "new_maybe_3.pddl", "new_maybe_4.pddl", "new_maybe_5.pddl", "new_maybe_6.pddl", "no_line_A.pddl", "no_line_B.pddl", "no_line_C.pddl", "no_line_D.pddl", "yes_line_A.pddl", "yes_line_B.pddl", "yes_line_C.pddl", "yes_line_D.pddl", "yes_line_E.pddl"]
 
@@ -242,7 +243,8 @@ function modify_state_level_1(state::State, k::Integer, boltzmann_policies, doma
     for n in 1:(k-1) # Only predict agents before you in the order of play        
         try
             # What would agent n do if they used level 0 reasoning?
-            level0_state = modify_state_level_0(state, n)   # Use original state, from begining of round (ignoring agents 1 to k-1's actual actions)
+            level0_state = modify_state_level_0(predicted_state, n)   # CHANGED: see accumulated predictions
+            #### # Used original state, from begining of round (ignoring agents 1 to k-1's actual actions)
             predicted_action = SymbolicPlanners.get_action(boltzmann_policies[n], level0_state)
             
             # Apply that action to our predicted world
@@ -312,6 +314,8 @@ for problem in all_problems
     T=1000 # Upper bound on timesteps for a single run
     boltzmann_policy_parameters = [0.0001]
 
+    runs=50
+
     # Nested: data[noise][iteration] = Dict(agent_id => first_fill_timestep | -1)
     data = Dict()
     collision_data = Dict() # collecting data about collisions too
@@ -323,7 +327,7 @@ for problem in all_problems
     #iterating over all the boltzmann_policy_parameter values
     for noise in boltzmann_policy_parameters
         #iterate loop on each boltzmann_policy_parameter value 5 times each
-        for iteration in 1:5
+        for iteration in 1:runs
             print("noise: ", noise, " iteration: ", iteration, "\n")
 
             state = initstate(domain, mal_problem)
@@ -342,7 +346,7 @@ for problem in all_problems
             agent_filled = Dict{Int64, Int64}(1 => 0, 2 => 0, 3 => 0, 4 => 0, 5 => 0, 6 => 0, 7 => 0, 8 => 0)
 
             #for saving state_history
-            state_history_name = string("state_history", "_", problem, "_", noise, "_iteration", iteration, ".txt")
+            state_history_name = string("state_history", "_", problem, "_", noise, "_runs", runs, "_iteration", iteration, ".txt")
             file = open(joinpath(state_history_path, state_history_name), "w")
             write(file, string(state))
             close(file)
@@ -402,10 +406,10 @@ for problem in all_problems
             #print(data[noise][iteration], "\n")
         end
         # Save per-(map, noise) results. CSV will be appended to if rerun.
-        csv_name = string(data_save_path, problem, "_", noise, "_5.csv")
+        csv_name = string(data_save_path, problem, "_", noise, "_", runs, ".csv")
         CSV.write(csv_name, data, append=true)
 
-        collision_csv_name = string(data_save_path, "collisions_", problem, "_", noise, "_5.csv")
+        collision_csv_name = string(data_save_path, "collisions_", problem, "_", noise, "_", runs, ".csv")
         CSV.write(collision_csv_name, collision_data[noise], append=true)   
     end
 end

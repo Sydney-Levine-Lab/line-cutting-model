@@ -164,8 +164,10 @@ problem_path = "./maps"
 domain = multi_agent_lines
 
 # The experiment set: names correspond to files under maps/.
-all_problems = ["no_line_1_test.pddl", "yes_line_10_test.pddl", "maybe_6.pddl"]
-#ll_problems = ["no_line_1_test.pddl", "no_line_2_test.pddl", "no_line_3_test.pddl", "yes_line_7_test.pddl", "yes_line_8_test.pddl", "yes_line_9_test.pddl", "yes_line_10_test.pddl", "7esque_test.pddl", "9esque_test.pddl", "10esque_test.pddl", "maybe_4.pddl", "maybe_5.pddl", "maybe_6.pddl", "new_maybe_1.pddl", "new_maybe_2.pddl", "new_maybe_3.pddl", "new_maybe_4.pddl", "new_maybe_5.pddl", "new_maybe_6.pddl", "no_line_A.pddl", "no_line_B.pddl", "no_line_C.pddl", "no_line_D.pddl", "yes_line_A.pddl", "yes_line_B.pddl", "yes_line_C.pddl", "yes_line_D.pddl", "yes_line_E.pddl", "yes_line_F.pddl"]
+#all_problems = ["no_line_1_test.pddl", "yes_line_10_test.pddl", "maybe_6.pddl"]
+#all_problems = ["no_line_1_test.pddl", "no_line_2_test.pddl", "no_line_3_test.pddl", "yes_line_7_test.pddl", "yes_line_8_test.pddl", "yes_line_9_test.pddl", "yes_line_10_test.pddl", "7esque_test.pddl", "9esque_test.pddl", "10esque_test.pddl", "maybe_4.pddl", "maybe_5.pddl", "maybe_6.pddl", "new_maybe_1.pddl", "new_maybe_2.pddl", "new_maybe_3.pddl", "new_maybe_4.pddl", "new_maybe_5.pddl", "new_maybe_6.pddl", "no_line_A.pddl", "no_line_B.pddl", "no_line_C.pddl", "no_line_D.pddl", "yes_line_A.pddl", "yes_line_B.pddl", "yes_line_C.pddl", "yes_line_D.pddl", "yes_line_E.pddl", "yes_line_F.pddl"]
+all_problems = ["no_line_2_test.pddl", "no_line_3_test.pddl", "yes_line_7_test.pddl", "yes_line_8_test.pddl", "yes_line_9_test.pddl", "7esque_test.pddl", "9esque_test.pddl", "10esque_test.pddl", "maybe_4.pddl", "maybe_5.pddl", "new_maybe_1.pddl", "new_maybe_2.pddl", "new_maybe_3.pddl", "new_maybe_4.pddl", "new_maybe_5.pddl", "new_maybe_6.pddl", "no_line_A.pddl", "no_line_B.pddl", "no_line_C.pddl", "no_line_D.pddl", "yes_line_A.pddl", "yes_line_B.pddl", "yes_line_C.pddl", "yes_line_D.pddl", "yes_line_E.pddl", "yes_line_F.pddl"]
+
 
 # Helper: project to a single-agent view for agent k by deleting other agents
 # and turning their last positions into walls.
@@ -283,6 +285,8 @@ for problem in all_problems
     T=1000 # Upper bound on timesteps for a single run
     boltzmann_policy_parameters = [0.0001]
 
+    runs=50
+
     # Nested: data[noise][iteration] = Dict(agent_id => first_fill_timestep | -1)
     data = Dict()
     for parameter in boltzmann_policy_parameters
@@ -292,7 +296,7 @@ for problem in all_problems
     #iterating over all the boltzmann_policy_parameter values
     for noise in boltzmann_policy_parameters
         #iterate loop on each boltzmann_policy_parameter value 5 times each
-        for iteration in 1:5
+        for iteration in 1:runs
             #print("noise: ", noise, " iteration: ", iteration, "\n")
 
             state = initstate(domain, mal_problem)
@@ -311,7 +315,7 @@ for problem in all_problems
             agent_filled = Dict{Int64, Int64}(1 => 0, 2 => 0, 3 => 0, 4 => 0, 5 => 0, 6 => 0, 7 => 0, 8 => 0)
 
             #for saving state_history
-            state_history_name = string("state_history", "_", problem, "_", noise, "_iteration", iteration, ".txt")
+            state_history_name = string("state_history", "_", problem, "_", noise, "_runs", runs, "_iteration", iteration, ".txt")
             file = open(joinpath(state_history_path, state_history_name), "w")
             write(file, string(state))
             close(file)
@@ -345,7 +349,7 @@ for problem in all_problems
                         #only change the value if it is equal to 0, otherwise constant overwriting.
                         if agent_filled[n] == 0
                             agent_filled[n] = t
-                        end 
+                        end
                     end
                 end
         
@@ -365,10 +369,10 @@ for problem in all_problems
 
             #add the agent_filled dictionary to the data dictionary
             data[noise][iteration] = agent_filled
-            #print(data[noise][iteration], "\n")
+            #print(data[runs][iteration], "\n")
         end
-        # Save per-(map, noise) results. CSV will be appended to if rerun.
-        csv_name = string(data_save_path, problem, "_", noise, "_5.csv")
+        # Save per-(map, runs) results. CSV will be appended to if rerun.
+        csv_name = string(data_save_path, problem, "_", noise, "_", runs, ".csv")
         CSV.write(csv_name, data, append=true)
     end
 end

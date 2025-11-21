@@ -1,0 +1,21 @@
+# Byte-compiled / temporary
+*.pyc
+__pycache__/
+*.swp
+
+# Jupyter auto-checkpoints
+**/.ipynb_checkpoints/
+
+# Raw, heavy simulation outputs (local only)
+data/raw_sim/
+state_histories/
+all_data/
+maps/data
+all_state_histories/
+
+# Optional: large baseline exports, if they’re big
+# data/baseline_with_line/raw_exports/
+
+# OS cruft
+.DS_Store
+Thumbs.db

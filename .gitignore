@@ -7,11 +7,24 @@ __pycache__/
 **/.ipynb_checkpoints/
 
 # Raw, heavy simulation outputs (local only)
-data/raw_sim/
-state_histories/
-all_data/
-maps/data
-all_state_histories/
+data/old/
+data/level-0
+data/level-1
+data/maps/*
+data/state_histories*
+data/readable-data
+data/raw-data
+#state_histories/
+#all_data/
+#maps/data
+#all_state_histories/
+data/analsyis_per_map
+
+src/maps/data
+src/state_histories
+
+analysis/plots
+analysis/old_notebooks
 
 # Optional: large baseline exports, if they’re big
 # data/baseline_with_line/raw_exports/

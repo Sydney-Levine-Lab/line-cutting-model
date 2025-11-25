@@ -1,0 +1,13 @@
+Main docs: 
+analysis_utils.py: tools for analysis (convert raw data into analyzed data csv)
+analysis.ipynb: notebook to do that from and make graphs
+draft_analysis.ipynb: notebook for playing around and doing temporary fixes (e.g., converting data in old format)
+
+sim_analysis.py: destined to be remove; old tools for data in old format,
+and too fine an understanding of per simulation results (per player completion times) and noise
+
+Lots of cleaning to do; old jupyters already in two folds (old notebooks; some abt 24-11-2025 week specifically inside that)
+
+visualize_completion_times_25-10: old method for visualization, using nested dictionary data (Joe's old format);
+---perhaps some idea there for visualization, in particular for debugging / understanding stochasticity etc.
+---(not so much for final output)

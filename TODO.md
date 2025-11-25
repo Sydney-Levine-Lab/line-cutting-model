@@ -19,6 +19,8 @@ _Last updated: 2025-11-21_
 - [ ] Update existing notebook(s) to import from `sim_analysis.py` instead of defining everything inline.
 - [ ] Create a Google Sheet summarizing per-map behavior (L0 vs L1 vs paper; later with-line).
 
+### Notes: Compare 
+
 ## 2. Baseline with line
 
 - [ ] Export with-line baseline from Logan’s Google Sheet for 2–3 canonical maps.

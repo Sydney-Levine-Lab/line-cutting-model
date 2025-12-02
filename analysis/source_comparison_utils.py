@@ -252,7 +252,7 @@ def add_effect_sizes_by_source(
     sd_across_ref = ref_series.std(ddof=1)
     range_ref = ref_series.max() - ref_series.min()
 
-    eps = 1e-9 # avoid division by zero
+    #eps = 1e-9 # avoid division by zero
     mask_alt = df["source"] == alt_source # add effect sizes to alt_source lines
 
     # Raw difference
@@ -263,7 +263,7 @@ def add_effect_sizes_by_source(
     df.loc[mask_alt, delta_name] = df.loc[mask_alt, "map"].map(delta_dict)
 
     # Cohen's d
-    d = delta / (sd_across_ref + eps)
+    d = delta / sd_across_ref
     d_name = f"d_{metric}_{alt_source}_vs_{ref_source}"
     df[d_name] = pd.NA
     d_dict = d.to_dict()
@@ -278,7 +278,7 @@ def add_effect_sizes_by_source(
         df.loc[mask_alt, q_name] = df.loc[mask_alt, "map"].map(q_dict)
 
     # Relative difference
-    rel = delta / (ref_series.replace(0, np.nan) + eps)
+    rel = delta / ref_series.abs() 
     rel_name = f"relative_{metric}_{alt_source}_vs_{ref_source}"
     df[rel_name] = pd.NA
     rel_dict = rel.to_dict()
@@ -479,7 +479,7 @@ def plot_regression_by_source(
     if save_path is not None:
         fig.savefig(save_path, dpi=300, bbox_inches="tight")
 
-    plt.show()
+    return fig, ax
 
 
 
@@ -610,8 +610,7 @@ def plot_effect_vs_sd_by_source(
     if save_path is not None:
         fig.savefig(save_path, dpi=300, bbox_inches="tight")
 
-    plt.show()
-
+    return fig, ax
 
 def plot_zscores_by_source(
     df,
@@ -671,6 +670,4 @@ def plot_zscores_by_source(
     if save_path is not None:
         fig.savefig(save_path, dpi=300, bbox_inches="tight")
 
-    plt.show()
-
-    return
+    return fig, ax

@@ -8,23 +8,24 @@ __pycache__/
 
 # Raw, heavy simulation outputs (local only)
 data/old/
-data/level-0
-data/level-1
+data/level-0/
+data/level-1/
 data/maps/*
 data/state_histories*
-data/readable-data
-data/raw-data
+data/readable-data/
+data/raw-data/
+data/analysis_per_map/*
 #state_histories/
 #all_data/
 #maps/data
 #all_state_histories/
-data/analsyis_per_map
 
-src/maps/data
-src/state_histories
+src/maps/data/
+src/state_histories/
 
-analysis/plots
-analysis/old_notebooks
+#analysis/plots/
+analysis/figures
+analysis/old_notebooks/
 
 # Optional: large baseline exports, if they’re big
 # data/baseline_with_line/raw_exports/

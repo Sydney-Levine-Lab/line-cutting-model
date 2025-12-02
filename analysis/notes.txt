@@ -1,13 +1,12 @@
-Main docs: 
-analysis_utils.py: tools for analysis (convert raw data into analyzed data csv)
-analysis.ipynb: notebook to do that from and make graphs
-draft_analysis.ipynb: notebook for playing around and doing temporary fixes (e.g., converting data in old format)
 
-sim_analysis.py: destined to be remove; old tools for data in old format,
-and too fine an understanding of per simulation results (per player completion times) and noise
+- build_utils.py: tools to build CSVs
+- source_comparison_utils.py: tools to compare two sources statistically and make plots
+- analysis_by_source.ipynb: notebook to compare two sources (uses tools from sources_comparison_utils.py)
 
-Lots of cleaning to do; old jupyters already in two folds (old notebooks; some abt 24-11-2025 week specifically inside that)
+TODO: (Dec 2)
+Add pipeline for per map statistical analysis and plots; utils.py file and notebook.
+My old notebook from October displays completion times distributions for a given map (visualize_completion_times_25-10.ipynb- TO BE REMOVED), using final completion times in old data format (nested dictionaries; to become outdate onced I update the code). 
+I also need to use state_histories (and possibly collision data), to investigate maps a bit more. (Although prioririty might be higher-level understanding, tbd)
+((This new pipeline might be most useful for our understanding; not sure it will help with final paper outputs, although it's always nice to have a pipeline for finer analysis))
 
-visualize_completion_times_25-10: old method for visualization, using nested dictionary data (Joe's old format);
----perhaps some idea there for visualization, in particular for debugging / understanding stochasticity etc.
----(not so much for final output)
+Old files in old_notebooks. Including sim_analysis.py and draft_analysis.ipynb (inside notebooks-01-12-2025), which have tools to convert files from old to new format.

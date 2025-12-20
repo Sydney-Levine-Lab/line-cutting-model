@@ -1,11 +1,12 @@
 """
-Tools to build per-map analysis CSVs and the project-wide summary CSV.
+Tools to build analysis CSVs for simulations and scenarios.
 
-Intended usage:
-    - call `get_summary_dataframe(recompute=True)` once to regenerate all
-      analysis and summary files from raw data;
-    - call `get_summary_dataframe(recompute=False)` to load the existing
-      summary CSV in notebooks.
+Intended usage from Notebook:
+    - call get_universalization_summary(run_type, recompute=True) once for every type of simulation run,
+    to build per-map universalization metrics CSV and load it.
+    - call get_outcome_metrics(recompute=True) once to build per-scenario outcome metrics CSV and load it.
+    - later, call these functions with recompute=False to load the dataframes without rebuilding them.
+    - NEW (DEC 11): use build_display_matrix() to build regression ready display matrix using dfs for universalization metrics, outcome, and experimental data.
 """
 
 import numpy as np
@@ -13,10 +14,10 @@ import pandas as pd
 from pathlib import Path
 
 # ---------------------------------------------------------------------
-# Core metrics
+# Metrics
 # ---------------------------------------------------------------------
 
-def gini(values):
+def compute_gini(values):
     """
     Compute Gini coefficient for a 1D array of non-negative values.
     """
@@ -32,285 +33,337 @@ def gini(values):
 
 
 
-# Metrics summarized (mean, sd) in summary csv
+def compute_metrics(world, line):
+    """
+    Compute metrics by comparing completion times in world to those in the line baseline.
+
+    line: size 8 array with completion times when agents follow a line.
+    world: size 8 array with completion times in an alternate world.
+
+    Returns a dict with outcome measures when world is a scenario where 1 agent cuts the line (1cut, 1cut_bad, 1cut_badder),
+    and a univerlizability estimates when world is a simulation run.
+    """
+    line = pd.Series(line, dtype=float)
+    world = pd.Series(world, dtype=float)
+
+    line_last = line.max() # Completion time for last agent in line; used to normalize metrics
+    
+    # Aggregate welfare (positive: total completion times are lower than in line; ie welfare is improved)
+    aggregate_welfare = - ( world.sum() - line.sum() ) / line_last
+        
+    # Inequality (positive: increase in gap btw first and last)
+    gap_world = world.max() - world.min()
+    gap_line = line_last - line.min()
+    inequality = ( gap_world - gap_line ) / line_last
+
+    # Cardinal harm (always positive; normalized sum of increases in completion time)
+    positive_differences = (world - line).clip(lower=0)
+    cardinal_harm =  positive_differences.sum() / line_last
+    
+    # Ordinal harm (always positive; sum of increases in rank)
+    ### NOTE: this is a "blind" version. Possible TODO: replace with proper version.
+    ### With just completion times, I can't tell if a line-cutter is using a different source or not. Kwon2023 reports a non-blind version, probably done by hand
+    world_rank = world.rank(method="first")
+    line_rank = line.rank(method="first")
+    positive_rank_differences = (world_rank - line_rank).clip(lower=0)
+    ordinal_harm_blind = positive_rank_differences.sum()
+
+    # Gini (difference in Gini coefficients)
+    gini = compute_gini(world) - compute_gini(line)
+    
+    return {
+        "aggregate_welfare": aggregate_welfare,
+        "ordinal_harm_blind": ordinal_harm_blind,
+        "cardinal_harm": cardinal_harm,
+        "inequality": inequality,
+        "gini": gini
+    }
+
+
+
 METRIC_COLS = [
-    "first",
-    "last",
-    "gap",
-    "average",
-    "total",
     "aggregate_welfare",
-    "gap_normalized",
+    "inequality",
+    "cardinal_harm",
+    "ordinal_harm_blind",
     "gini",
 ]
 
 # ---------------------------------------------------------------------
-# Per-map analysis files
+# Build analysis CSVs
 # ---------------------------------------------------------------------
 
-def build_analysis_one_map(
+def build_processed_sim_one_map(
+        run_type,
         map_name, 
-        run_type, 
-        data_root="../data/readable-data", 
-        xp_csv="../data/2023_experimental_data.csv", 
-        output_root="../data/analysis_per_map"
+        sim_root="../data/simulations", 
+        line_csv="../data/scenarios/completion_times.csv"
         ):
     """
-    Build an analysis CSV for a single map and run type.
+    Build a processed simulation file, for a run type and map name with
+    per-run univerlization metrics,
+    by adding colums to the corresponding raw simulation file.
 
-    The output file includes:
-    - all simulation runs for that map and run type
-    - the corresponding experimental row for that map
-    - derived metrics (e.g., aggregate_welfare, inequality, etc.)
-
-    Saves to: <output_root>/<run_type>/<map_name>.csv
+    Assumes run type is a subdirectory of sim_data_root, and that raw data is under raw/.
+    Saves to <sim_data_root>/<run_type>/processed/<map_name>.csv
     """
-    data_root = Path(data_root)
-    xp_csv = Path(xp_csv)
-    output_root = Path(output_root)
+    sim_root = Path(sim_root)
+    raw_path = sim_root / run_type / "raw" / f"{map_name}.csv"
+    processed_path = sim_root / run_type / "processed" / f"{map_name}.csv"
 
-    # ---------- 1) Make dataframe with simulation and experimental data ----------
-    df_xp = pd.read_csv(xp_csv) # experimental data
+    df = pd.read_csv(raw_path) # Load raw simulation data
+    agent_cols = [c for c in df.columns if c.startswith("agent_")] # Should be valid for both dfs
 
-    sim_csv = data_root / run_type / f"{map_name}.csv"
-    if not sim_csv.exists():
-        raise FileNotFoundError(f"Simulation file not found: {sim_csv}")
-    df_sim = pd.read_csv(sim_csv) # simulation data
+    # Load completion times when agents follow the line
+    line_path = Path(line_csv)
+    comp = pd.read_csv(line_path)
+    line = comp[(comp["map"] == map_name) & (comp["condition"] == "line")]
+    line_times = line.iloc[0][agent_cols].to_numpy(dtype=float)
 
-    # Add columns to simulation data frame, re-order
-    df_sim["source"] = "simulation"
-    df_sim["condition"] = np.nan
-    base_cols = ["source", "run", "condition"]
-    other_cols = [c for c in df_sim.columns if c not in base_cols]
-    df_sim = df_sim[base_cols + other_cols]
+    for idx, run in df.iterrows():
+        world_times = run[agent_cols].to_numpy(dtype=float)
+        metrics = compute_metrics(world=world_times, line=line_times)
+        for k, v in metrics.items():
+            df.loc[idx, k] = v
 
-    # Extract the relevant experimental rows for this map, and make df compatible
-    df_xp_subset = df_xp[df_xp["map"] == map_name].copy()
-    if df_xp_subset.empty:
-        raise ValueError(f"No experimental rows found for map '{map_name}' in {xp_csv}")
-    df_xp_subset["source"] = "experimental"
-    df_xp_subset["run"] = np.nan
-    df_xp_subset["noise"] = np.nan
-    df_xp_subset = df_xp_subset[base_cols + other_cols]
-
-    # Combine simulation and experimental dfs to get analysis data frame
-    df = pd.concat([df_sim, df_xp_subset], ignore_index=True)
-    df["run"] = df["run"].astype("Int64") # restore run index as integer
-
-    # ---------- 2) Compute metrics ----------
-    agent_cols = [c for c in df.columns if c.startswith("agent_")]
-
-    # Basic metrics
-    df["first"] = df[agent_cols].min(axis=1)
-    df["last"]  = df[agent_cols].max(axis=1)
-    df["gap"] = (df["last"] - df["first"]) * 1.0
-    df["average"] = df[agent_cols].mean(axis=1)
-    df["total"]  = df[agent_cols].sum(axis=1)
-
-    # Use 'line' condition metrics as baseline for other metrics
-    baseline_mask = df["condition"] == "line"
-    baseline_welfare = df.loc[ baseline_mask, "total"].mean()
-    baseline_last = df.loc[ baseline_mask, "last"].mean() # For normalization
-
-    # Change in aggregate welfare, compared to baseline
-    df["aggregate_welfare"] = ( baseline_welfare - df["total"] ) / baseline_last
-    df.loc[baseline_mask, "aggregate_welfare"] = 0.0 # make sure baseline welfare stays at 0
-
-    # Normalized gap, compared to baseline
-    baseline_gap = df.loc[baseline_mask, "gap"].mean()
-    df["gap_normalized"] = (df["gap"] - baseline_gap) / baseline_last
-
-    # Gini coefficient (not compared to baseline)
-    df["gini"] = df[agent_cols].apply(gini, axis=1)
-
-    # ---------- 3) Save to analysis folder ----------
-    output_dir = output_root / run_type
-    output_dir.mkdir(parents=True, exist_ok=True)
-    output_path = output_dir / f"{map_name}.csv"
-    df.to_csv(output_path, index=False)
-
-    return f"Result for {map_name} in {run_type} run saved to {output_dir}"
+    df.to_csv(processed_path, index=False)
 
 
 
-def build_all_analyses(
-        data_root="../data/readable-data",
-        xp_csv="../data/2023_experimental_data.csv",
-        output_root="../data/analysis_per_map"
-        ):
-    """
-    Build per-map analysis CSVs for all run types found under data_root,
-    treating each of its subdirectories as a run type.
-    """
-    data_root = Path(data_root)
-    xp_csv = Path(xp_csv)
-    output_root = Path(output_root)
-
-    # Deduce run types from subfolders of data_root
-    run_types = []
-    for p in data_root.iterdir():
-        if p.is_dir() and any(p.glob("*.csv")):
-            run_types.append(p.name)
-
-    for run_type in run_types:
-        sim_dir = data_root / run_type
-        map_names = sorted(f.stem for f in sim_dir.glob("*.csv"))
-
-        print(f"\n=== Run type: {run_type} ===")
-        for map_name in map_names:
-            try:
-                build_analysis_one_map(
-                    map_name=map_name,
-                    run_type=run_type,
-                    data_root=data_root,
-                    xp_csv=xp_csv,
-                    output_root=output_root,
-                )
-                print(f"  ✔ {map_name}")
-            except Exception as e:
-                print(f"  ✖ {map_name}: {type(e).__name__}: {e}")
-    return
-
-
-# ---------------------------------------------------------------------
-# Summary CSV (across maps & run types)
-# ---------------------------------------------------------------------
-
-def build_summary_csv(
-    analysis_data_root="../data/analysis_per_map",
-    output_csv="../data/summary_statistics.csv"
+def build_processed_sim_all_maps(
+    run_type,
+    sim_root="../data/simulations",
+    line_csv="../data/scenarios/completion_times.csv",
 ):
     """
-    Build a summary CSV aggregating metrics across all maps and run types.
+    Build processed simulation files for every map within a run type folder.
+
+    Uses build_processed_sim_one_map().
     """
-    analysis_data_root = Path(analysis_data_root)
-    output_csv = Path(output_csv)
+    sim_root = Path(sim_root)
+    raw_dir = sim_root / run_type / "raw"
+    processed_dir = sim_root / run_type / "processed"
+    processed_dir.mkdir(parents=True, exist_ok=True)
 
-    run_types = [
-        p.name
-        for p in analysis_data_root.iterdir()
-        if p.is_dir() and any(p.glob("*.csv"))
-    ]
-    if not run_types:
-        raise RuntimeError(f"No run_type subfolders with CSVs found under {analysis_data_root}")
+    raw_files = sorted(raw_dir.glob("*.csv"))
+    for raw_path in raw_files:
+        map_name = raw_path.stem
+        build_processed_sim_one_map(run_type=run_type, map_name=map_name, sim_root=sim_root,line_csv=line_csv)
 
-    map_names = set()
-    for run_type in run_types:
-        run_dir = analysis_data_root / run_type
-        for f in run_dir.glob("*.csv"):
-            map_names.add(f.stem)
-    map_names = sorted(map_names)
+    print(
+        f"Processed {len(raw_files)} maps for run_type='{run_type}' "
+        f"and saved to {processed_dir}"
+    )
 
-    all_rows = []
 
-    for map_name in map_names:
-        # Experimental-based metrics ('line', '1cut*')
-        ref_df = None
-        for run_type in run_types:
-            path = analysis_data_root / run_type / f"{map_name}.csv"
-            if path.exists():
-                ref_df = pd.read_csv(path)
-                break
 
-        if ref_df is None:
-            print(f"[WARN] No analysis file found for map={map_name} in any run_type; skipping exp-based rows.")
-        else:
-            mask_line = (ref_df["source"] == "experimental") & (ref_df["condition"] == "line")
-            if mask_line.any():
-                line_mean = ref_df.loc[mask_line, METRIC_COLS].mean()
-                line_sd   = ref_df.loc[mask_line, METRIC_COLS].std(ddof=1)
+def build_universalization_summary(
+    run_type,
+    sim_root="../data/simulations",
+    output_csv="summary_universalization_metrics.csv"
+):
+    """
+    Build a summary CSV aggregating universalization metrics across all maps
+    for a given run type.
+    """
+    sim_root = Path(sim_root)
+    processed_dir = sim_root / run_type / "processed"
+    output_path = sim_root / run_type / output_csv
 
-                row = {"map": map_name, "source": "line"}
-                for m in METRIC_COLS:
-                    row[m] = line_mean[m]
-                    row[m + "_sd"] = line_sd[m]
-                all_rows.append(row)
-            else:
-                print(f"[WARN] No 'line' condition found for map={map_name} in {path}")
+    processed_files = sorted(processed_dir.glob("*.csv"))
 
-            mask_cut = (ref_df["source"] == "experimental") & ref_df["condition"].astype(str).str.startswith("1cut")
-            if mask_cut.any():
-                for cond, df_cond in ref_df.loc[mask_cut].groupby("condition"):
-                    cut_mean = df_cond[METRIC_COLS].mean()
-                    cut_sd   = df_cond[METRIC_COLS].std(ddof=1)
+    rows = []
 
-                    row = {"map": map_name, "source": cond}
-                    for m in METRIC_COLS:
-                        row[m] = cut_mean[m]
-                        row[m + "_sd"] = cut_sd[m]
-                    all_rows.append(row)
+    for fpath in processed_files:
+        map_name = fpath.stem
+        df = pd.read_csv(fpath)
 
-        # Simulation-based metrics (e.g., paper_data, level-0, level-1)
-        for run_type in run_types:
-            path = analysis_data_root / run_type / f"{map_name}.csv"
-            if not path.exists():
-                continue
+        n_runs = len(df)
 
-            df_rt = pd.read_csv(path)
-            mask_sim = df_rt["source"] == "simulation"
-            if not mask_sim.any():
-                print(f"[WARN] No simulation rows for map={map_name}, run_type={run_type}")
-                continue
+        row = {
+            "map_name": map_name,
+            "n_runs": n_runs
+        }
 
-            sim_mean = df_rt.loc[mask_sim, METRIC_COLS].mean()
-            sim_sd   = df_rt.loc[mask_sim, METRIC_COLS].std(ddof=1)
-            n_sim    = mask_sim.sum()
+        # compute mean and sd for each metric
+        for m in METRIC_COLS:
+            mean_val = df[m].mean()
+            sd_val = df[m].std(ddof=1)
+            row[f"univ_{m}"] = mean_val
+            row[f"univ_{m}_sd"] = sd_val
 
-            row = {"map": map_name, "source": run_type}
-            row["n_runs"] = int(n_sim)
-            for m in METRIC_COLS:
-                row[m] = sim_mean[m]
-                row[m + "_sd"] = sim_sd[m]
-            all_rows.append(row)
+        rows.append(row)
 
-    if not all_rows:
-        raise RuntimeError("No summary rows created; check your analysis_data_root structure.")
+    summary_df = pd.DataFrame(rows)
+    summary_df.to_csv(output_path, index=False)
 
-    df = pd.DataFrame(all_rows)
-    df.to_csv(output_csv, index=False)
-    print(f"Saved summary CSV: {output_csv}")
+    print(
+        f"Built universalization summary for run_type='{run_type}' "
+        f"over {len(rows)} maps and saved to {output_csv}"
+    )
+    return summary_df
 
-    return df
+
+
+def build_outcome_metrics(
+    completion_csv="../data/scenarios/completion_times.csv",
+    lookup_csv="../data/scenarios/scenario_lookup.csv",
+    output_csv="../data/scenarios/outcome_metrics.csv",
+):
+    """
+    Build a scenario-level outcome metrics CSV from completion_csv,
+    using lookup_csv as a correspondance table.
+    """
+    completion_path = Path(completion_csv)
+    lookup_path = Path(lookup_csv)
+    output_path = Path(output_csv)
+
+    comp_df = pd.read_csv(completion_path)
+    lookup_df = pd.read_csv(lookup_path)
+
+    agent_cols = [c for c in comp_df.columns if c.startswith("agent_")]
+    line_df = comp_df[comp_df["condition"] == "line"].set_index("map") # Line baseline per map
+
+    rows = []
+
+    for _, row in lookup_df.iterrows():
+        map_name = row["map_name"]
+        cond = row["condition"]
+        
+        # Baseline line completion times   
+        line_times = line_df.loc[map_name, agent_cols].to_numpy(dtype=float) 
+        # Scenario after line-cutting completion times
+        world_rows = comp_df[(comp_df["map"] == map_name) & (comp_df["condition"] == cond)]
+        world_times = world_rows.iloc[0][agent_cols].to_numpy(dtype=float)
+
+        metrics = compute_metrics(world=world_times, line=line_times)
+
+        out = {
+            "scenario_label": row.get("preferred_label", None),
+            "xp_name": row.get("xp_name", None),
+            "map_name": map_name,
+            "condition": cond,
+            "aggregate_welfare": metrics["aggregate_welfare"],
+            "inequality": metrics["inequality"],
+            "cardinal_harm": metrics["cardinal_harm"],
+            "ordinal_harm_blind": metrics["ordinal_harm_blind"],
+            "gini": metrics["gini"],
+        }
+        rows.append(out)
+
+    metrics_df = pd.DataFrame(rows)
+    metrics_df.to_csv(output_path, index=False)
+
+    print(
+        f"Built {len(metrics_df)} scenario outcome rows and saved to {output_path}"
+    )
+    return metrics_df
+
 
 # ---------------------------------------------------------------------
-# Convenience helper for notebooks
+# Helpers to call from notebooks
 # ---------------------------------------------------------------------
 
-def get_summary_dataframe(
+def get_universalization_summary(
+    run_type,
+    sim_root="../data/simulations",
+    summary_csv="summary_universalization_metrics.csv",
+    line_csv="../data/scenarios/completion_times.csv",
     recompute=False,
-    data_root="../data/readable-data",
-    xp_csv="../data/2023_experimental_data.csv",
-    analysis_data_root="../data/analysis_per_map",
-    summary_csv="../data/summary_statistics.csv",
 ):
     """
-    High-level helper for notebooks.
+    Load universalization metrics for run_type.
 
-    If recompute is True:
-      - Rebuild per-map analysis CSVs from raw simulation + experimental data.
-      - Rebuild the summary CSV.
-      - Return the fresh summary DataFrame.
+    If recompute=False: read summary_csv.
+    If recompute=True: rebuild it using build_universalization_summary()
+    and build_processed_sim_all_maps().
+    """
+    sim_root=Path(sim_root)
 
-    If recompute is False:
-      - Read the existing summary CSV and return it.
+    if recompute:
+        raw_dir = sim_root / run_type / "raw"
+        raw_files = sorted(raw_dir.glob("*.csv"))
+
+        if not raw_files:
+            raise FileNotFoundError(
+                f"No raw CSV files found for run_type='{run_type}'.\n"
+                f"Expected files under: {raw_dir}"
+            )
+        # rebuild per-map processed files
+        build_processed_sim_all_maps(
+            run_type=run_type,
+            sim_root=sim_root,
+            line_csv=line_csv
+        )
+        # rebuild summary over maps
+        return build_universalization_summary(
+            run_type=run_type,
+            sim_root=sim_root,
+            output_csv=summary_csv
+            )
+    else:
+        summary_path = sim_root / run_type / summary_csv
+        if not summary_path.exists():
+            raise FileNotFoundError(
+                f"Summary CSV not found for run_type='{run_type}'.\n"
+                f"Expected: {summary_path}\n"
+                f"To rebuild from raw simulation files call get_universalization_summary(run_type, recompute=True)."
+            )
+        return pd.read_csv(summary_path)
+
+
+
+def get_outcome_metrics(
+    completion_csv="../data/scenarios/completion_times.csv",
+    lookup_csv="../data/scenarios/scenario_lookup.csv",
+    outcome_csv="../data/scenarios/outcome_metrics.csv",
+    recompute=False,
+):
+    """
+    Load the scenario outcome metrics.
+
+    If recompute=False: read outcome_csv.
+    If recompute=True: rebuild it using build_outcome_metrics().
     """
     if recompute:
-        build_all_analyses(
-            data_root=data_root,
-            xp_csv=xp_csv,
-            output_root=analysis_data_root,
+        return build_outcome_metrics(
+            completion_csv=completion_csv,
+            lookup_csv=lookup_csv,
+            output_csv=outcome_csv
         )
-        df = build_summary_csv(
-            analysis_data_root=analysis_data_root,
-            output_csv=summary_csv,
-        )
-        return df
+    else:
+        outcome_path = Path(outcome_csv)
+        return pd.read_csv(outcome_path)
+    
 
-    summary_csv = Path(summary_csv)
-    if not summary_csv.exists():
-        raise FileNotFoundError(
-            f"Summary CSV {summary_csv} not found. "
-            f"Either run get_summary_dataframe(recompute=True) "
-            f"or ensure the file exists."
+def build_design_matrix(
+    univ_df,
+    out_df,
+    xp_df,
+    country=None,
+):
+    """
+    Build a regression-ready design matrix (dataframe),
+    using universalization, output and experimental data dfs,
+    typically retrieved with above helpers.
+
+    Ratings are pooled across countries by default;
+    and otherwise limited to those obtained for a specified country.
+    """
+    # normalize xp column names
+    xp_df = xp_df.rename(columns={"map": "xp_name"}).copy()
+
+    if country is not None:
+        # restrict to a single country
+        xp_df = xp_df[xp_df["country"] == country].copy()
+        xp_scenario = xp_df.rename(columns={"rating_mean": "rating_mean_country"})
+    else:
+        xp_scenario = (
+            xp_df.groupby("xp_name", as_index=False)
+                 .agg(rating_mean=("rating_mean", "mean"))
         )
-    return pd.read_csv(summary_csv)
+
+    scenario_univ = out_df.merge(univ_df, on="map_name", how="left")
+
+    design = xp_scenario.merge(scenario_univ, on="xp_name", how="inner")
+    return design

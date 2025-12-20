@@ -3,6 +3,10 @@ using SymbolicPlanners
 import SymbolicPlanners: precompute!, is_precomputed, compute
 using CSV
 
+using Base.Threads
+@info "Threads" nthreads()
+
+
 # -----------------------------------------------------------------------------
 # WellTankHeuristic needs to here: see main_level_0_reasoning
 # -----------------------------------------------------------------------------
@@ -155,20 +159,20 @@ end
 # Test Joe's script (used for 2023 CSS paper)
 
 # Load domain and problem - (local file names)
+base_save_path = "../data/simulations/level-1_noise-2.0/"
+state_history_path = joinpath(base_save_path, "state_histories")
+data_save_path = base_save_path
+
 domain_path = "."
-state_history_path = "./state_histories/level-1/"
-data_save_path = "./maps/data/level-1/"
 multi_agent_lines = load_domain(joinpath(domain_path, "domain.pddl"))
 problem_path = "./maps"
 #mal_problem = load_problem(joinpath(problem_path, "new_maybe_3.pddl"))
 domain = multi_agent_lines
 
 # The experiment set: names correspond to files under maps/.
-#all_problems = ["yes_line_10_test.pddl", "maybe_6.pddl"]
-#all_problems = ["no_line_2_test.pddl", "no_line_3_test.pddl", "yes_line_7_test.pddl", "yes_line_8_test.pddl", "yes_line_9_test.pddl", "7esque_test.pddl", "9esque_test.pddl", "10esque_test.pddl", "maybe_4.pddl", "maybe_5.pddl", "new_maybe_1.pddl", "new_maybe_2.pddl", "new_maybe_3.pddl", "new_maybe_4.pddl", "new_maybe_5.pddl", "new_maybe_6.pddl", "no_line_A.pddl", "no_line_B.pddl", "no_line_C.pddl", "no_line_D.pddl", "yes_line_A.pddl", "yes_line_B.pddl", "yes_line_C.pddl", "yes_line_D.pddl", "yes_line_E.pddl", "yes_line_F.pddl"]
-all_problems = ["yes_line_E.pddl", "yes_line_F.pddl"]
-#all_problems = ["no_line_1_test.pddl", "no_line_2_test.pddl", "no_line_3_test.pddl", "yes_line_7_test.pddl", "yes_line_8_test.pddl", "yes_line_9_test.pddl", "yes_line_10_test.pddl", "7esque_test.pddl", "9esque_test.pddl", "10esque_test.pddl", "maybe_4.pddl", "maybe_5.pddl", "maybe_6.pddl", "new_maybe_1.pddl", "new_maybe_2.pddl", "new_maybe_3.pddl", "new_maybe_4.pddl", "new_maybe_5.pddl", "new_maybe_6.pddl", "no_line_A.pddl", "no_line_B.pddl", "no_line_C.pddl", "no_line_D.pddl", "yes_line_A.pddl", "yes_line_B.pddl", "yes_line_C.pddl", "yes_line_D.pddl", "yes_line_E.pddl", "yes_line_F.pddl"]
-#all_problems = ["no_line_2_test.pddl", "no_line_3_test.pddl", "yes_line_7_test.pddl", "yes_line_8_test.pddl", "yes_line_9_test.pddl", "yes_line_10_test.pddl", "7esque_test.pddl", "9esque_test.pddl", "10esque_test.pddl", "maybe_4.pddl", "maybe_5.pddl", "maybe_6.pddl", "new_maybe_1.pddl", "new_maybe_2.pddl", "new_maybe_3.pddl", "new_maybe_4.pddl", "new_maybe_5.pddl", "new_maybe_6.pddl", "no_line_A.pddl", "no_line_B.pddl", "no_line_C.pddl", "no_line_D.pddl", "yes_line_A.pddl", "yes_line_B.pddl", "yes_line_C.pddl", "yes_line_D.pddl", "yes_line_E.pddl"]
+#all_problems = ["yes_line_7_test.pddl", "yes_line_8_test.pddl", "yes_line_9_test.pddl", "yes_line_10_test.pddl", "7esque_test.pddl", "9esque_test.pddl", "10esque_test.pddl", "yes_line_B.pddl", "yes_line_C.pddl", "yes_line_D.pddl", "yes_line_E.pddl", "yes_line_F.pddl", "no_line_1_test.pddl", "no_line_2_test.pddl", "no_line_3_test.pddl", "maybe_4.pddl", "maybe_5.pddl", "maybe_6.pddl", "new_maybe_1.pddl", "new_maybe_2.pddl", "new_maybe_3.pddl", "new_maybe_4.pddl", "new_maybe_5.pddl", "new_maybe_6.pddl", "no_line_A.pddl", "no_line_B.pddl", "no_line_C.pddl", "no_line_D.pddl"]
+# "yes_line_A.pddl": not used in stimuli...
+all_problems = ["no_line_D.pddl"]
 
 # Helper: project to a single-agent view for agent k by deleting other agents
 # and turning their last positions into walls.
@@ -302,6 +306,7 @@ multi_domain = MultiAgentDomain(domain)
 
 
 for problem in all_problems
+    print(problem)
     mal_problem = load_problem(joinpath(problem_path, problem))
     # Register array theory for gridworld domains (required for wall grids)
     PDDL.Arrays.@register()
@@ -313,9 +318,10 @@ for problem in all_problems
     domain = multi_agent_lines
 
     T=1000 # Upper bound on timesteps for a single run
-    boltzmann_policy_parameters = [0.0001]
+    #boltzmann_policy_parameters = [0.0001, 0.001, 0.01, 0.1, 1]
+    boltzmann_policy_parameters = [0.3]
 
-    runs=50
+    runs=5
 
     # Nested: data[noise][iteration] = Dict(agent_id => first_fill_timestep | -1)
     data = Dict()

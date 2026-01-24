@@ -36,14 +36,14 @@ const MAP_FILES = [
 # Note: "yes_line_A.pddl" not used in stimuli
 
 # Run is identified by label written at launch; if this label has been used, time stamp is used
-const RUN_LABEL = get(ENV, "RUN_LABEL", "main")
+const RUN_LABEL = get(ENV, "RUN_LABEL", "main2")
 const RUN_ID = isempty(strip(RUN_LABEL)) ?
     Dates.format(now(), "yyyy-mm-dd_HHMMSS") :
     RUN_LABEL * "_" * Dates.format(now(), "yyyy-mm-dd_HHMMSS")
 
 const OUTPUT_DIR  = joinpath(SRC_DIR, "..", "data", "simulations", RUN_ID, "raw")
 const FULL_HISTORY_DIR     = joinpath(OUTPUT_DIR, "state_histories")
-const SAVE_HISTORIES = false  # Don't save full state histories by default
+const SAVE_HISTORIES = true   # Don't save full state histories by default
 
 const SEED = 1234
 
@@ -197,102 +197,115 @@ function run_simulations()
         initial_state = initstate(domain, problem)
 
         # For each map, store per-run completion times
-        # data[run] = Dict(agent_id => first_fill_timestep | -1)
+        #data[run] = Dict(agent_id => first_fill_timestep | -1)
         data = Dict{Int, Dict{Int, Int}}()
 
-        output_rows = NamedTuple[] # Initialize output tuple
+        output_rows = NamedTuple[] # one row per run
 
         for run in 1:RUNS
+            println(run)
 
-            # Random seed
-            Random.seed!(SEED + 10_000 * map_index + run)
+            seed_this_run = SEED + 10_000 * map_index + run
+            Random.seed!(seed_this_run)
 
             # Reset state and history
             state = initial_state
+            
             state_history = [state]
 
             # agent_filled[n] = timestep when agent n first fills a tank (0 if not yet, -1 if stuck)
             agent_filled = Dict{Int, Int}(n => 0 for n in 1:N_AGENTS)
 
-            if SAVE_HISTORIES
-                # Prepare state history file
+            history_path = nothing
+            history_io = nothing
+
                 state_history_name = string(
-                    "state_history_", map, "_", TEMPERATURE,
+                    "state_history_", map, "_T", TEMPERATURE,
                     "_runs", RUNS, "_run", run, ".txt",
                 )
                 history_path = joinpath(FULL_HISTORY_DIR, state_history_name)
-                open(history_path, "w") do file
-                    write(file, string(state))
-                end
-            end
+                open(history_path, "w") do io
+                    println(io, "# t=0")
+                    show(io, state); println(io)
 
-            for t in 1:TIME_MAX
-                # Update state
-                state = simulation_step(state, policies, domain)
+                for t in 1:TIME_MAX
+                    state = simulation_step(state, policies, domain)
 
-                # Append state to history file
-                if SAVE_HISTORIES
-                    open(history_path, "a") do file
-                        write(file, string(state))
+                    if SAVE_HISTORIES
+                        open(history_path, "a") do file
+                            write(file, string(state))
+                        end
                     end
-                end
 
-                push!(state_history, state)
+                    push!(state_history, state)
 
-                # If any agent has filled a tank, record the timestep (first time only)
-                for n in 1:N_AGENTS
-                    agent = Const(Symbol("agent$n"))
-                    if state[Compound(Symbol("has-filled"), Term[agent])] &&
-                       agent_filled[n] == 0
-                        agent_filled[n] = t
-                    end
-                end
-
-                # If state stopped changing for 3 timesteps, set all to -1 and stop
-                if t >= 3 &&
-                   state == state_history[t] &&
-                   state == state_history[t-1] &&
-                   state == state_history[t-2]
+                    # If any agent has filled a tank, record the timestep (first time only)
                     for n in 1:N_AGENTS
-                        agent_filled[n] = -1
+                        agent = Const(Symbol("agent$n"))
+                        if state[Compound(Symbol("has-filled"), Term[agent])] &&
+                        agent_filled[n] == 0
+                            agent_filled[n] = t
+                        end
                     end
-                    break
-                end
 
-                # If all goals are met, terminate the loop
-                filled_all = all(
-                    state[Compound(Symbol("has-filled"),
-                                   Term[Const(Symbol("agent$n"))])] for n in 1:N_AGENTS
-                )
-                if filled_all
-                    break
+                    # If state stopped changing for 3 timesteps, set all to -1 and stop
+                    if t >= 3 &&
+                    state == state_history[t] &&
+                    state == state_history[t-1] &&
+                    state == state_history[t-2]
+                        for n in 1:N_AGENTS
+                            agent_filled[n] = -1
+                        end
+                        break
+                    end
+
+                    # all filled?
+                    if all(state[Compound(Symbol("has-filled"), Term[Const(Symbol("agent$n"))])] for n in 1:N_AGENTS)
+                        break
+                    end
+
+                    # Terminate if all agents have filled their tank
+                    filled_all = all(
+                        state[Compound(Symbol("has-filled"),
+                                    Term[Const(Symbol("agent$n"))])] for n in 1:N_AGENTS
+                    )
+                    if filled_all
+                        break
+                    end
                 end
             end
+
+                for n in 1:N_AGENTS
+                    if agent_filled[n] == 0 # agent did not complete the task
+                        agent_filled[n] = -1   
+                    end
+                end
+            
+            push!(output_rows, (
+                run = run, 
+                agent1 = agent_filled[1],
+                agent2 = agent_filled[2],
+                agent3 = agent_filled[3],
+                agent4 = agent_filled[4],
+                agent5 = agent_filled[5],
+                agent6 = agent_filled[6],
+                agent7 = agent_filled[7],
+                agent8 = agent_filled[8],
+                temperature = TEMPERATURE,
+                time_max = TIME_MAX,
+                n_agents = N_AGENTS,
+                map = replace(map, ".pddl" => ""),
+                seed = seed_this_run,
+            ))    
 
             data[run] = agent_filled
         end
-
-        push!(output_rows, (
-            agent1 = agent_filled[1],
-            agent2 = agent_filled[2],
-            agent3 = agent_filled[3],
-            agent4 = agent_filled[4],
-            agent5 = agent_filled[5],
-            agent6 = agent_filled[6],
-            agent7 = agent_filled[7],
-            agent8 = agent_filled[8],
-            temperature = TEMPERATURE,
-            time_max = TIME_MAX,
-            n_agents = N_AGENTS,
-            seed = seed,
-        ))
-    
+        # Save per-(map, runs) results.
+        csv_name = joinpath(OUTPUT_DIR, replace(map, ".pddl" => "") * ".csv")
+        #print(csv_name)
+        #csv_name = string(COMPLETION_TIMES_DIR, map, "_", TEMPERATURE, "_", RUNS, ".csv")
+        CSV.write(csv_name, output_rows)
     end
-    # Save per-(map, runs) results.
-    csv_name = joinpath(OUTPUT_DIR, replace(map, ".pddl" => "") * ".csv")
-    #print(csv_name)
-    #csv_name = string(COMPLETION_TIMES_DIR, map, "_", TEMPERATURE, "_", RUNS, ".csv")
-    CSV.write(csv_name, rows)
 end
 
 # Run if called as a script

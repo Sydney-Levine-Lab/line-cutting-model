@@ -1,26 +1,31 @@
 using PDDL, PlanningDomains
 using SymbolicPlanners
-using CSV
+using Base.Threads
+using Random
+using CSV, Printf
+using Dates
+using Pkg
 
-include("water_collection_heuristic.jl")
+include(joinpath(@__DIR__, "water_collection_heuristic.jl"))
+
+# Enable array-valued fluents (e.g. wall grids) for this PDDL domain
+PDDL.Arrays.@register()
 
 # --------------------------------------------------------------------
 # Configuration
 # --------------------------------------------------------------------
 
-const N_AGENTS     = 8                   # Must match problem files
-const TIME_MAX     = 1000             # Upper bound on timesteps for a single run
-const TEMPERATURE  = 0.3                 # Boltzmann temperature
-const RUNS         = 5                   # Number of runs per map
+const N_AGENTS    = 8        # Must match map files
+const TIME_MAX    = 1000     # Upper bound on timesteps for a single run
+const TEMPERATURE = 0.0001   # Boltzmann temperature
+const RUNS        = 50       # Number of runs per map
 
-const COMPLETION_TIMES_DIR  = "../data/simulations/test2/"
-const FULL_HISTORY_DIR      = joinpath(COMPLETION_TIMES_DIR, "full_histories")
-
-const DOMAIN_PATH = "."
-const MAPS_PATH   = "./maps"
+const SRC_DIR     = @__DIR__ 
+const DOMAIN_FILE = joinpath(SRC_DIR, "domain.pddl") 
+const MAPS_DIR    = joinpath(SRC_DIR, "maps")
 
 # The experiment set: names correspond to files under maps/.
-const ALL_MAPS = [
+const MAP_FILES = [
     "no_line_1_test.pddl", "no_line_2_test.pddl", "no_line_3_test.pddl",
     "yes_line_7_test.pddl", "yes_line_8_test.pddl", "yes_line_9_test.pddl", "yes_line_10_test.pddl",
     "7esque_test.pddl", "9esque_test.pddl", "10esque_test.pddl",
@@ -30,52 +35,111 @@ const ALL_MAPS = [
     "no_line_A.pddl", "no_line_B.pddl", "no_line_C.pddl", "no_line_D.pddl",
     "yes_line_B.pddl", "yes_line_C.pddl", "yes_line_D.pddl", "yes_line_E.pddl", "yes_line_F.pddl",
 ]
-# "yes_line_A.pddl" not used in stimuli
+# Note: "yes_line_A.pddl" not used in stimuli
 
+# Run is identified by label written at launch; if this label has been used, time stamp is used
+const RUN_LABEL = get(ENV, "RUN_LABEL", "main")
+const RUN_ID    = isempty(strip(RUN_LABEL)) ?
+    Dates.format(now(), "yyyy-mm-dd_HHMMSS") :
+    RUN_LABEL * "_" * Dates.format(now(), "yyyy-mm-dd_HHMMSS")
+
+# Random seed = BASE_SEED + MAP_SEED_OFFSET * map_number + run_number
+const BASE_SEED         = 1234
+const MAP_SEED_OFFSET   = 10_000
+
+const OUTPUT_DIR        = joinpath(SRC_DIR, "..", "data", "simulations", RUN_ID, "raw")
+const TRAJECTORY_DIR    = joinpath(OUTPUT_DIR, "trajectories")
+
+const SAVE_TRAJECTORIES = true   # For now: save trajectories by default (TBD time it takes)
+const VERBOSE = true
+# --------------------------------------------------------------------
+# Precomputed terms
+# --------------------------------------------------------------------
+const AGENTS     = [Const(Symbol("agent$n")) for n in 1:N_AGENTS]
+const XLOC       = [Compound(:xloc, Term[a]) for a in AGENTS]
+const YLOC       = [Compound(:yloc, Term[a]) for a in AGENTS]
+const HAS_FILLED = [Compound(Symbol("has-filled"), Term[a]) for a in AGENTS]
+const HAS_WATER1 = [Compound(Symbol("has-water1"), Term[a]) for a in AGENTS]
+const HAS_WATER2 = [Compound(Symbol("has-water2"), Term[a]) for a in AGENTS]
+const HAS_WATER3 = [Compound(Symbol("has-water3"), Term[a]) for a in AGENTS]
 
 
 # --------------------------------------------------------------------
-# Level-0 projection: others as walls
+# Agent policies
 # --------------------------------------------------------------------
+# Key assumptions:
+# - state evaluation: A* + task-specific heuristic → steps-to-go estimate
+# - policy: Boltzmann sampling from action values
 
 """
-    project_others_to_walls(state, k, N, domain)
-
-Return a single-agent view for agent k by:
-- deleting all other agent objects, and
-- turning their last positions into walls.
-
-This is the level-0 projection used for planning: the focal agent sees
-others as static obstacles.
+Build the steps-to-go estimator used for action selection.
 """
-function project_others_to_walls(state::State, k::Integer, N::Int, domain::Domain)
+function build_steps_to_go_estimator()
+    inner_heuristic   = WaterCollectionHeuristic()       # lower-bound estimate of steps-to-go (task-specific heuristic)
+    planner           = AStarPlanner(inner_heuristic)    # search guided by heuristic
+    planner_heuristic = PlannerHeuristic(planner)        # estimate steps-to-go from a state
+    return memoized(planner_heuristic)                   # cache for speed
+end
+
+"""
+Build per-agent Boltzmann policies from a steps-to-go estimator.
+
+Each agent's goal is to reach a state where it has filled a tank (`has-filled(agent\$n)`).
+"""
+function build_agent_policies(domain::Domain, steps_to_go)
+    policies = Vector{BoltzmannPolicy}(undef, N_AGENTS)
+    for n in 1:N_AGENTS
+        agent         = AGENTS[n]
+        goal          = MinStepsGoal(Term[HAS_FILLED[n]])
+        value_policy  = FunctionalVPolicy(steps_to_go, domain, goal)
+        policies[n]   = BoltzmannPolicy(value_policy, TEMPERATURE)
+    end
+    return policies
+end
+
+# --------------------------------------------------------------------
+# Agent reasoning model and information
+# --------------------------------------------------------------------
+# Key assumptions:
+# - agents act sequentially, in fixed order (agent 1, then 2, etc.)
+# - full observability: later agents see earlier moves
+# - level-0 projection: agents plan by treating others as static obstacles
+
+# Note: the first two assumptions reduce coordination needs,
+# so agents rarely collide (even with level-0 reasoning) 
+
+"""
+Build single-agent view for focal agent `k` (level-0 projection), where other agents become walls.
+"""
+function project_others_to_walls(state::State, k::Int, domain::Domain)
     # define objects and their types
     objtypes = PDDL.get_objtypes(state)
+
     # store the coordinates of all the agents that get deleted, to place walls there later
-    agent_locs = Array{Tuple{Int,Int}}(undef, N-1)
+    agent_locs = Array{Tuple{Int,Int}}(undef, N_AGENTS - 1)
     agent_index = 1
+
     # iterate over all agent objects. Unless it is the current agent, turn it into a wall
-    for n in 1:N
+    for n in 1:N_AGENTS
         if n == k
             continue
         end
-        agent = Const(Symbol("agent$n"))
-        #save the coordinates of the agent, in order to place a wall there
-        agent_locs[agent_index] = ((state[Compound(:xloc, Term[agent])], state[Compound(:yloc, Term[agent])]))
+        agent = AGENTS[n]
+        # save the coordinates of the agent, in order to place a wall there
+        agent_locs[agent_index] = (state[XLOC[n]], state[YLOC[n]])
         agent_index += 1
-        #then, delete the agent completely
+        # then, delete the agent completely
         delete!(objtypes, agent)
     end
-    # get the old wall matrix
+
+    # get the old wall matrix and modify it to include walls where agents were
     walls = copy(state[pddl"(walls)"])
-    # it looks like this:
-    # Bool[0 0 0 0 0 0 0 0 0 0 0 0 0 0; 0 0 0 0 0 0 0 0 0 0 0 0 1 1; 0 0 0 0 0 0 0 0 0 0 0 0 1 0; 0 0 0 0 0 0 0 0 0 0 1 1 1 0; 0 0 0 0 0 0 0 0 0 0 0 0 0 0; 0 0 0 0 0 0 0 0 0 0 0 0 0 0; 0 0 0 0 0 0 0 0 0 0 0 0 0 0; 0 0 0 0 0 0 0 0 0 1 1 0 0 0; 0 0 0 0 0 0 0 0 0 0 0 0 0 0; 0 0 0 0 0 0 0 0 0 0 0 0 0 0; 0 0 0 0 0 0 0 0 0 0 0 0 1 0; 0 0 0 0 0 0 0 0 0 0 0 0 0 0; 0 0 0 0 0 0 0 0 0 0 0 0 0 0; 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
-    # modify wall matrix to include walls where agents were
-    for loc in agent_locs
-        walls[loc[2], loc[1]] = true
+    for (x, y) in agent_locs
+        walls[y, x] = true
     end
 
     fluents = Dict{Term, Any}()
+
     # Loop over non-agents and assign their locations
     for (obj, objtype) in objtypes
         if objtype == :agent
@@ -85,259 +149,224 @@ function project_others_to_walls(state::State, k::Integer, N::Int, domain::Domai
         fluents[Compound(:yloc, Term[obj])] = state[Compound(:yloc, Term[obj])]
     end
 
-    agent = Const(Symbol("agent$k"))
-
     # Assign walls fluent
     fluents[pddl"(walls)"] = walls
     # Assign position of remaining agent
-    fluents[Compound(:xloc, Term[agent])] = state[Compound(:xloc, Term[agent])]
-    fluents[Compound(:yloc, Term[agent])] = state[Compound(:yloc, Term[agent])]
-
-    # new state is missing this: Set(Term[not(has-water(agent2)), not(has-filled(agent1)), not(has-water(agent1)), not(has-filled(agent2))])
-    #fluents is a dictionary of assignments to fluents (will have true/false values, array vals, ..)
-    #bools default false
-    fluents[Compound(Symbol("has-filled"), Term[agent])] = state[Compound(Symbol("has-filled"), Term[agent])]
-    fluents[Compound(Symbol("has-water1"), Term[agent])] = state[Compound(Symbol("has-water1"), Term[agent])]
-    fluents[Compound(Symbol("has-water2"), Term[agent])] = state[Compound(Symbol("has-water2"), Term[agent])]
-    fluents[Compound(Symbol("has-water3"), Term[agent])] = state[Compound(Symbol("has-water3"), Term[agent])]
-
+    fluents[XLOC[k]] = state[XLOC[k]]
+    fluents[YLOC[k]] = state[YLOC[k]]
+    
+    # Task-status fluents for the remaining agent
+    fluents[HAS_FILLED[k]] = state[HAS_FILLED[k]]
+    fluents[HAS_WATER1[k]] = state[HAS_WATER1[k]]
+    fluents[HAS_WATER2[k]] = state[HAS_WATER2[k]]
+    fluents[HAS_WATER3[k]] = state[HAS_WATER3[k]]
+    
     new_state = initstate(domain, objtypes, fluents)
-    #print(new_state)
     return new_state
 end
 
-inner_heuristic = WaterCollectionHeuristic() # Optimistic heuristic
-planner = AStarPlanner(inner_heuristic) # Planner that uses optimistic heuristic
-heuristic = PlannerHeuristic(planner) # Some exact heuristic
-memoized_h = memoized(heuristic) # Memoized exact heuristic
+"""
+Run one simulation timestep: each agent takes one action.
 
-# Number of agents (must match the problem files)
-N=8 
-
-
-
-
-
-
-
-multi_agent_lines = PlanningDomains.load_domain(joinpath(DOMAIN_PATH, "domain.pddl"))
-domain = multi_agent_lines
-
-
-
-
-for problem in ALL_MAPS
-    print(problem)
-    mal_problem = PlanningDomains.load_problem(joinpath(MAPS_PATH, problem))
-    # Register array theory for gridworld domains (required for wall grids)
-    PDDL.Arrays.@register()
-
-    mal_state = initstate(multi_agent_lines, mal_problem)
-    mal_spec = Specification(mal_problem)
-
-    state = mal_state
-    domain = multi_agent_lines
-
-    T=1000 # Upper bound on timesteps for a single run
-    #boltzmann_policy_parameters = [0.0001, 0.001, 0.01, 0.1, 1]
-    boltzmann_policy_parameters = [0.3]
-
-    runs=5
-
-    # Nested: data[noise][iteration] = Dict(agent_id => first_fill_timestep | -1)
-    data = Dict()
-    for parameter in boltzmann_policy_parameters
-        data[parameter] = Dict{Int64, Dict{Int64, Int64}}()
+Assumptions:
+- fixed sequential order (1..N_AGENTS)
+- later agents observe earlier moves (state is updated in sequence)
+- agents plan treating others as static obstacles (level-0 projection)
+"""
+function simulation_step(state::State,
+                         policies::AbstractVector{<:BoltzmannPolicy},
+                         domain::Domain)
+    interim_state = state
+    for n in 1:N_AGENTS
+        level_0_projection  = project_others_to_walls(interim_state, n, domain) # treat others as walls
+        act                 = SymbolicPlanners.get_action(policies[n], level_0_projection) # select an action
+        interim_state       = transition(domain, interim_state, act) # sequential update: later agents observe earlier moves
     end
-
-    #iterating over all the boltzmann_policy_parameter values
-    for noise in boltzmann_policy_parameters
-        #iterate loop on each boltzmann_policy_parameter value 5 times each
-        for iteration in 1:runs
-            #print("noise: ", noise, " iteration: ", iteration, "\n")
-
-            state = initstate(domain, mal_problem)
-            state_history = [state]
-
-            boltzmann_policies = Array{BoltzmannPolicy}(undef, N)
-            for k in 1:N
-                agent = Const(Symbol("agent$k"))
-                mal_spec = MinStepsGoal(Term[Compound(Symbol("has-filled"), Term[agent])])
-                inner_policy = FunctionalVPolicy(memoized_h, domain, mal_spec) # Policy that evaluates every state
-                boltzmann_policy = BoltzmannPolicy(inner_policy, noise) # Boltzmann agent
-                boltzmann_policies[k] = boltzmann_policy
-            end
-
-            #create a dictionary where the key is the agent number and the value is the time step that the agent has-filled
-            agent_filled = Dict{Int64, Int64}(1 => 0, 2 => 0, 3 => 0, 4 => 0, 5 => 0, 6 => 0, 7 => 0, 8 => 0)
-
-            #for saving state_history
-            state_history_name = string("state_history", "_", problem, "_", noise, "_runs", runs, "_iteration", iteration, ".txt")
-            file = open(joinpath(FULL_HISTORY_DIR, state_history_name), "w")
-            write(file, string(state))
-            close(file)
-
-            for t in 1:T
-                if t % 10 == 0
-                    println("Timestep $t")
-                end
-                #actions = Term[]
-                interim_state = state
-                for k in 1:N
-                    agent = Const(Symbol("agent$k"))
-                    modified_state = project_others_to_walls(interim_state, k, N, domain) # Change other agents into walls                    
-                    act = SymbolicPlanners.get_action(boltzmann_policies[k], modified_state)
-                    interim_state = transition(domain, interim_state, act)
-                end
-            
-                state = interim_state
-
-                #save object state_history as text to a new file in current directory
-                file = open(joinpath(FULL_HISTORY_DIR, state_history_name), "a")
-                write(file, string(state))
-                close(file)
-
-                push!(state_history, state)
-        
-                # if any agent has filled the tank, then record the time step into the agent_filled dictionary
-                for n in 1:N
-                    agent = Const(Symbol("agent$n"))
-                    if state[Compound(Symbol("has-filled"), Term[agent])]
-                        #only change the value if it is equal to 0, otherwise constant overwriting.
-                        if agent_filled[n] == 0
-                            agent_filled[n] = t
-                        end
-                    end
-                end
-        
-                # if state didn't change, then set all agent_filled values to -1
-                if state == state_history[t] && state == state_history[t-1] && state == state_history[t-2] 
-                    for n in 1:N
-                        agent_filled[n] = -1
-                    end
-                    break
-                end
-        
-                # if all the goals have been met, terminate the loop
-                if all([state[Compound(Symbol("has-filled"), Term[Const(Symbol("agent$n"))])] for n in 1:N])
-                    break
-                end
-            end
-
-            #add the agent_filled dictionary to the data dictionary
-            data[noise][iteration] = agent_filled
-            #print(data[runs][iteration], "\n")
-        end
-        # Save per-(map, runs) results. CSV will be appended to if rerun.
-        csv_name = string(COMPLETION_TIMES_DIR, problem, "_", noise, "_", runs, ".csv")
-        CSV.write(csv_name, data, append=true)
-    end
+    return interim_state
 end
 
-
+# --------------------------------------------------------------------
+# Main simulation loop
+# --------------------------------------------------------------------
 
 function run_simulations()
-    # Load domain
-    domain = PlanningDomains.load_domain(joinpath(DOMAIN_PATH, "domain.pddl"))
+    # Make sure output directories exist
+    mkpath(OUTPUT_DIR)
+    mkpath(TRAJECTORY_DIR)
 
-    mkpath(COMPLETION_TIMES_D
-       
-    # Register array theory for gridworld domains (required for wall grids)
-    PDDL.Arrays.@register()
+    println("Starting simulations:")
+    println("  maps = $(length(MAP_FILES))")
+    println("  runs per map = $(RUNS)")
+    println("  threads = $(Threads.nthreads())")
+    println("  output dir = $(OUTPUT_DIR)")
+    println("  save trajectories = $(SAVE_TRAJECTORIES)")
+    println()
 
-    # Set up heuristic and planner
-    inner_heuristic = WaterCollectionHeuristic()         # optimistic heuristic
-    planner         = AStarPlanner(inner_heuristic)      # planner using heuristic
-    heuristic       = PlannerHeuristic(planner)          # exact heuristic via planning
-    memoized_h      = memoized(heuristic)                # cached version
+    # Reproducibility snapshot (files, once per run)
+    #open(joinpath(OUTPUT_DIR, "versions.txt"), "w") do io
+    #    println(io, "Julia ", VERSION)
+    #    println(io)
+    #    versioninfo(io)
+    #end
 
-    for map in ALL_MAPS
-        println(map)
+    #open(joinpath(OUTPUT_DIR, "pkg_status.txt"), "w") do io
+    #    println(io, "Project dependencies:")
+    #    Pkg.status(io)
+    #    println(io)
+    #    println("Full manifest:")
+    #    Pkg.status(io; mode=Pkg.PKGMODE_MANIFEST)
+    #end
 
-        mal_map = PlanningDomains.load_problem(joinpath(MAPS_PATH, problem))
-        mal_state   = initstate(multi_agent_lines, mal_map)
-        mal_spec    = Specification(mal_map)
+   # for f in ("Project.toml", "Manifest.toml")
+    #    src = joinpath(SRC_DIR, f)
+    #    if isfile(src)
+    #        cp(src, joinpath(OUTPUT_DIR, f); force=true)
+    #    end
+    #end
 
-        state  = mal_state
-        domain = multi_agent_lines
-
-        # Use a single noise value for now, but keep structure for future sweep
-        boltzmann_policy_parameters = [NOISE]
-
-        # Nested: data[noise][iteration] = Dict(agent_id => first_fill_timestep | -1)
-        data = Dict{Float64, Dict{Int, Dict{Int, Int}}}()
-        for parameter in boltzmann_policy_parameters
-            data[parameter] = Dict{Int, Dict{Int, Int}}()
+    # Parallelize over maps
+    Threads.@threads for map_index in eachindex(MAP_FILES)
+        map = MAP_FILES[map_index]
+        map_name = replace(map, ".pddl" => "")
+        if VERBOSE
+            #lock(print_lock) do
+            println("Starting map $map_name (thread $(threadid()))")
+            #end
         end
 
-        for iteration in 1:RUNS
-            # Reset initial state and history
-            state = initstate(domain, mal_map)
-            state_history = [state]
+        # Load domain and build policies
+        domain = PlanningDomains.load_domain(DOMAIN_FILE)
+        steps_to_go = build_steps_to_go_estimator()
+        policies = build_agent_policies(domain, steps_to_go)
 
-            # Build per-agent Boltzmann policies
-            boltzmann_policies = build_boltzmann_policies(domain, memoized_h, noise, N_AGENTS)
+        # Load problem / initial state for this map
+        problem = PlanningDomains.load_problem(joinpath(MAPS_DIR, map))
+        initial_state = initstate(domain, problem)
 
-            # Dictionary: agent_id => timestep of first fill (or -1 if never)
-            agent_filled = Dict{Int, Int}()
-            for n in 1:N_AGENTS
-                agent_filled[n] = 0
-            end
+        # Results container (one row per run) for this map
+        results = Vector{NamedTuple}(undef, RUNS)
 
-            # Prepare state history file
-            state_history_name = string(
-                "state_history_", map, "_", noise,
-                "_runs", RUNS, "_iteration", iteration, ".txt",
-            )
-            file = open(joinpath(STATE_HISTORY_PATH, state_history_name), "w")
-            write(file, string(state))
-            close(file)
+        for run in 1:RUNS
+            println("[$(threadid())] map=$(map) run=$(run)")
 
-            for t in 1:TIME_MAX
+            # Seed per (map_index, run) so results are reproducible independent of thread scheduling.
+            seed_this_run = BASE_SEED + MAP_SEED_OFFSET * map_index + run
+            Random.seed!(seed_this_run)
 
-                # One level-0 timestep (all agents move once)
-                state = level0_step!(state, boltzmann_policies, domain, N_AGENTS)
+            # Reset current state
+            state = initial_state
+            # Keep previous two states for detecting if an agent is stuck
+            state_t_minus_1 = state
+            state_t_minus_2 = state
 
-                # Append state to history file
-                file = open(joinpath(STATE_HISTORY_PATH, state_history_name), "a")
-                write(file, string(state))
-                close(file)
+            # Record timestep when agent n first fills a tank (0 if not yet, -1 if stuck)
+            agent_filled = fill(0, N_AGENTS)
 
-                push!(state_history, state)
+            traj_name = "trajectory_$(map_name)_run$(run).log"
+            traj_path = joinpath(TRAJECTORY_DIR, traj_name)
+            
+            elapsed_run = @elapsed begin
+                if SAVE_TRAJECTORIES
+                    open(traj_path, "w") do io
+                    # write header + t=0 in trajectory file
+                    @printf(io, "# map=%s run=%d seed=%d temp=%.6g\n", map, run, seed_this_run, TEMPERATURE)
+                    println(io, "# t=0")
+                    show(io, state); println(io)
+            
+                    for t in 1:TIME_MAX
+                        state = simulation_step(state, policies, domain)
 
-                # If any agent has filled a tank, record the timestep
-                for n in 1:N_AGENTS
-                    agent = Const(Symbol("agent$n"))
-                    if state[Compound(Symbol("has-filled"), Term[agent])]
-                        if agent_filled[n] == 0
-                            agent_filled[n] = t
+                        println(io, "# t=$t")
+                        show(io, state); println(io)
+                
+                        # Record first time any agent fills tank
+                        for n in 1:N_AGENTS
+                            if agent_filled[n] == 0 && state[HAS_FILLED[n]]
+                                agent_filled[n] = t
+                            end
                         end
+
+                        # Break if stuck for 3 consecutive steps
+                        if t>=3 && state == state_t_minus_1 && state_t_minus_1 == state_t_minus_2
+                            fill!(agent_filled, -1)
+                            break
+                        end
+                
+                        # Break if all agents filled tank
+                        if all(>(0), agent_filled)
+                            break
+                        end
+
+                        # Shift states
+                        state_t_minus_2 = state_t_minus_1
+                        state_t_minus_1 = state
                     end
                 end
+                else
+                    # Run the simulation without saving trajectory log
+                    for t in 1:TIME_MAX
+                        state = simulation_step(state, policies, domain)
 
-                # If state stopped changing for 3 timesteps, set all to -1 and stop
-                if t ≥ 3 && state == state_history[t] &&
-                            state == state_history[t-1] &&
-                            state == state_history[t-2]
-                    for n in 1:N_AGENTS
-                        agent_filled[n] = -1
+                        # Record first time any agent fills tank
+                        for n in 1:N_AGENTS
+                            if agent_filled[n] == 0 && state[HAS_FILLED[n]]
+                                agent_filled[n] = t
+                            end
+                        end
+
+                        # Break if stuck for 3 consecutive steps
+                        if t>=3 && state == state_t_minus_1 && state_t_minus_1 == state_t_minus_2
+                            fill!(agent_filled, -1)
+                            break
+                        end
+                
+                        # Break if all agents filled tank
+                        if all(>(0), agent_filled)
+                            break
+                        end
+
+                        # Shift states
+                        state_t_minus_2 = state_t_minus_1
+                        state_t_minus_1 = state
                     end
-                    break
-                end
-
-                # If all goals are met, terminate the loop
-                if all([state[Compound(Symbol("has-filled"),
-                                        Term[Const(Symbol("agent$n"))])] for n in 1:N_AGENTS])
-                    break
                 end
             end
 
-            data[noise][iteration] = agent_filled
+            # mark unfinished agents as -1
+            for n in 1:N_AGENTS
+                if agent_filled[n] == 0
+                    agent_filled[n] = -1
+                end
+            end
+            
+            results[run] = (
+                run = run, 
+                agent1 = agent_filled[1],
+                agent2 = agent_filled[2],
+                agent3 = agent_filled[3],
+                agent4 = agent_filled[4],
+                agent5 = agent_filled[5],
+                agent6 = agent_filled[6],
+                agent7 = agent_filled[7],
+                agent8 = agent_filled[8],
+                map = map_name,
+                seed = seed_this_run,
+                temperature = TEMPERATURE,
+                time_max = TIME_MAX,
+                n_agents = N_AGENTS,
+                run_elapsed_seconds = elapsed_run,
+            )    
         end
 
-        # Save per-(map, runs) results. CSV will be appended to if rerun.
-        csv_name = string(DATA_SAVE_PATH, map, "_", noise, "_", RUNS, ".csv")
-        CSV.write(csv_name, data, append=true)
+        # Save per-(map, runs) results.
+        csv_name = joinpath(OUTPUT_DIR, replace(map, ".pddl" => "") * ".csv")
+        CSV.write(csv_name, results)
+
+        println("Finished map $map_name → wrote $(basename(csv_name))")
     end
 end
 
+# Run if called as a script
+if abspath(PROGRAM_FILE) == @__FILE__
+    run_simulations()
+end

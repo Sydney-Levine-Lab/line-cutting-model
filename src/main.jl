@@ -18,7 +18,7 @@ PDDL.Arrays.@register()
 const N_AGENTS    = 8        # Must match map files
 const TIME_MAX    = 1000     # Upper bound on timesteps for a single run
 const TEMPERATURE = 0.0001   # Boltzmann temperature
-const RUNS        = 50       # Number of runs per map
+const RUNS        = 1       # Number of runs per map
 
 const SRC_DIR     = @__DIR__ 
 const DOMAIN_FILE = joinpath(SRC_DIR, "domain.pddl") 

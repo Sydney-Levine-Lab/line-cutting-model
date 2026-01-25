@@ -988,10 +988,10 @@ uuid = "efcefdf7-47ab-520b-bdef-62a2eaa19f15"
 version = "10.42.0+0"
 
 [[deps.PDDL]]
-deps = ["AutoHashEquals", "DocStringExtensions", "Julog", "ParserCombinator", "ValSplit"]
-git-tree-sha1 = "df1e12fb86d1f081833a74249335aa02657be774"
+deps = ["AutoHashEquals", "IntervalArithmetic", "Julog", "ParserCombinator", "ValSplit"]
+path = "PDDL.jl"
 uuid = "2c8894f9-daa1-498a-9e3a-26edd9623db8"
-version = "0.2.18"
+version = "0.2.10"
 
 [[deps.PDMats]]
 deps = ["LinearAlgebra", "SparseArrays", "SuiteSparse"]

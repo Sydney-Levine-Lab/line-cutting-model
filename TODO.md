@@ -1,3 +1,15 @@
+# Todo now (to get clean repo for cogsci)
+- Delete useless files: some under src/maps, some others at root (.md) files, and a couple of notes.txt here & there
+- Double check
+- Run final paper_run
+- Write clean README.md
+
+
+
+
+
+### Below: very old notes
+
 # TODO / Roadmap for line-cutting project
 
 _Last updated: 2025-11-21_

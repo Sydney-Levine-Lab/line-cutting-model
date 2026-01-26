@@ -2,7 +2,7 @@
 Tools to build analysis CSVs for simulations and scenarios.
 
 Intended usage from Notebook:
-    - call get_universalization_summary(run_type, recompute=True) once for every type of simulation run,
+    - call get_universalization_summary(run_label, recompute=True) once for every type of simulation run,
     to build per-map universalization metrics CSV and load it.
     - call get_outcome_metrics(recompute=True) once to build per-scenario outcome metrics CSV and load it.
     - later, call these functions with recompute=False to load the dataframes without rebuilding them.
@@ -94,7 +94,7 @@ METRIC_COLS = [
 # ---------------------------------------------------------------------
 
 def build_processed_sim_one_map(
-        run_type,
+        run_label,
         map_name, 
         sim_root="../data/simulations", 
         line_csv="../data/scenarios/completion_times.csv"
@@ -105,11 +105,11 @@ def build_processed_sim_one_map(
     by adding colums to the corresponding raw simulation file.
 
     Assumes run type is a subdirectory of sim_data_root, and that raw data is under raw/.
-    Saves to <sim_data_root>/<run_type>/processed/<map_name>.csv
+    Saves to <sim_data_root>/<run_label>/processed/<map_name>.csv
     """
     sim_root = Path(sim_root)
-    raw_path = sim_root / run_type / "raw" / f"{map_name}.csv"
-    processed_path = sim_root / run_type / "processed" / f"{map_name}.csv"
+    raw_path = sim_root / run_label / "raw" / f"{map_name}.csv"
+    processed_path = sim_root / run_label / "processed" / f"{map_name}.csv"
 
     df = pd.read_csv(raw_path) # Load raw simulation data
     agent_cols = [c for c in df.columns if c.startswith("agent_")] # Should be valid for both dfs
@@ -131,7 +131,7 @@ def build_processed_sim_one_map(
 
 
 def build_processed_sim_all_maps(
-    run_type,
+    run_label,
     sim_root="../data/simulations",
     line_csv="../data/scenarios/completion_times.csv",
 ):
@@ -141,24 +141,24 @@ def build_processed_sim_all_maps(
     Uses build_processed_sim_one_map().
     """
     sim_root = Path(sim_root)
-    raw_dir = sim_root / run_type / "raw"
-    processed_dir = sim_root / run_type / "processed"
+    raw_dir = sim_root / run_label / "raw"
+    processed_dir = sim_root / run_label / "processed"
     processed_dir.mkdir(parents=True, exist_ok=True)
 
     raw_files = sorted(raw_dir.glob("*.csv"))
     for raw_path in raw_files:
         map_name = raw_path.stem
-        build_processed_sim_one_map(run_type=run_type, map_name=map_name, sim_root=sim_root,line_csv=line_csv)
+        build_processed_sim_one_map(run_label=run_label, map_name=map_name, sim_root=sim_root,line_csv=line_csv)
 
     print(
-        f"Processed {len(raw_files)} maps for run_type='{run_type}' "
+        f"Processed {len(raw_files)} maps for run_label='{run_label}' "
         f"and saved to {processed_dir}"
     )
 
 
 
 def build_universalization_summary(
-    run_type,
+    run_label,
     sim_root="../data/simulations",
     output_csv="summary_universalization_metrics.csv"
 ):
@@ -167,8 +167,8 @@ def build_universalization_summary(
     for a given run type.
     """
     sim_root = Path(sim_root)
-    processed_dir = sim_root / run_type / "processed"
-    output_path = sim_root / run_type / output_csv
+    processed_dir = sim_root / run_label / "processed"
+    output_path = sim_root / run_label / output_csv
 
     processed_files = sorted(processed_dir.glob("*.csv"))
 
@@ -198,7 +198,7 @@ def build_universalization_summary(
     summary_df.to_csv(output_path, index=False)
 
     print(
-        f"Built universalization summary for run_type='{run_type}' "
+        f"Built universalization summary for run_label='{run_label}' "
         f"over {len(rows)} maps and saved to {output_csv}"
     )
     return summary_df
@@ -265,14 +265,14 @@ def build_outcome_metrics(
 # ---------------------------------------------------------------------
 
 def get_universalization_summary(
-    run_type,
+    run_label,
     sim_root="../data/simulations",
     summary_csv="summary_universalization_metrics.csv",
     line_csv="../data/scenarios/completion_times.csv",
     recompute=False,
 ):
     """
-    Load universalization metrics for run_type.
+    Load universalization metrics for run_label.
 
     If recompute=False: read summary_csv.
     If recompute=True: rebuild it using build_universalization_summary()
@@ -281,33 +281,33 @@ def get_universalization_summary(
     sim_root=Path(sim_root)
 
     if recompute:
-        raw_dir = sim_root / run_type / "raw"
+        raw_dir = sim_root / run_label / "raw"
         raw_files = sorted(raw_dir.glob("*.csv"))
 
         if not raw_files:
             raise FileNotFoundError(
-                f"No raw CSV files found for run_type='{run_type}'.\n"
+                f"No raw CSV files found for run_label='{run_label}'.\n"
                 f"Expected files under: {raw_dir}"
             )
         # rebuild per-map processed files
         build_processed_sim_all_maps(
-            run_type=run_type,
+            run_label=run_label,
             sim_root=sim_root,
             line_csv=line_csv
         )
         # rebuild summary over maps
         return build_universalization_summary(
-            run_type=run_type,
+            run_label=run_label,
             sim_root=sim_root,
             output_csv=summary_csv
             )
     else:
-        summary_path = sim_root / run_type / summary_csv
+        summary_path = sim_root / run_label / summary_csv
         if not summary_path.exists():
             raise FileNotFoundError(
-                f"Summary CSV not found for run_type='{run_type}'.\n"
+                f"Summary CSV not found for run_label='{run_label}'.\n"
                 f"Expected: {summary_path}\n"
-                f"To rebuild from raw simulation files call get_universalization_summary(run_type, recompute=True)."
+                f"To rebuild from raw simulation files call get_universalization_summary(run_label, recompute=True)."
             )
         return pd.read_csv(summary_path)
 

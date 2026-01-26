@@ -1,1 +1,0 @@
-Raw data should become obsolete, once the simulation is modified to produce data in readable form

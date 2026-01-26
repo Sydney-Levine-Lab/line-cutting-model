@@ -1,0 +1,12 @@
+RUN_ID = t_2026-01-26_162803
+RUN_LABEL = t
+N_AGENTS = 8
+TIME_MAX = 1000
+TEMPERATURE = 0.0001
+RUNS = 1
+SAVE_TRAJECTORIES = false
+VERBOSE = true
+BASE_SEED = 1234
+MAP_SEED_OFFSET = 10000
+THREADS = 10
+MAP_FILES = no_line_1.pddl, no_line_2.pddl, no_line_3.pddl, yes_line_7.pddl, yes_line_8.pddl, yes_line_9.pddl, yes_line_10.pddl, 7esque.pddl, 9esque.pddl, 10esque.pddl, maybe_4.pddl, maybe_5.pddl, maybe_6.pddl, new_maybe_1.pddl, new_maybe_2.pddl, new_maybe_3.pddl, new_maybe_4.pddl, new_maybe_5.pddl, new_maybe_6.pddl, no_line_A.pddl, no_line_B.pddl, no_line_C.pddl, no_line_D.pddl, yes_line_B.pddl, yes_line_C.pddl, yes_line_D.pddl, yes_line_E.pddl, yes_line_F.pddl

@@ -1,4 +1,3 @@
-# water_collection_heuristic.jl
 # Heuristic for the water-collection (well → tank → finish) task.
 
 using PDDL

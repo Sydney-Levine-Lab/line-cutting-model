@@ -2,7 +2,7 @@
 UPDATE / make this a bit cleaner
 
 # Main command for paper data (From the repo root)
-RUN_LABEL=paper_data RUNS=50 SAVE_TRAJECTORIES=false WRITE_SNAPSHOT=true NUM_THREADS=10 julia +1.10 --project=src src/main.jl
+RUN_LABEL=paper_data RUNS=50 SAVE_TRAJECTORIES=false WRITE_SNAPSHOT=true JULIA_NUM_THREADS=10 julia +1.10 --project=src src/main.jl
 
 # Main command for playing around with it
 JULIA_NUM_THREADS=10 julia +1.10 --project=src src/main.jl

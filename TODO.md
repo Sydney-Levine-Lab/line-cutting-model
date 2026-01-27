@@ -5,6 +5,10 @@
 - Write clean README.md
 
 
+- among other things check trajectories only written if save=true etc (test it out...)
+
+- remove figures
+
 
 
 

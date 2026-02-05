@@ -1,53 +1,65 @@
-# TODO
-UPDATE / make this a bit cleaner
+# Line-cutting simulation model
 
-# Main command for paper data (From the repo root)
-RUN_LABEL=paper_data RUNS=50 SAVE_TRAJECTORIES=false WRITE_SNAPSHOT=true JULIA_NUM_THREADS=10 julia +1.10 --project=src src/main.jl
+This repository contains the code used to produce universalization metrics for the project ***"How universal is universalization? Exploring the use of universalization in norm violation across the globe".***
 
-# Main command for playing around with it
-JULIA_NUM_THREADS=10 julia +1.10 --project=src src/main.jl
+The Julia code in `src/` runs simulations over different maps. Agents must collect water in a world where line-cutting has become generalized and everyone pushes forward selfishly.
 
+The `data/` folder holds scenario, experimental, and simulation CSVs; `analysis/` contains tools to build metrics and compare them to participant judgments.
 
+---
 
+## Repository layout
 
-# Multi-agent water-collection simulations (Julia)
+From the repo root:
 
-This repository runs multi-agent water-collection simulations in a gridworld specified in PDDL. Agents act sequentially, plan using A* guided by a task-specific heuristic, and select actions via Boltzmann sampling.
+- `src/` – **Julia simulation code**
+  - `main.jl` – entry point to run simulations.
+  - `utils.jl` – small utilities
+  - `water_collection_heuristic.jl` – task-specific heuristic used for planning
+  - `domain.pddl` – PDDL domain describing the gridworld environment where agents must collect water
+  - `maps/` – PDDL files for each individual map
+  - `Project.toml`, `Manifest.toml` – Julia environment for the simulation.
 
-## Repository structure
+- `data/` – **CSV data**
+  - `data/scenarios/` – CSVs comparing outcomes in two videos shown to participants (after an agent cuts out of line vs. a line-following baseline).
+  - `data/experimental/` – CSVs with participant judgments (evaluations of single line-cutting instance)
+  - `data/simulations/` – CSVs comparing outcomes in simulations to the line-following baseline.
+- `analysis/` – **Analysis tools**
+  - `build_utils.py` – tools to build CSVs with outcome and universalized metrics
+  - `analysis_utils.py` – tools for statistical analysis
+  - `fit_simulation_to_data.ipynb` – notebook that fits the simulation outputs to participant judgments.
 
-- `src/main.jl` — entry point (runs the simulation batch)
-- `src/utils.jl` — small utilities (ENV parsing, thread-safe printing, reproducibility snapshot)
-- `src/water_collection_heuristic.jl` — task-specific heuristic used by A*
-- `src/domain.pddl` — PDDL domain definition
-- `src/maps/` — PDDL problem instances (maps)
-- `data/` — outputs written by runs (created automatically)
+---
 
 ## Requirements
 
-- Julia **1.10.x** (recommended)
-- Packages are managed via the Julia project in `src/` (`src/Project.toml` + `src/Manifest.toml`)
+- **Julia** ≥ 1.10  
+  The examples below assume you can invoke it as `julia +1.10` and that you are in the repository root.
 
-If you use `juliaup`, you can run with `julia +1.10 ...`.
+---
 
-## Setup
+## Quick start (simulation only)
 
 From the repository root:
 
-```bash
-julia +1.10 --project=src -e 'import Pkg; Pkg.instantiate(); Pkg.precompile()'
-p`, you can run with `julia +1.10 ...`.
+1. **Instantiate and precompile the Julia environment** (one-time):
 
-p`, you can run with `julia +1.10 ...`.
-p`, you can run with `julia +1.10 ...`.
-## RUNn
-
-##
-
-## Setup
+   ```bash
+   julia +1.10 --project=src -e 'using Pkg; Pkg.instantiate(); Pkg.precompile()'
 
 
+2. **Minimal test run**:
+   ```bash
+    julia +1.10 --project=src src/main.jl
 
-# Main command
-julia +1.10 --project=src -e 'import Pkg; Pkg.instantiate(); Pkg.precompile()'
-RUN_LABEL=Test_FINAL JULIA_NUM_THREADS=10 julia +1.10 --project=src src/main.jl
+3. **Paper-style run** (to reproduce our results):
+   ```bash
+    RUN_LABEL=my_replication_run \
+    RUNS=50 \
+    SAVE_TRAJECTORIES=true \
+    WRITE_SNAPSHOT=true \
+    JULIA_NUM_THREADS=10 \
+    julia +1.10 --project=src src/main.jl
+
+4. **Analysis**
+    You can use `analysis/fit_simulation_to_data.ipynb` to fit data from any run to participant judgments. You'll need Python 3 and a Jupyter-capable environment.

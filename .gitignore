@@ -1,35 +1,22 @@
+# Personal notes
+_notes/
+
+# Ignore simulation output, except for paper run
+data/simulations
+!data/simulations/paper_data
+
+# Ignore plots
+analysis/figures
+
+# OS cruft
+.DS_Store
+Thumbs.db
+
 # Byte-compiled / temporary
 *.pyc
 __pycache__/
 *.swp
 
 # Jupyter auto-checkpoints
-**/.ipynb_checkpoints/
+.ipynb_checkpoints/
 
-# Raw, heavy simulation outputs (local only)
-data/old/
-data/level-0/
-data/level-1/
-data/maps/*
-data/state_histories*
-data/readable-data/
-data/raw-data/
-data/analysis_per_map/*
-#state_histories/
-#all_data/
-#maps/data
-#all_state_histories/
-
-src/maps/data/
-src/state_histories/
-
-#analysis/plots/
-analysis/figures
-analysis/old_notebooks/
-
-# Optional: large baseline exports, if they’re big
-# data/baseline_with_line/raw_exports/
-
-# OS cruft
-.DS_Store
-Thumbs.db

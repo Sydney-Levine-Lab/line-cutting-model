@@ -15,7 +15,7 @@ PDDL.Arrays.@register()
 # --------------------------------------------------------------------
 
 const N_AGENTS    = 8                   #  Must match map files
-const RUNS        = env_int("RUNS", 1)  # Number of runs per map
+const RUNS        = env_int("RUNS", 5)  # Number of runs per map
 const TIME_MAX    = 1000                # Upper bound on timesteps for a single run
 const TEMPERATURE = 0.0001              # Boltzmann temperature
 
@@ -66,6 +66,31 @@ const HAS_WATER1 = [Compound(Symbol("has-water1"), Term[a]) for a in AGENTS]
 const HAS_WATER2 = [Compound(Symbol("has-water2"), Term[a]) for a in AGENTS]
 const HAS_WATER3 = [Compound(Symbol("has-water3"), Term[a]) for a in AGENTS]
 
+# --------------------------------------------------------------------
+# Modeling knobs
+# --------------------------------------------------------------------
+
+# How agents are scheduled within a timestep
+#   "fixed"  = deterministic order 1..N_AGENTS
+#   "random" = random permutation each timestep
+const ORDER = get(ENV, "ORDER", "random")
+# possible TODO: implement simultaneous moves,
+# but that would require a conflict-resolution layer (as agents try to move in same cell)
+
+# What information agents use to plan this timestep
+#   "blind" = everyone reasons from the beginning-of-round snapshot
+#   "full"  = each agent reasons from the current world (sees earlier moves)
+const INFO = get(ENV, "INFO", "blind")
+
+# How sophisticated their model of others is
+#   "L0" = others are static (no within-round prediction)
+#   "L1" = predict one L0 step for agents before you in the order (only used if INFO == "blind")
+const REASONING = get(ENV, "REASONING", "L0")
+
+# How agents search (TODO)
+#   "astar"     = A*
+#   "p_astar"   = probabilistic A*
+const PLANNING = get(ENV, "PLANNING", "astar")
 
 # --------------------------------------------------------------------
 # Agent policies
@@ -107,6 +132,68 @@ end
 # - agents act sequentially, in fixed order (agent 1, then 2, etc.)
 # - full observability: later agents see earlier moves
 # - level-0 projection: agents plan by treating others as static obstacles
+
+
+"""
+Get the within-round order of agents for this timestep.
+"""
+function get_order()
+    if ORDER == "fixed"
+        return collect(1:N_AGENTS)
+    elseif ORDER == "random"
+        return randperm(N_AGENTS)
+    else
+        error("Unknown ORDER: $ORDER")
+    end
+end
+
+"""
+Apply `act` to `state`. If the action is invalid (preconditions fail),
+treat it as "no move" and keep the state unchanged.
+"""
+function safe_transition(domain::Domain, state::State, act)
+    try
+        return transition(domain, state, act)
+    catch
+        # collision or other invalid move → agent bumps and stays put
+        return state
+    end
+end
+
+"""
+Level-1 planning view for agent `k` in a given within-round order.
+
+- `initial_state`: snapshot at start of this timestep
+- `order`: vector of agent indices indicating within-round order
+- `idx_in_order`: position of `k` in `order` (1-based)
+- `policies`: Boltzmann policies for all agents
+
+Predicts that each agent scheduled before `k` in `order` takes one
+level-0 step (treating others as walls), then builds a single-agent
+projection for `k` in that predicted world.
+"""
+function level1_planning_state(initial_state::State,
+                               k::Int,
+                               domain::Domain,
+                               policies::AbstractVector{<:BoltzmannPolicy},
+                               order::AbstractVector{Int},
+                               idx_in_order::Int)
+    predicted_state = initial_state
+
+    # Predict one L0 step for all agents who move before k this round
+    for j in 1:(idx_in_order - 1)
+        other = order[j]
+        # Other's L0 view of the predicted world so far
+        l0_view = project_others_to_walls(predicted_state, other, domain)
+        act_other = SymbolicPlanners.get_action(policies[other], l0_view)
+        # They might try something impossible in prediction; treat that as no move
+        predicted_state = safe_transition(domain, predicted_state, act_other)
+    end
+
+    # Now build k's single-agent view of this predicted world
+    return project_others_to_walls(predicted_state, k, domain)
+end
+
 
 """
 Build single-agent view for focal agent `k` (level-0 projection), where other agents become walls.
@@ -168,22 +255,80 @@ end
 """
 Run one simulation timestep: each agent takes one action.
 
-Assumptions:
-- fixed sequential order (1..N_AGENTS)
-- later agents observe earlier moves (state is updated in sequence)
-- agents plan treating others as static obstacles (level-0 projection)
+Knobs:
+
+- ORDER:
+    "fixed"  → order = 1..N_AGENTS
+    "random" → order = random permutation each timestep
+
+- INFO:
+    "blind" → agents reason from the beginning-of-round snapshot
+    "full"  → agents reason from the current world (see earlier moves)
+
+- REASONING (only meaningful when INFO == "blind"):
+    "L0" → others are static (no within-round prediction)
+    "L1" → predict one L0 step for agents before you in the order
 """
 function simulation_step(state::State,
                          policies::AbstractVector{<:BoltzmannPolicy},
                          domain::Domain)
-    interim_state = state
-    for n in 1:N_AGENTS
-        level_0_projection  = project_others_to_walls(interim_state, n, domain) # treat others as walls
-        act                 = SymbolicPlanners.get_action(policies[n], level_0_projection) # select an action
-        interim_state       = transition(domain, interim_state, act) # sequential update: later agents observe earlier moves
+
+    initial_state = state          # snapshot at start of this timestep
+    interim_state = initial_state  # actual evolving world
+
+    order = get_order()
+
+    for idx in 1:N_AGENTS
+        k = order[idx]  # focal agent index
+
+        # -----------------------------
+        # Build the planning state
+        # -----------------------------
+        planning_state = nothing
+
+        if INFO == "full"
+            # Agents see earlier moves and plan from the current world.
+            # REASONING_LEVEL is effectively ignored in this mode.
+            planning_state = project_others_to_walls(interim_state, k, domain)
+
+        elseif INFO == "blind"
+            if REASONING == "L0"
+                # Everyone plans from the same snapshot, treating others as walls.
+                planning_state = project_others_to_walls(initial_state, k, domain)
+
+            elseif REASONING == "L1"
+                # Agent k predicts one L0 step from agents before it in `order`,
+                # then plans from that predicted world.
+                planning_state = level1_planning_state(initial_state, k, domain,
+                                                       policies, order, idx)
+            else
+                error("Unknown REASONING: $REASONING")
+            end
+
+        else
+            error("Unknown INFO: $INFO")
+        end
+
+        # -----------------------------
+        # Choose and apply action
+        # -----------------------------
+        act = SymbolicPlanners.get_action(policies[k], planning_state)
+
+        if INFO == "full"
+            # In full-info mode with a well-designed domain, these actions
+            # should be valid; you *can* still use safe_transition for robustness.
+            interim_state = safe_transition(domain, interim_state, act)
+        else
+            # In blind modes, invalid moves are expected (collisions, etc.).
+            # Interpret them as "bump and stay put".
+            interim_state = safe_transition(domain, interim_state, act)
+        end
     end
+
     return interim_state
 end
+
+
 
 # --------------------------------------------------------------------
 # Main simulation loop
@@ -192,9 +337,14 @@ end
 function run_simulations()
     # Make sure output directories exist
     mkpath(OUTPUT_DIR)
-    mkpath(TRAJECTORY_DIR)
+    if SAVE_TRAJECTORIES
+        mkpath(TRAJECTORY_DIR)
+    end
 
     println("Starting simulations:")
+    println("  order = $(ORDER)")
+    println("  information = $(INFO)")
+    println("  reasoning = $(REASONING)")
     println("  maps = $(length(MAP_FILES))")
     println("  runs per map = $(RUNS)")
     println("  threads = $(Threads.nthreads())")
@@ -338,6 +488,10 @@ function run_simulations()
                 time_max = TIME_MAX,
                 n_agents = N_AGENTS,
                 run_elapsed_seconds = elapsed_run,
+                order = ORDER,
+                info = INFO,
+                reasoning = REASONING,
+                planning = PLANNING,
             )    
         end
 

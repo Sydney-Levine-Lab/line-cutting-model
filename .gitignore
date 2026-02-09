@@ -5,8 +5,9 @@ _notes/
 data/simulations
 !data/simulations/paper_data
 
-# Ignore plots
-analysis/figures
+# Ignore plots, except for 3 figures using paper run
+#analysis/figures
+!analysis/figures/paper_figures/
 
 # OS cruft
 .DS_Store

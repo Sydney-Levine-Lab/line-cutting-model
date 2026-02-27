@@ -1,5 +1,7 @@
 # Personal notes
 _notes/
+.direnv/
+.venv/
 
 # Ignore simulation output, except for paper run
 data/simulations

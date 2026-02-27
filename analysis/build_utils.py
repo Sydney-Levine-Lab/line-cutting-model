@@ -5,9 +5,29 @@ Intended usage from Notebook:
     - call get_universalization_summary(run_label, recompute=True) once for every type of simulation run,
     to build per-map universalization metrics CSV and load it.
     - call get_outcome_metrics(recompute=True) once to build per-scenario outcome metrics CSV and load it.
-    - later, call these functions with recompute=False to load the dataframes without rebuilding them.
-    - NEW (DEC 11): use build_display_matrix() to build regression ready display matrix using dfs for universalization metrics, outcome, and experimental data.
+    - (later, call these functions with recompute=False to load the dataframes without rebuilding them.)f
+    - call build_display_matrix() to build regression ready display matrix using dfs for universalization metrics, outcome, and experimental data.
 """
+
+
+
+
+#TODO: make metrics robust to having unfinished agents
+# Probably just by excludings runs with unfinished agents
+### 
+
+
+
+
+KNOB_COLS = [
+        "order",
+        "info",
+        "reasoning",
+        "planning",
+        "planning_h_mult",
+        "planning_search_noise"
+    ]
+
 
 import numpy as np
 import pandas as pd
@@ -32,10 +52,9 @@ def compute_gini(values):
     return g
 
 
-
 def compute_metrics(world, line):
     """
-    Compute metrics by comparing completion times in world to those in the line baseline.
+    Compute main metrics by comparing completion times in world to those in the line baseline.
 
     line: size 8 array with completion times when agents follow a line.
     world: size 8 array with completion times in an alternate world.
@@ -45,6 +64,12 @@ def compute_metrics(world, line):
     """
     line = pd.Series(line, dtype=float)
     world = pd.Series(world, dtype=float)
+
+    #if time_max is not None:
+    #    world = world.copy()
+    #    unfinished_mask = world <= 0
+    #    if unfinished_mask.any():
+    #           world.loc[unfinished_mask] = float(time_max)
 
     line_last = line.max() # Completion time for last agent in line; used to normalize metrics
     
@@ -76,9 +101,30 @@ def compute_metrics(world, line):
         "ordinal_harm_blind": ordinal_harm_blind,
         "cardinal_harm": cardinal_harm,
         "inequality": inequality,
-        "gini": gini
+        "gini": gini,
     }
 
+def compute_other_metrics(world):
+    """
+    Compute simple metrics to compare between simulation runs.
+    """
+    world = pd.Series(world, dtype=float)
+    finished = world[world > 0]
+
+    if finished.empty:
+        return {
+            "mean": np.nan,
+            "first": np.nan,
+            "last": np.nan,
+            "prop_finished": 0.0,
+        }
+    else:
+        return {
+            "mean": finished.mean(),
+            "first": finished.min(),
+            "last": finished.max(),
+            "prop_finished": finished.size / world.size,
+        }
 
 
 METRIC_COLS = [
@@ -87,6 +133,13 @@ METRIC_COLS = [
     "cardinal_harm",
     "ordinal_harm_blind",
     "gini",
+]
+
+OTHER_COLS = [
+    "mean",
+    "last",
+    "first",
+    "prop_finished"
 ]
 
 # ---------------------------------------------------------------------
@@ -124,6 +177,9 @@ def build_processed_sim_one_map(
         world_times = run[agent_cols].to_numpy(dtype=float)
         metrics = compute_metrics(world=world_times, line=line_times)
         for k, v in metrics.items():
+            df.loc[idx, k] = v
+        other_metrics = compute_other_metrics(world=world_times)
+        for k, v in other_metrics.items():
             df.loc[idx, k] = v
 
     df.to_csv(processed_path, index=False)
@@ -181,9 +237,15 @@ def build_universalization_summary(
         n_runs = len(df)
 
         row = {
-            "map_name": map_name,
+            "map": map_name,
             "n_runs": n_runs
         }
+
+        # copy knob settings from the first run (they are constant within a run_label)
+        first = df.iloc[0]
+        for col in KNOB_COLS:
+            if col in df.columns:
+                row[col] = first[col]
 
         # compute mean and sd for each metric
         for m in METRIC_COLS:
@@ -191,6 +253,10 @@ def build_universalization_summary(
             sd_val = df[m].std(ddof=1)
             row[f"univ_{m}"] = mean_val
             row[f"univ_{m}_sd"] = sd_val
+
+        for m in OTHER_COLS:
+            mean_val = df[m].mean()
+            row[m] = mean_val
 
         rows.append(row)
 
@@ -227,7 +293,7 @@ def build_outcome_metrics(
     rows = []
 
     for _, row in lookup_df.iterrows():
-        map_name = row["map_name"]
+        map_name = row["map"]
         cond = row["condition"]
         
         # Baseline line completion times   
@@ -239,9 +305,9 @@ def build_outcome_metrics(
         metrics = compute_metrics(world=world_times, line=line_times)
 
         out = {
-            "scenario_label": row.get("preferred_label", None),
-            "xp_name": row.get("xp_name", None),
-            "map_name": map_name,
+            "stimulus": row.get("preferred_label", None),
+            #"xp_name": row.get("xp_name", None),
+            "map": map_name,
             "condition": cond,
             "aggregate_welfare": metrics["aggregate_welfare"],
             "inequality": metrics["inequality"],
@@ -263,6 +329,34 @@ def build_outcome_metrics(
 # ---------------------------------------------------------------------
 # Helpers to call from notebooks
 # ---------------------------------------------------------------------
+
+def get_experimental_data(
+    xp_file,
+    dataset_type="cogsci",    # pilot or cogsci
+    experimental_dir="../data/experimental",
+    lookup_csv="../data/scenarios/scenario_lookup.csv",
+):
+    """
+    Load and normalize experimental data so that `build_design_matrix`
+    can use it.
+
+    Two hard-coded options: pilot and cogsci data.
+    If data comes with a new format, add an option and a column to lookup_csv.
+    """
+    xp_path = Path(experimental_dir) / xp_file
+    xp_df = pd.read_csv(xp_path).copy()
+
+    lookup_df = pd.read_csv(lookup_csv)
+
+    old_col = dataset_type
+
+    label_map = dict(zip(lookup_df[old_col], lookup_df["preferred_label"]))
+
+    # convert old labels to new; leave already-new labels unchanged
+    xp_df["stimulus"] = xp_df["stimulus"].apply(lambda v: label_map.get(v, v))
+
+    return xp_df
+
 
 def get_universalization_summary(
     run_label,
@@ -347,23 +441,21 @@ def build_design_matrix(
     using universalization, output and experimental data dfs,
     typically retrieved with above helpers.
 
-    Ratings are pooled across countries by default;
+    Judgments are pooled across countries by default;
     and otherwise limited to those obtained for a specified country.
     """
-    # normalize xp column names
-    xp_df = xp_df.rename(columns={"map": "xp_name"}).copy()
+    xp = xp_df.copy()
 
     if country is not None:
         # restrict to a single country
-        xp_df = xp_df[xp_df["country"] == country].copy()
-        xp_scenario = xp_df.rename(columns={"rating_mean": "rating_mean_country"})
+        xp = xp_df[xp_df["country"] == country]
     else:
-        xp_scenario = (
-            xp_df.groupby("xp_name", as_index=False)
-                 .agg(rating_mean=("rating_mean", "mean"))
+        xp = (
+            xp_df.groupby("stimulus", as_index=False)
+                 .agg(rating_mean=("judgment_mean", "mean"))
         )
 
-    scenario_univ = out_df.merge(univ_df, on="map_name", how="left")
+    scenario_univ = out_df.merge(univ_df, on="map", how="left")
 
-    design = xp_scenario.merge(scenario_univ, on="xp_name", how="inner")
+    design = xp.merge(scenario_univ, on="stimulus", how="inner")
     return design

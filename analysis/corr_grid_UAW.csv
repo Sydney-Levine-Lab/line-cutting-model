@@ -1,0 +1,6 @@
+tag,info,order,reasoning,corr_with_participants,corr_with_joe,corr_with_random,corr_with_random_blind,corr_with_random_blind_L1
+participants,,,,,0.418,0.486,0.155,0.473
+joe,full,fixed,L0,0.418,,0.986,0.584,0.985
+random,full,random,L0,0.486,0.986,,0.613,0.994
+random_blind,blind,random,L0,0.155,0.584,0.613,,0.601
+random_blind_L1,blind,random,L1,0.473,0.985,0.994,0.601,

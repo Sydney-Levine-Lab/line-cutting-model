@@ -87,13 +87,18 @@ const INFO = get(ENV, "INFO", "blind")
 #   "L1" = predict one L0 step for agents before you in the order (only used if INFO == "blind")
 const REASONING = get(ENV, "REASONING", "L0")
 
-# How agents search (TODO)
-#   "astar"     = A*
-#   "p_astar"   = probabilistic A*
+# How agents search
+#   "astar"         = A*
+#   "proba_astar"   = probabilistic A*
+#   "weighted_astar" = weighted A*
 const PLANNING = get(ENV, "PLANNING", "astar")
 
+# Planning parameters
+const PLANNING_H_MULT       = env_float("PLANNING_H_MULT", 2.0)
+const PLANNING_SEARCH_NOISE = env_float("PLANNING_SEARCH_NOISE", 0.5)
+
 # --------------------------------------------------------------------
-# Agent policies
+# Agent     
 # --------------------------------------------------------------------
 # Key assumptions:
 # - state evaluation: A* + task-specific heuristic → steps-to-go estimate
@@ -103,10 +108,21 @@ const PLANNING = get(ENV, "PLANNING", "astar")
 Build the steps-to-go estimator used for action selection.
 """
 function build_steps_to_go_estimator()
-    inner_heuristic   = WaterCollectionHeuristic()       # lower-bound estimate of steps-to-go (task-specific heuristic)
-    planner           = AStarPlanner(inner_heuristic)    # search guided by heuristic
-    planner_heuristic = PlannerHeuristic(planner)        # estimate steps-to-go from a state
-    return memoized(planner_heuristic)                   # cache for speed
+    inner_heuristic   = WaterCollectionHeuristic()                        # lower-bound estimate of steps-to-go (task-specific heuristic)
+    # Search guided by heuristic; simulations vary in what type of planner is used
+    if PLANNING == "astar"
+        planner = SymbolicPlanners.AStarPlanner(inner_heuristic)
+    elseif PLANNING == "weighted_astar"
+        # Greedier A*; more weight on the heuristic term
+        planner = SymbolicPlanners.WeightedAStarPlanner(inner_heuristic, PLANNING_H_MULT)
+    elseif PLANNING == "proba_astar"
+         # Probabilistic A*: samples which node to expand, controlled by search_noise
+        planner = SymbolicPlanners.ProbAStarPlanner(inner_heuristic; search_noise = PLANNING_SEARCH_NOISE)
+    else
+        error("Unknown PLANNING: $PLANNING")
+    end
+    planner_heuristic = SymbolicPlanners.PlannerHeuristic(planner)        # estimate steps-to-go from a state
+    return SymbolicPlanners.memoized(planner_heuristic)                   # cache for speed
 end
 
 """
@@ -118,9 +134,22 @@ function build_agent_policies(domain::Domain, steps_to_go)
     policies = Vector{BoltzmannPolicy}(undef, N_AGENTS)
     for n in 1:N_AGENTS
         agent         = AGENTS[n]
-        goal          = MinStepsGoal(Term[HAS_FILLED[n]])
-        value_policy  = FunctionalVPolicy(steps_to_go, domain, goal)
-        policies[n]   = BoltzmannPolicy(value_policy, TEMPERATURE)
+        goal          = SymbolicPlanners.MinStepsGoal(Term[HAS_FILLED[n]])
+        
+        
+        #value_policy  = SymbolicPlanners.HeuristicVPolicy(steps_to_go, domain, goal) 
+        # CHANGED from FunctionalVPolicy (which only works with AStar bcz that only has one argument)
+        # TODO: check that doesn't impact AStar runs
+
+
+        # CHANGED: trying to use FunctionalVPolicy everywhere
+        #value_fn     = state -> steps_to_go(domain, state, goal)
+        #value_policy = SymbolicPlanners.FunctionalVPolicy(value_fn, domain, goal)
+
+        value_policy = SymbolicPlanners.FunctionalVPolicy(steps_to_go, domain, goal)
+
+
+        policies[n]   = SymbolicPlanners.BoltzmannPolicy(value_policy, TEMPERATURE)
     end
     return policies
 end
@@ -345,6 +374,7 @@ function run_simulations()
     println("  order = $(ORDER)")
     println("  information = $(INFO)")
     println("  reasoning = $(REASONING)")
+    println("  planning = $(PLANNING)")
     println("  maps = $(length(MAP_FILES))")
     println("  runs per map = $(RUNS)")
     println("  threads = $(Threads.nthreads())")
@@ -492,6 +522,8 @@ function run_simulations()
                 info = INFO,
                 reasoning = REASONING,
                 planning = PLANNING,
+                planning_h_mult = PLANNING_H_MULT,
+                planning_search_noise = PLANNING_SEARCH_NOISE,            
             )    
         end
 

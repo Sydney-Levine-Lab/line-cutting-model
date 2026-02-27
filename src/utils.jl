@@ -12,6 +12,16 @@ function env_int(key::AbstractString, default::Int)
     end
 end
 
+# Read float from ENV
+function env_float(key::AbstractString, default::Float64)
+    raw = strip(get(ENV, key, string(default)))
+    try
+        parse(Float64, raw)
+    catch
+        default
+    end
+end
+
 # Read boolean flag from ENV
 function env_bool(key::AbstractString, default::Bool=false)
     raw = get(ENV, key, "")
@@ -86,6 +96,12 @@ function write_snapshot!(outdir::AbstractString, src_dir::AbstractString)
         println(io, "MAP_SEED_OFFSET = ", MAP_SEED_OFFSET)
         println(io, "THREADS = ", Threads.nthreads())
         println(io, "MAP_FILES = ", join(MAP_FILES, ", "))
+        println(io, "ORDER = ", ORDER)
+        println(io, "INFO = ", INFO)
+        println(io, "REASONING = ", REASONING)
+        println(io, "PLANNING = ", PLANNING)
+        println(io, "PLANNING_H_MULT = ", PLANNING_H_MULT)
+        println(io, "PLANNING_SEARCH_NOISE = ", PLANNING_SEARCH_NOISE)
     end
 end
 

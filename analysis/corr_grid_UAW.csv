@@ -1,6 +1,10 @@
-tag,info,order,reasoning,corr_with_participants,corr_with_joe,corr_with_random,corr_with_random_blind,corr_with_random_blind_L1
-participants,,,,,0.418,0.486,0.155,0.473
-joe,full,fixed,L0,0.418,,0.986,0.584,0.985
-random,full,random,L0,0.486,0.986,,0.613,0.994
-random_blind,blind,random,L0,0.155,0.584,0.613,,0.601
-random_blind_L1,blind,random,L1,0.473,0.985,0.994,0.601,
+tag,info,order,reasoning,corr_with_participants,corr_with_joe,corr_with_random,corr_with_random_blind,corr_with_random_blind_L1,corr_with_joe_new,corr_with_random_new,corr_with_random_blind_new,corr_with_random_blind_L1_new
+participants,,,,,0.418,0.486,0.155,0.473,0.313,0.378,0.158,0.342
+joe,full,fixed,L0,0.418,,0.986,0.584,0.985,0.833,0.861,0.295,0.864
+random,full,random,L0,0.486,0.986,,0.613,0.994,0.836,0.88,0.37,0.872
+random_blind,blind,random,L0,0.155,0.584,0.613,,0.601,0.535,0.614,0.555,0.606
+random_blind_L1,blind,random,L1,0.473,0.985,0.994,0.601,,0.83,0.869,0.338,0.865
+joe_new,full,fixed,L0,0.313,0.833,0.836,0.535,0.83,,0.987,0.402,0.991
+random_new,full,random,L0,0.378,0.861,0.88,0.614,0.869,0.987,,0.438,0.994
+random_blind_new,blind,random,L0,0.158,0.295,0.37,0.555,0.338,0.402,0.438,,0.424
+random_blind_L1_new,blind,random,L1,0.342,0.864,0.872,0.606,0.865,0.991,0.994,0.424,

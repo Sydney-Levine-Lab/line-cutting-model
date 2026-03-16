@@ -1,0 +1,1205 @@
+participant_id,joe_context,stimulus,condition,univ_judgment,excluded
+R_26kYaGxKqcDzQh2,No 1,no_line_1,1cut,50.0,False
+R_26kYaGxKqcDzQh2,No 2,no_line_2,1cut,50.0,False
+R_26kYaGxKqcDzQh2,No 3,no_line_3,1cut,31.0,False
+R_26kYaGxKqcDzQh2,Yes 1,yes_line_7,1cut,-50.0,False
+R_26kYaGxKqcDzQh2,Yes 2,yes_line_8,1cut,-50.0,False
+R_26kYaGxKqcDzQh2,Yes 3,yes_line_9,1cut,-50.0,False
+R_26kYaGxKqcDzQh2,Yes 4,yes_line_10,1cut,-50.0,False
+R_26kYaGxKqcDzQh2,New Yes 7,7esque,1cut,-50.0,False
+R_26kYaGxKqcDzQh2,New Yes 9,9esque,1cut,50.0,False
+R_26kYaGxKqcDzQh2,New Yes 10,10esque,1cut,-50.0,False
+R_26kYaGxKqcDzQh2,Maybe 1,maybe_4,1cut,50.0,False
+R_26kYaGxKqcDzQh2,Maybe 2,maybe_5,1cut,50.0,False
+R_26kYaGxKqcDzQh2,Maybe 3,maybe_6,1cut,50.0,False
+R_26kYaGxKqcDzQh2,New Maybe 1,new_maybe_1,1cut,50.0,False
+R_26kYaGxKqcDzQh2,New Maybe 2,new_maybe_2,1cut,50.0,False
+R_26kYaGxKqcDzQh2,New Maybe 3,new_maybe_3,1cut,20.0,False
+R_26kYaGxKqcDzQh2,New Maybe 4,new_maybe_4,1cut,30.0,False
+R_26kYaGxKqcDzQh2,New Maybe 5,new_maybe_5,1cut,-50.0,False
+R_26kYaGxKqcDzQh2,New Maybe 6,new_maybe_6,1cut,22.0,False
+R_26kYaGxKqcDzQh2,No A,no_line_A,1cut,50.0,False
+R_26kYaGxKqcDzQh2,No B,no_line_B,1cut,50.0,False
+R_26kYaGxKqcDzQh2,No C,no_line_C,1cut,50.0,False
+R_26kYaGxKqcDzQh2,No D,no_line_D,1cut,50.0,False
+R_26kYaGxKqcDzQh2,Yes B,yes_line_B,1cut,34.0,False
+R_26kYaGxKqcDzQh2,Yes C,yes_line_C,1cut,50.0,False
+R_26kYaGxKqcDzQh2,Yes D,yes_line_D,1cut,50.0,False
+R_26kYaGxKqcDzQh2,Yes E,yes_line_E,1cut,-50.0,False
+R_26kYaGxKqcDzQh2,Yes F,yes_line_F,1cut,50.0,False
+R_1rIDbUD7D19jHwL,No 1,no_line_1,1cut,-23.0,False
+R_1rIDbUD7D19jHwL,No 2,no_line_2,1cut,23.0,False
+R_1rIDbUD7D19jHwL,No 3,no_line_3,1cut,5.0,False
+R_1rIDbUD7D19jHwL,Yes 1,yes_line_7,1cut,-42.0,False
+R_1rIDbUD7D19jHwL,Yes 2,yes_line_8,1cut,-24.0,False
+R_1rIDbUD7D19jHwL,Yes 3,yes_line_9,1cut,-21.0,False
+R_1rIDbUD7D19jHwL,Yes 4,yes_line_10,1cut,-38.0,False
+R_1rIDbUD7D19jHwL,New Yes 7,7esque,1cut,-50.0,False
+R_1rIDbUD7D19jHwL,New Yes 9,9esque,1cut,4.0,False
+R_1rIDbUD7D19jHwL,New Yes 10,10esque,1cut,-18.0,False
+R_1rIDbUD7D19jHwL,Maybe 1,maybe_4,1cut,50.0,False
+R_1rIDbUD7D19jHwL,Maybe 2,maybe_5,1cut,5.0,False
+R_1rIDbUD7D19jHwL,Maybe 3,maybe_6,1cut,46.0,False
+R_1rIDbUD7D19jHwL,New Maybe 1,new_maybe_1,1cut,-21.0,False
+R_1rIDbUD7D19jHwL,New Maybe 2,new_maybe_2,1cut,14.0,False
+R_1rIDbUD7D19jHwL,New Maybe 3,new_maybe_3,1cut,27.0,False
+R_1rIDbUD7D19jHwL,New Maybe 4,new_maybe_4,1cut,14.0,False
+R_1rIDbUD7D19jHwL,New Maybe 5,new_maybe_5,1cut,-50.0,False
+R_1rIDbUD7D19jHwL,New Maybe 6,new_maybe_6,1cut,14.0,False
+R_1rIDbUD7D19jHwL,No A,no_line_A,1cut,50.0,False
+R_1rIDbUD7D19jHwL,No B,no_line_B,1cut,50.0,False
+R_1rIDbUD7D19jHwL,No C,no_line_C,1cut,50.0,False
+R_1rIDbUD7D19jHwL,No D,no_line_D,1cut,50.0,False
+R_1rIDbUD7D19jHwL,Yes B,yes_line_B,1cut,14.0,False
+R_1rIDbUD7D19jHwL,Yes C,yes_line_C,1cut,50.0,False
+R_1rIDbUD7D19jHwL,Yes D,yes_line_D,1cut,50.0,False
+R_1rIDbUD7D19jHwL,Yes E,yes_line_E,1cut,-7.0,False
+R_1rIDbUD7D19jHwL,Yes F,yes_line_F,1cut,-12.0,False
+R_2zGesJmcZ2DxCol,No 1,no_line_1,1cut,30.0,False
+R_2zGesJmcZ2DxCol,No 2,no_line_2,1cut,50.0,False
+R_2zGesJmcZ2DxCol,No 3,no_line_3,1cut,26.0,False
+R_2zGesJmcZ2DxCol,Yes 1,yes_line_7,1cut,-50.0,False
+R_2zGesJmcZ2DxCol,Yes 2,yes_line_8,1cut,-30.0,False
+R_2zGesJmcZ2DxCol,Yes 3,yes_line_9,1cut,-41.0,False
+R_2zGesJmcZ2DxCol,Yes 4,yes_line_10,1cut,-40.0,False
+R_2zGesJmcZ2DxCol,New Yes 7,7esque,1cut,-50.0,False
+R_2zGesJmcZ2DxCol,New Yes 9,9esque,1cut,11.0,False
+R_2zGesJmcZ2DxCol,New Yes 10,10esque,1cut,-31.0,False
+R_2zGesJmcZ2DxCol,Maybe 1,maybe_4,1cut,50.0,False
+R_2zGesJmcZ2DxCol,Maybe 2,maybe_5,1cut,16.0,False
+R_2zGesJmcZ2DxCol,Maybe 3,maybe_6,1cut,50.0,False
+R_2zGesJmcZ2DxCol,New Maybe 1,new_maybe_1,1cut,14.0,False
+R_2zGesJmcZ2DxCol,New Maybe 2,new_maybe_2,1cut,7.0,False
+R_2zGesJmcZ2DxCol,New Maybe 3,new_maybe_3,1cut,9.0,False
+R_2zGesJmcZ2DxCol,New Maybe 4,new_maybe_4,1cut,11.0,False
+R_2zGesJmcZ2DxCol,New Maybe 5,new_maybe_5,1cut,-50.0,False
+R_2zGesJmcZ2DxCol,New Maybe 6,new_maybe_6,1cut,7.0,False
+R_2zGesJmcZ2DxCol,No A,no_line_A,1cut,50.0,False
+R_2zGesJmcZ2DxCol,No B,no_line_B,1cut,50.0,False
+R_2zGesJmcZ2DxCol,No C,no_line_C,1cut,50.0,False
+R_2zGesJmcZ2DxCol,No D,no_line_D,1cut,50.0,False
+R_2zGesJmcZ2DxCol,Yes B,yes_line_B,1cut,22.0,False
+R_2zGesJmcZ2DxCol,Yes C,yes_line_C,1cut,10.0,False
+R_2zGesJmcZ2DxCol,Yes D,yes_line_D,1cut,15.0,False
+R_2zGesJmcZ2DxCol,Yes E,yes_line_E,1cut,-16.0,False
+R_2zGesJmcZ2DxCol,Yes F,yes_line_F,1cut,-8.0,False
+R_3dLWRwgFtRAUU16,No 1,no_line_1,1cut,-10.0,False
+R_3dLWRwgFtRAUU16,No 2,no_line_2,1cut,20.0,False
+R_3dLWRwgFtRAUU16,No 3,no_line_3,1cut,-20.0,False
+R_3dLWRwgFtRAUU16,Yes 1,yes_line_7,1cut,-40.0,False
+R_3dLWRwgFtRAUU16,Yes 2,yes_line_8,1cut,-40.0,False
+R_3dLWRwgFtRAUU16,Yes 3,yes_line_9,1cut,-20.0,False
+R_3dLWRwgFtRAUU16,Yes 4,yes_line_10,1cut,-50.0,False
+R_3dLWRwgFtRAUU16,New Yes 7,7esque,1cut,-10.0,False
+R_3dLWRwgFtRAUU16,New Yes 9,9esque,1cut,10.0,False
+R_3dLWRwgFtRAUU16,New Yes 10,10esque,1cut,-40.0,False
+R_3dLWRwgFtRAUU16,Maybe 1,maybe_4,1cut,40.0,False
+R_3dLWRwgFtRAUU16,Maybe 2,maybe_5,1cut,-10.0,False
+R_3dLWRwgFtRAUU16,Maybe 3,maybe_6,1cut,10.0,False
+R_3dLWRwgFtRAUU16,New Maybe 1,new_maybe_1,1cut,-30.0,False
+R_3dLWRwgFtRAUU16,New Maybe 2,new_maybe_2,1cut,20.0,False
+R_3dLWRwgFtRAUU16,New Maybe 3,new_maybe_3,1cut,-31.0,False
+R_3dLWRwgFtRAUU16,New Maybe 4,new_maybe_4,1cut,-30.0,False
+R_3dLWRwgFtRAUU16,New Maybe 5,new_maybe_5,1cut,-41.0,False
+R_3dLWRwgFtRAUU16,New Maybe 6,new_maybe_6,1cut,-30.0,False
+R_3dLWRwgFtRAUU16,No A,no_line_A,1cut,50.0,False
+R_3dLWRwgFtRAUU16,No B,no_line_B,1cut,10.0,False
+R_3dLWRwgFtRAUU16,No C,no_line_C,1cut,42.0,False
+R_3dLWRwgFtRAUU16,No D,no_line_D,1cut,-10.0,False
+R_3dLWRwgFtRAUU16,Yes B,yes_line_B,1cut,-31.0,False
+R_3dLWRwgFtRAUU16,Yes C,yes_line_C,1cut,15.0,False
+R_3dLWRwgFtRAUU16,Yes D,yes_line_D,1cut,-20.0,False
+R_3dLWRwgFtRAUU16,Yes E,yes_line_E,1cut,-50.0,False
+R_3dLWRwgFtRAUU16,Yes F,yes_line_F,1cut,15.0,False
+R_2YRJa3vIbwJ9jsl,No 1,no_line_1,1cut,50.0,False
+R_2YRJa3vIbwJ9jsl,No 2,no_line_2,1cut,-9.0,False
+R_2YRJa3vIbwJ9jsl,No 3,no_line_3,1cut,-16.0,False
+R_2YRJa3vIbwJ9jsl,Yes 1,yes_line_7,1cut,-32.0,False
+R_2YRJa3vIbwJ9jsl,Yes 2,yes_line_8,1cut,-50.0,False
+R_2YRJa3vIbwJ9jsl,Yes 3,yes_line_9,1cut,-46.0,False
+R_2YRJa3vIbwJ9jsl,Yes 4,yes_line_10,1cut,-50.0,False
+R_2YRJa3vIbwJ9jsl,New Yes 7,7esque,1cut,40.0,False
+R_2YRJa3vIbwJ9jsl,New Yes 9,9esque,1cut,28.0,False
+R_2YRJa3vIbwJ9jsl,New Yes 10,10esque,1cut,-50.0,False
+R_2YRJa3vIbwJ9jsl,Maybe 1,maybe_4,1cut,31.0,False
+R_2YRJa3vIbwJ9jsl,Maybe 2,maybe_5,1cut,20.0,False
+R_2YRJa3vIbwJ9jsl,Maybe 3,maybe_6,1cut,-43.0,False
+R_2YRJa3vIbwJ9jsl,New Maybe 1,new_maybe_1,1cut,-35.0,False
+R_2YRJa3vIbwJ9jsl,New Maybe 2,new_maybe_2,1cut,-43.0,False
+R_2YRJa3vIbwJ9jsl,New Maybe 3,new_maybe_3,1cut,28.0,False
+R_2YRJa3vIbwJ9jsl,New Maybe 4,new_maybe_4,1cut,-45.0,False
+R_2YRJa3vIbwJ9jsl,New Maybe 5,new_maybe_5,1cut,-50.0,False
+R_2YRJa3vIbwJ9jsl,New Maybe 6,new_maybe_6,1cut,-36.0,False
+R_2YRJa3vIbwJ9jsl,No A,no_line_A,1cut,-50.0,False
+R_2YRJa3vIbwJ9jsl,No B,no_line_B,1cut,50.0,False
+R_2YRJa3vIbwJ9jsl,No C,no_line_C,1cut,10.0,False
+R_2YRJa3vIbwJ9jsl,No D,no_line_D,1cut,-18.0,False
+R_2YRJa3vIbwJ9jsl,Yes B,yes_line_B,1cut,-44.0,False
+R_2YRJa3vIbwJ9jsl,Yes C,yes_line_C,1cut,-42.0,False
+R_2YRJa3vIbwJ9jsl,Yes D,yes_line_D,1cut,-49.0,False
+R_2YRJa3vIbwJ9jsl,Yes E,yes_line_E,1cut,25.0,False
+R_2YRJa3vIbwJ9jsl,Yes F,yes_line_F,1cut,-46.0,False
+R_1gpcMqQw3MgxmQj,No 1,no_line_1,1cut,50.0,False
+R_1gpcMqQw3MgxmQj,No 2,no_line_2,1cut,50.0,False
+R_1gpcMqQw3MgxmQj,No 3,no_line_3,1cut,50.0,False
+R_1gpcMqQw3MgxmQj,Yes 1,yes_line_7,1cut,-21.0,False
+R_1gpcMqQw3MgxmQj,Yes 2,yes_line_8,1cut,-50.0,False
+R_1gpcMqQw3MgxmQj,Yes 3,yes_line_9,1cut,-50.0,False
+R_1gpcMqQw3MgxmQj,Yes 4,yes_line_10,1cut,-50.0,False
+R_1gpcMqQw3MgxmQj,New Yes 7,7esque,1cut,-41.0,False
+R_1gpcMqQw3MgxmQj,New Yes 9,9esque,1cut,41.0,False
+R_1gpcMqQw3MgxmQj,New Yes 10,10esque,1cut,-50.0,False
+R_1gpcMqQw3MgxmQj,Maybe 1,maybe_4,1cut,50.0,False
+R_1gpcMqQw3MgxmQj,Maybe 2,maybe_5,1cut,40.0,False
+R_1gpcMqQw3MgxmQj,Maybe 3,maybe_6,1cut,9.0,False
+R_1gpcMqQw3MgxmQj,New Maybe 1,new_maybe_1,1cut,7.0,False
+R_1gpcMqQw3MgxmQj,New Maybe 2,new_maybe_2,1cut,9.0,False
+R_1gpcMqQw3MgxmQj,New Maybe 3,new_maybe_3,1cut,18.0,False
+R_1gpcMqQw3MgxmQj,New Maybe 4,new_maybe_4,1cut,19.0,False
+R_1gpcMqQw3MgxmQj,New Maybe 5,new_maybe_5,1cut,-50.0,False
+R_1gpcMqQw3MgxmQj,New Maybe 6,new_maybe_6,1cut,-50.0,False
+R_1gpcMqQw3MgxmQj,No A,no_line_A,1cut,50.0,False
+R_1gpcMqQw3MgxmQj,No B,no_line_B,1cut,50.0,False
+R_1gpcMqQw3MgxmQj,No C,no_line_C,1cut,50.0,False
+R_1gpcMqQw3MgxmQj,No D,no_line_D,1cut,50.0,False
+R_1gpcMqQw3MgxmQj,Yes B,yes_line_B,1cut,7.0,False
+R_1gpcMqQw3MgxmQj,Yes C,yes_line_C,1cut,27.0,False
+R_1gpcMqQw3MgxmQj,Yes D,yes_line_D,1cut,2.0,False
+R_1gpcMqQw3MgxmQj,Yes E,yes_line_E,1cut,-8.0,False
+R_1gpcMqQw3MgxmQj,Yes F,yes_line_F,1cut,8.0,False
+R_3g0FAV2qa3JazkP,No 1,no_line_1,1cut,35.0,False
+R_3g0FAV2qa3JazkP,No 2,no_line_2,1cut,20.0,False
+R_3g0FAV2qa3JazkP,No 3,no_line_3,1cut,-10.0,False
+R_3g0FAV2qa3JazkP,Yes 1,yes_line_7,1cut,-50.0,False
+R_3g0FAV2qa3JazkP,Yes 2,yes_line_8,1cut,-50.0,False
+R_3g0FAV2qa3JazkP,Yes 3,yes_line_9,1cut,-50.0,False
+R_3g0FAV2qa3JazkP,Yes 4,yes_line_10,1cut,-50.0,False
+R_3g0FAV2qa3JazkP,New Yes 7,7esque,1cut,-50.0,False
+R_3g0FAV2qa3JazkP,New Yes 9,9esque,1cut,20.0,False
+R_3g0FAV2qa3JazkP,New Yes 10,10esque,1cut,-50.0,False
+R_3g0FAV2qa3JazkP,Maybe 1,maybe_4,1cut,50.0,False
+R_3g0FAV2qa3JazkP,Maybe 2,maybe_5,1cut,15.0,False
+R_3g0FAV2qa3JazkP,Maybe 3,maybe_6,1cut,35.0,False
+R_3g0FAV2qa3JazkP,New Maybe 1,new_maybe_1,1cut,12.0,False
+R_3g0FAV2qa3JazkP,New Maybe 2,new_maybe_2,1cut,40.0,False
+R_3g0FAV2qa3JazkP,New Maybe 3,new_maybe_3,1cut,-40.0,False
+R_3g0FAV2qa3JazkP,New Maybe 4,new_maybe_4,1cut,-45.0,False
+R_3g0FAV2qa3JazkP,New Maybe 5,new_maybe_5,1cut,-50.0,False
+R_3g0FAV2qa3JazkP,New Maybe 6,new_maybe_6,1cut,-40.0,False
+R_3g0FAV2qa3JazkP,No A,no_line_A,1cut,50.0,False
+R_3g0FAV2qa3JazkP,No B,no_line_B,1cut,50.0,False
+R_3g0FAV2qa3JazkP,No C,no_line_C,1cut,50.0,False
+R_3g0FAV2qa3JazkP,No D,no_line_D,1cut,25.0,False
+R_3g0FAV2qa3JazkP,Yes B,yes_line_B,1cut,-45.0,False
+R_3g0FAV2qa3JazkP,Yes C,yes_line_C,1cut,5.0,False
+R_3g0FAV2qa3JazkP,Yes D,yes_line_D,1cut,-40.0,False
+R_3g0FAV2qa3JazkP,Yes E,yes_line_E,1cut,-50.0,False
+R_3g0FAV2qa3JazkP,Yes F,yes_line_F,1cut,-45.0,False
+R_2AEz7gp2X7S0kDc,No 1,no_line_1,1cut,39.0,False
+R_2AEz7gp2X7S0kDc,No 2,no_line_2,1cut,30.0,False
+R_2AEz7gp2X7S0kDc,No 3,no_line_3,1cut,32.0,False
+R_2AEz7gp2X7S0kDc,Yes 1,yes_line_7,1cut,-43.0,False
+R_2AEz7gp2X7S0kDc,Yes 2,yes_line_8,1cut,-41.0,False
+R_2AEz7gp2X7S0kDc,Yes 3,yes_line_9,1cut,-29.0,False
+R_2AEz7gp2X7S0kDc,Yes 4,yes_line_10,1cut,-50.0,False
+R_2AEz7gp2X7S0kDc,New Yes 7,7esque,1cut,-48.0,False
+R_2AEz7gp2X7S0kDc,New Yes 9,9esque,1cut,25.0,False
+R_2AEz7gp2X7S0kDc,New Yes 10,10esque,1cut,-44.0,False
+R_2AEz7gp2X7S0kDc,Maybe 1,maybe_4,1cut,46.0,False
+R_2AEz7gp2X7S0kDc,Maybe 2,maybe_5,1cut,31.0,False
+R_2AEz7gp2X7S0kDc,Maybe 3,maybe_6,1cut,-16.0,False
+R_2AEz7gp2X7S0kDc,New Maybe 1,new_maybe_1,1cut,-13.0,False
+R_2AEz7gp2X7S0kDc,New Maybe 2,new_maybe_2,1cut,-23.0,False
+R_2AEz7gp2X7S0kDc,New Maybe 3,new_maybe_3,1cut,-41.0,False
+R_2AEz7gp2X7S0kDc,New Maybe 4,new_maybe_4,1cut,-41.0,False
+R_2AEz7gp2X7S0kDc,New Maybe 5,new_maybe_5,1cut,-50.0,False
+R_2AEz7gp2X7S0kDc,New Maybe 6,new_maybe_6,1cut,-50.0,False
+R_2AEz7gp2X7S0kDc,No A,no_line_A,1cut,46.0,False
+R_2AEz7gp2X7S0kDc,No B,no_line_B,1cut,50.0,False
+R_2AEz7gp2X7S0kDc,No C,no_line_C,1cut,30.0,False
+R_2AEz7gp2X7S0kDc,No D,no_line_D,1cut,41.0,False
+R_2AEz7gp2X7S0kDc,Yes B,yes_line_B,1cut,-45.0,False
+R_2AEz7gp2X7S0kDc,Yes C,yes_line_C,1cut,10.0,False
+R_2AEz7gp2X7S0kDc,Yes D,yes_line_D,1cut,-37.0,False
+R_2AEz7gp2X7S0kDc,Yes E,yes_line_E,1cut,-50.0,False
+R_2AEz7gp2X7S0kDc,Yes F,yes_line_F,1cut,5.0,False
+R_1kIcX7Z0ftlxVr6,No 1,no_line_1,1cut,-10.0,False
+R_1kIcX7Z0ftlxVr6,No 2,no_line_2,1cut,-11.0,False
+R_1kIcX7Z0ftlxVr6,No 3,no_line_3,1cut,-19.0,False
+R_1kIcX7Z0ftlxVr6,Yes 1,yes_line_7,1cut,-36.0,False
+R_1kIcX7Z0ftlxVr6,Yes 2,yes_line_8,1cut,-31.0,False
+R_1kIcX7Z0ftlxVr6,Yes 3,yes_line_9,1cut,-18.0,False
+R_1kIcX7Z0ftlxVr6,Yes 4,yes_line_10,1cut,-49.0,False
+R_1kIcX7Z0ftlxVr6,New Yes 7,7esque,1cut,0.0,False
+R_1kIcX7Z0ftlxVr6,New Yes 9,9esque,1cut,-18.0,False
+R_1kIcX7Z0ftlxVr6,New Yes 10,10esque,1cut,-27.0,False
+R_1kIcX7Z0ftlxVr6,Maybe 1,maybe_4,1cut,42.0,False
+R_1kIcX7Z0ftlxVr6,Maybe 2,maybe_5,1cut,21.0,False
+R_1kIcX7Z0ftlxVr6,Maybe 3,maybe_6,1cut,27.0,False
+R_1kIcX7Z0ftlxVr6,New Maybe 1,new_maybe_1,1cut,10.0,False
+R_1kIcX7Z0ftlxVr6,New Maybe 2,new_maybe_2,1cut,19.0,False
+R_1kIcX7Z0ftlxVr6,New Maybe 3,new_maybe_3,1cut,0.0,False
+R_1kIcX7Z0ftlxVr6,New Maybe 4,new_maybe_4,1cut,-18.0,False
+R_1kIcX7Z0ftlxVr6,New Maybe 5,new_maybe_5,1cut,-50.0,False
+R_1kIcX7Z0ftlxVr6,New Maybe 6,new_maybe_6,1cut,-42.0,False
+R_1kIcX7Z0ftlxVr6,No A,no_line_A,1cut,50.0,False
+R_1kIcX7Z0ftlxVr6,No B,no_line_B,1cut,50.0,False
+R_1kIcX7Z0ftlxVr6,No C,no_line_C,1cut,50.0,False
+R_1kIcX7Z0ftlxVr6,No D,no_line_D,1cut,25.0,False
+R_1kIcX7Z0ftlxVr6,Yes B,yes_line_B,1cut,-17.0,False
+R_1kIcX7Z0ftlxVr6,Yes C,yes_line_C,1cut,-14.0,False
+R_1kIcX7Z0ftlxVr6,Yes D,yes_line_D,1cut,-11.0,False
+R_1kIcX7Z0ftlxVr6,Yes E,yes_line_E,1cut,-41.0,False
+R_1kIcX7Z0ftlxVr6,Yes F,yes_line_F,1cut,-50.0,False
+R_1EYCOF0MawdNwGL,No 1,no_line_1,1cut,-20.0,False
+R_1EYCOF0MawdNwGL,No 2,no_line_2,1cut,-10.0,False
+R_1EYCOF0MawdNwGL,No 3,no_line_3,1cut,-11.0,False
+R_1EYCOF0MawdNwGL,Yes 1,yes_line_7,1cut,-9.0,False
+R_1EYCOF0MawdNwGL,Yes 2,yes_line_8,1cut,-40.0,False
+R_1EYCOF0MawdNwGL,Yes 3,yes_line_9,1cut,10.0,False
+R_1EYCOF0MawdNwGL,Yes 4,yes_line_10,1cut,-10.0,False
+R_1EYCOF0MawdNwGL,New Yes 7,7esque,1cut,-19.0,False
+R_1EYCOF0MawdNwGL,New Yes 9,9esque,1cut,-9.0,False
+R_1EYCOF0MawdNwGL,New Yes 10,10esque,1cut,-3.0,False
+R_1EYCOF0MawdNwGL,Maybe 1,maybe_4,1cut,-10.0,False
+R_1EYCOF0MawdNwGL,Maybe 2,maybe_5,1cut,-7.0,False
+R_1EYCOF0MawdNwGL,Maybe 3,maybe_6,1cut,-4.0,False
+R_1EYCOF0MawdNwGL,New Maybe 1,new_maybe_1,1cut,-14.0,False
+R_1EYCOF0MawdNwGL,New Maybe 2,new_maybe_2,1cut,-10.0,False
+R_1EYCOF0MawdNwGL,New Maybe 3,new_maybe_3,1cut,-5.0,False
+R_1EYCOF0MawdNwGL,New Maybe 4,new_maybe_4,1cut,-20.0,False
+R_1EYCOF0MawdNwGL,New Maybe 5,new_maybe_5,1cut,-20.0,False
+R_1EYCOF0MawdNwGL,New Maybe 6,new_maybe_6,1cut,-20.0,False
+R_1EYCOF0MawdNwGL,No A,no_line_A,1cut,-20.0,False
+R_1EYCOF0MawdNwGL,No B,no_line_B,1cut,-20.0,False
+R_1EYCOF0MawdNwGL,No C,no_line_C,1cut,-20.0,False
+R_1EYCOF0MawdNwGL,No D,no_line_D,1cut,32.0,False
+R_1EYCOF0MawdNwGL,Yes B,yes_line_B,1cut,30.0,False
+R_1EYCOF0MawdNwGL,Yes C,yes_line_C,1cut,50.0,False
+R_1EYCOF0MawdNwGL,Yes D,yes_line_D,1cut,0.0,False
+R_1EYCOF0MawdNwGL,Yes E,yes_line_E,1cut,0.0,False
+R_1EYCOF0MawdNwGL,Yes F,yes_line_F,1cut,27.0,False
+R_2WCjAMrzmDLSd1H,No 1,no_line_1,1cut,23.0,False
+R_2WCjAMrzmDLSd1H,No 2,no_line_2,1cut,23.0,False
+R_2WCjAMrzmDLSd1H,No 3,no_line_3,1cut,25.0,False
+R_2WCjAMrzmDLSd1H,Yes 1,yes_line_7,1cut,24.0,False
+R_2WCjAMrzmDLSd1H,Yes 2,yes_line_8,1cut,18.0,False
+R_2WCjAMrzmDLSd1H,Yes 3,yes_line_9,1cut,16.0,False
+R_2WCjAMrzmDLSd1H,Yes 4,yes_line_10,1cut,19.0,False
+R_2WCjAMrzmDLSd1H,New Yes 7,7esque,1cut,21.0,False
+R_2WCjAMrzmDLSd1H,New Yes 9,9esque,1cut,25.0,False
+R_2WCjAMrzmDLSd1H,New Yes 10,10esque,1cut,23.0,False
+R_2WCjAMrzmDLSd1H,Maybe 1,maybe_4,1cut,12.0,False
+R_2WCjAMrzmDLSd1H,Maybe 2,maybe_5,1cut,15.0,False
+R_2WCjAMrzmDLSd1H,Maybe 3,maybe_6,1cut,18.0,False
+R_2WCjAMrzmDLSd1H,New Maybe 1,new_maybe_1,1cut,21.0,False
+R_2WCjAMrzmDLSd1H,New Maybe 2,new_maybe_2,1cut,22.0,False
+R_2WCjAMrzmDLSd1H,New Maybe 3,new_maybe_3,1cut,20.0,False
+R_2WCjAMrzmDLSd1H,New Maybe 4,new_maybe_4,1cut,20.0,False
+R_2WCjAMrzmDLSd1H,New Maybe 5,new_maybe_5,1cut,-18.0,False
+R_2WCjAMrzmDLSd1H,New Maybe 6,new_maybe_6,1cut,-7.0,False
+R_2WCjAMrzmDLSd1H,No A,no_line_A,1cut,45.0,False
+R_2WCjAMrzmDLSd1H,No B,no_line_B,1cut,44.0,False
+R_2WCjAMrzmDLSd1H,No C,no_line_C,1cut,45.0,False
+R_2WCjAMrzmDLSd1H,No D,no_line_D,1cut,32.0,False
+R_2WCjAMrzmDLSd1H,Yes B,yes_line_B,1cut,-13.0,False
+R_2WCjAMrzmDLSd1H,Yes C,yes_line_C,1cut,14.0,False
+R_2WCjAMrzmDLSd1H,Yes D,yes_line_D,1cut,-6.0,False
+R_2WCjAMrzmDLSd1H,Yes E,yes_line_E,1cut,-8.0,False
+R_2WCjAMrzmDLSd1H,Yes F,yes_line_F,1cut,-19.0,False
+R_d71WN2oRhe3kdrP,No 1,no_line_1,1cut,50.0,False
+R_d71WN2oRhe3kdrP,No 2,no_line_2,1cut,50.0,False
+R_d71WN2oRhe3kdrP,No 3,no_line_3,1cut,20.0,False
+R_d71WN2oRhe3kdrP,Yes 1,yes_line_7,1cut,-50.0,False
+R_d71WN2oRhe3kdrP,Yes 2,yes_line_8,1cut,-50.0,False
+R_d71WN2oRhe3kdrP,Yes 3,yes_line_9,1cut,48.0,False
+R_d71WN2oRhe3kdrP,Yes 4,yes_line_10,1cut,-40.0,False
+R_d71WN2oRhe3kdrP,New Yes 7,7esque,1cut,-45.0,False
+R_d71WN2oRhe3kdrP,New Yes 9,9esque,1cut,-50.0,False
+R_d71WN2oRhe3kdrP,New Yes 10,10esque,1cut,-50.0,False
+R_d71WN2oRhe3kdrP,Maybe 1,maybe_4,1cut,50.0,False
+R_d71WN2oRhe3kdrP,Maybe 2,maybe_5,1cut,50.0,False
+R_d71WN2oRhe3kdrP,Maybe 3,maybe_6,1cut,-20.0,False
+R_d71WN2oRhe3kdrP,New Maybe 1,new_maybe_1,1cut,-50.0,False
+R_d71WN2oRhe3kdrP,New Maybe 2,new_maybe_2,1cut,21.0,False
+R_d71WN2oRhe3kdrP,New Maybe 3,new_maybe_3,1cut,-47.0,False
+R_d71WN2oRhe3kdrP,New Maybe 4,new_maybe_4,1cut,-10.0,False
+R_d71WN2oRhe3kdrP,New Maybe 5,new_maybe_5,1cut,-35.0,False
+R_d71WN2oRhe3kdrP,New Maybe 6,new_maybe_6,1cut,-50.0,False
+R_d71WN2oRhe3kdrP,No A,no_line_A,1cut,50.0,False
+R_d71WN2oRhe3kdrP,No B,no_line_B,1cut,50.0,False
+R_d71WN2oRhe3kdrP,No C,no_line_C,1cut,20.0,False
+R_d71WN2oRhe3kdrP,No D,no_line_D,1cut,-50.0,False
+R_d71WN2oRhe3kdrP,Yes B,yes_line_B,1cut,-25.0,False
+R_d71WN2oRhe3kdrP,Yes C,yes_line_C,1cut,11.0,False
+R_d71WN2oRhe3kdrP,Yes D,yes_line_D,1cut,-49.0,False
+R_d71WN2oRhe3kdrP,Yes E,yes_line_E,1cut,-49.0,False
+R_d71WN2oRhe3kdrP,Yes F,yes_line_F,1cut,-50.0,False
+R_yDAXwlOgsRhNQ7n,No 1,no_line_1,1cut,-10.0,False
+R_yDAXwlOgsRhNQ7n,No 2,no_line_2,1cut,35.0,False
+R_yDAXwlOgsRhNQ7n,No 3,no_line_3,1cut,-22.0,False
+R_yDAXwlOgsRhNQ7n,Yes 1,yes_line_7,1cut,-50.0,False
+R_yDAXwlOgsRhNQ7n,Yes 2,yes_line_8,1cut,-45.0,False
+R_yDAXwlOgsRhNQ7n,Yes 3,yes_line_9,1cut,-47.0,False
+R_yDAXwlOgsRhNQ7n,Yes 4,yes_line_10,1cut,-50.0,False
+R_yDAXwlOgsRhNQ7n,New Yes 7,7esque,1cut,-36.0,False
+R_yDAXwlOgsRhNQ7n,New Yes 9,9esque,1cut,12.0,False
+R_yDAXwlOgsRhNQ7n,New Yes 10,10esque,1cut,-32.0,False
+R_yDAXwlOgsRhNQ7n,Maybe 1,maybe_4,1cut,50.0,False
+R_yDAXwlOgsRhNQ7n,Maybe 2,maybe_5,1cut,6.0,False
+R_yDAXwlOgsRhNQ7n,Maybe 3,maybe_6,1cut,-8.0,False
+R_yDAXwlOgsRhNQ7n,New Maybe 1,new_maybe_1,1cut,8.0,False
+R_yDAXwlOgsRhNQ7n,New Maybe 2,new_maybe_2,1cut,19.0,False
+R_yDAXwlOgsRhNQ7n,New Maybe 3,new_maybe_3,1cut,-36.0,False
+R_yDAXwlOgsRhNQ7n,New Maybe 4,new_maybe_4,1cut,-50.0,False
+R_yDAXwlOgsRhNQ7n,New Maybe 5,new_maybe_5,1cut,-50.0,False
+R_yDAXwlOgsRhNQ7n,New Maybe 6,new_maybe_6,1cut,-45.0,False
+R_yDAXwlOgsRhNQ7n,No A,no_line_A,1cut,50.0,False
+R_yDAXwlOgsRhNQ7n,No B,no_line_B,1cut,50.0,False
+R_yDAXwlOgsRhNQ7n,No C,no_line_C,1cut,50.0,False
+R_yDAXwlOgsRhNQ7n,No D,no_line_D,1cut,22.0,False
+R_yDAXwlOgsRhNQ7n,Yes B,yes_line_B,1cut,-23.0,False
+R_yDAXwlOgsRhNQ7n,Yes C,yes_line_C,1cut,-40.0,False
+R_yDAXwlOgsRhNQ7n,Yes D,yes_line_D,1cut,-47.0,False
+R_yDAXwlOgsRhNQ7n,Yes E,yes_line_E,1cut,-50.0,False
+R_yDAXwlOgsRhNQ7n,Yes F,yes_line_F,1cut,17.0,False
+R_3istlOYztRUWLYY,No 1,no_line_1,1cut,41.0,False
+R_3istlOYztRUWLYY,No 2,no_line_2,1cut,16.0,False
+R_3istlOYztRUWLYY,No 3,no_line_3,1cut,17.0,False
+R_3istlOYztRUWLYY,Yes 1,yes_line_7,1cut,-50.0,False
+R_3istlOYztRUWLYY,Yes 2,yes_line_8,1cut,-50.0,False
+R_3istlOYztRUWLYY,Yes 3,yes_line_9,1cut,-43.0,False
+R_3istlOYztRUWLYY,Yes 4,yes_line_10,1cut,-50.0,False
+R_3istlOYztRUWLYY,New Yes 7,7esque,1cut,-50.0,False
+R_3istlOYztRUWLYY,New Yes 9,9esque,1cut,5.0,False
+R_3istlOYztRUWLYY,New Yes 10,10esque,1cut,-46.0,False
+R_3istlOYztRUWLYY,Maybe 1,maybe_4,1cut,50.0,False
+R_3istlOYztRUWLYY,Maybe 2,maybe_5,1cut,20.0,False
+R_3istlOYztRUWLYY,Maybe 3,maybe_6,1cut,50.0,False
+R_3istlOYztRUWLYY,New Maybe 1,new_maybe_1,1cut,-9.0,False
+R_3istlOYztRUWLYY,New Maybe 2,new_maybe_2,1cut,18.0,False
+R_3istlOYztRUWLYY,New Maybe 3,new_maybe_3,1cut,46.0,False
+R_3istlOYztRUWLYY,New Maybe 4,new_maybe_4,1cut,42.0,False
+R_3istlOYztRUWLYY,New Maybe 5,new_maybe_5,1cut,-50.0,False
+R_3istlOYztRUWLYY,New Maybe 6,new_maybe_6,1cut,-31.0,False
+R_3istlOYztRUWLYY,No A,no_line_A,1cut,50.0,False
+R_3istlOYztRUWLYY,No B,no_line_B,1cut,50.0,False
+R_3istlOYztRUWLYY,No C,no_line_C,1cut,50.0,False
+R_3istlOYztRUWLYY,No D,no_line_D,1cut,50.0,False
+R_3istlOYztRUWLYY,Yes B,yes_line_B,1cut,-36.0,False
+R_3istlOYztRUWLYY,Yes C,yes_line_C,1cut,50.0,False
+R_3istlOYztRUWLYY,Yes D,yes_line_D,1cut,50.0,False
+R_3istlOYztRUWLYY,Yes E,yes_line_E,1cut,-50.0,False
+R_3istlOYztRUWLYY,Yes F,yes_line_F,1cut,-46.0,False
+R_2TBm9RblyDfXDNy,No 1,no_line_1,1cut,30.0,False
+R_2TBm9RblyDfXDNy,No 2,no_line_2,1cut,30.0,False
+R_2TBm9RblyDfXDNy,No 3,no_line_3,1cut,30.0,False
+R_2TBm9RblyDfXDNy,Yes 1,yes_line_7,1cut,-50.0,False
+R_2TBm9RblyDfXDNy,Yes 2,yes_line_8,1cut,-30.0,False
+R_2TBm9RblyDfXDNy,Yes 3,yes_line_9,1cut,15.0,False
+R_2TBm9RblyDfXDNy,Yes 4,yes_line_10,1cut,-40.0,False
+R_2TBm9RblyDfXDNy,New Yes 7,7esque,1cut,-50.0,False
+R_2TBm9RblyDfXDNy,New Yes 9,9esque,1cut,40.0,False
+R_2TBm9RblyDfXDNy,New Yes 10,10esque,1cut,10.0,False
+R_2TBm9RblyDfXDNy,Maybe 1,maybe_4,1cut,0.0,False
+R_2TBm9RblyDfXDNy,Maybe 2,maybe_5,1cut,29.0,False
+R_2TBm9RblyDfXDNy,Maybe 3,maybe_6,1cut,33.0,False
+R_2TBm9RblyDfXDNy,New Maybe 1,new_maybe_1,1cut,0.0,False
+R_2TBm9RblyDfXDNy,New Maybe 2,new_maybe_2,1cut,42.0,False
+R_2TBm9RblyDfXDNy,New Maybe 3,new_maybe_3,1cut,15.0,False
+R_2TBm9RblyDfXDNy,New Maybe 4,new_maybe_4,1cut,12.0,False
+R_2TBm9RblyDfXDNy,New Maybe 5,new_maybe_5,1cut,0.0,False
+R_2TBm9RblyDfXDNy,New Maybe 6,new_maybe_6,1cut,19.0,False
+R_2TBm9RblyDfXDNy,No A,no_line_A,1cut,40.0,False
+R_2TBm9RblyDfXDNy,No B,no_line_B,1cut,50.0,False
+R_2TBm9RblyDfXDNy,No C,no_line_C,1cut,44.0,False
+R_2TBm9RblyDfXDNy,No D,no_line_D,1cut,50.0,False
+R_2TBm9RblyDfXDNy,Yes B,yes_line_B,1cut,16.0,False
+R_2TBm9RblyDfXDNy,Yes C,yes_line_C,1cut,37.0,False
+R_2TBm9RblyDfXDNy,Yes D,yes_line_D,1cut,31.0,False
+R_2TBm9RblyDfXDNy,Yes E,yes_line_E,1cut,9.0,False
+R_2TBm9RblyDfXDNy,Yes F,yes_line_F,1cut,9.0,False
+R_1OAJ7HJqKJdsnK8,No 1,no_line_1,1cut,50.0,False
+R_1OAJ7HJqKJdsnK8,No 2,no_line_2,1cut,40.0,False
+R_1OAJ7HJqKJdsnK8,No 3,no_line_3,1cut,39.0,False
+R_1OAJ7HJqKJdsnK8,Yes 1,yes_line_7,1cut,0.0,False
+R_1OAJ7HJqKJdsnK8,Yes 2,yes_line_8,1cut,-50.0,False
+R_1OAJ7HJqKJdsnK8,Yes 3,yes_line_9,1cut,-50.0,False
+R_1OAJ7HJqKJdsnK8,Yes 4,yes_line_10,1cut,-50.0,False
+R_1OAJ7HJqKJdsnK8,New Yes 7,7esque,1cut,0.0,False
+R_1OAJ7HJqKJdsnK8,New Yes 9,9esque,1cut,0.0,False
+R_1OAJ7HJqKJdsnK8,New Yes 10,10esque,1cut,-50.0,False
+R_1OAJ7HJqKJdsnK8,Maybe 1,maybe_4,1cut,50.0,False
+R_1OAJ7HJqKJdsnK8,Maybe 2,maybe_5,1cut,10.0,False
+R_1OAJ7HJqKJdsnK8,Maybe 3,maybe_6,1cut,25.0,False
+R_1OAJ7HJqKJdsnK8,New Maybe 1,new_maybe_1,1cut,-10.0,False
+R_1OAJ7HJqKJdsnK8,New Maybe 2,new_maybe_2,1cut,30.0,False
+R_1OAJ7HJqKJdsnK8,New Maybe 3,new_maybe_3,1cut,-20.0,False
+R_1OAJ7HJqKJdsnK8,New Maybe 4,new_maybe_4,1cut,-40.0,False
+R_1OAJ7HJqKJdsnK8,New Maybe 5,new_maybe_5,1cut,10.0,False
+R_1OAJ7HJqKJdsnK8,New Maybe 6,new_maybe_6,1cut,-20.0,False
+R_1OAJ7HJqKJdsnK8,No A,no_line_A,1cut,50.0,False
+R_1OAJ7HJqKJdsnK8,No B,no_line_B,1cut,50.0,False
+R_1OAJ7HJqKJdsnK8,No C,no_line_C,1cut,50.0,False
+R_1OAJ7HJqKJdsnK8,No D,no_line_D,1cut,50.0,False
+R_1OAJ7HJqKJdsnK8,Yes B,yes_line_B,1cut,0.0,False
+R_1OAJ7HJqKJdsnK8,Yes C,yes_line_C,1cut,-20.0,False
+R_1OAJ7HJqKJdsnK8,Yes D,yes_line_D,1cut,-20.0,False
+R_1OAJ7HJqKJdsnK8,Yes E,yes_line_E,1cut,-50.0,False
+R_1OAJ7HJqKJdsnK8,Yes F,yes_line_F,1cut,-10.0,False
+R_el1TUQvCIAwDR5L,No 1,no_line_1,1cut,24.0,False
+R_el1TUQvCIAwDR5L,No 2,no_line_2,1cut,50.0,False
+R_el1TUQvCIAwDR5L,No 3,no_line_3,1cut,17.0,False
+R_el1TUQvCIAwDR5L,Yes 1,yes_line_7,1cut,-41.0,False
+R_el1TUQvCIAwDR5L,Yes 2,yes_line_8,1cut,-27.0,False
+R_el1TUQvCIAwDR5L,Yes 3,yes_line_9,1cut,-17.0,False
+R_el1TUQvCIAwDR5L,Yes 4,yes_line_10,1cut,-50.0,False
+R_el1TUQvCIAwDR5L,New Yes 7,7esque,1cut,-15.0,False
+R_el1TUQvCIAwDR5L,New Yes 9,9esque,1cut,26.0,False
+R_el1TUQvCIAwDR5L,New Yes 10,10esque,1cut,0.0,False
+R_el1TUQvCIAwDR5L,Maybe 1,maybe_4,1cut,50.0,False
+R_el1TUQvCIAwDR5L,Maybe 2,maybe_5,1cut,15.0,False
+R_el1TUQvCIAwDR5L,Maybe 3,maybe_6,1cut,15.0,False
+R_el1TUQvCIAwDR5L,New Maybe 1,new_maybe_1,1cut,5.0,False
+R_el1TUQvCIAwDR5L,New Maybe 2,new_maybe_2,1cut,39.0,False
+R_el1TUQvCIAwDR5L,New Maybe 3,new_maybe_3,1cut,-5.0,False
+R_el1TUQvCIAwDR5L,New Maybe 4,new_maybe_4,1cut,-25.0,False
+R_el1TUQvCIAwDR5L,New Maybe 5,new_maybe_5,1cut,5.0,False
+R_el1TUQvCIAwDR5L,New Maybe 6,new_maybe_6,1cut,-5.0,False
+R_el1TUQvCIAwDR5L,No A,no_line_A,1cut,50.0,False
+R_el1TUQvCIAwDR5L,No B,no_line_B,1cut,50.0,False
+R_el1TUQvCIAwDR5L,No C,no_line_C,1cut,50.0,False
+R_el1TUQvCIAwDR5L,No D,no_line_D,1cut,47.0,False
+R_el1TUQvCIAwDR5L,Yes B,yes_line_B,1cut,0.0,False
+R_el1TUQvCIAwDR5L,Yes C,yes_line_C,1cut,11.0,False
+R_el1TUQvCIAwDR5L,Yes D,yes_line_D,1cut,15.0,False
+R_el1TUQvCIAwDR5L,Yes E,yes_line_E,1cut,-33.0,False
+R_el1TUQvCIAwDR5L,Yes F,yes_line_F,1cut,-5.0,False
+R_2aLg1pNUmyUyafN,No 1,no_line_1,1cut,10.0,False
+R_2aLg1pNUmyUyafN,No 2,no_line_2,1cut,-30.0,False
+R_2aLg1pNUmyUyafN,No 3,no_line_3,1cut,-15.0,False
+R_2aLg1pNUmyUyafN,Yes 1,yes_line_7,1cut,-10.0,False
+R_2aLg1pNUmyUyafN,Yes 2,yes_line_8,1cut,-15.0,False
+R_2aLg1pNUmyUyafN,Yes 3,yes_line_9,1cut,10.0,False
+R_2aLg1pNUmyUyafN,Yes 4,yes_line_10,1cut,-20.0,False
+R_2aLg1pNUmyUyafN,New Yes 7,7esque,1cut,0.0,False
+R_2aLg1pNUmyUyafN,New Yes 9,9esque,1cut,10.0,False
+R_2aLg1pNUmyUyafN,New Yes 10,10esque,1cut,-5.0,False
+R_2aLg1pNUmyUyafN,Maybe 1,maybe_4,1cut,30.0,False
+R_2aLg1pNUmyUyafN,Maybe 2,maybe_5,1cut,15.0,False
+R_2aLg1pNUmyUyafN,Maybe 3,maybe_6,1cut,20.0,False
+R_2aLg1pNUmyUyafN,New Maybe 1,new_maybe_1,1cut,10.0,False
+R_2aLg1pNUmyUyafN,New Maybe 2,new_maybe_2,1cut,15.0,False
+R_2aLg1pNUmyUyafN,New Maybe 3,new_maybe_3,1cut,0.0,False
+R_2aLg1pNUmyUyafN,New Maybe 4,new_maybe_4,1cut,-5.0,False
+R_2aLg1pNUmyUyafN,New Maybe 5,new_maybe_5,1cut,-35.0,False
+R_2aLg1pNUmyUyafN,New Maybe 6,new_maybe_6,1cut,10.0,False
+R_2aLg1pNUmyUyafN,No A,no_line_A,1cut,20.0,False
+R_2aLg1pNUmyUyafN,No B,no_line_B,1cut,40.0,False
+R_2aLg1pNUmyUyafN,No C,no_line_C,1cut,46.0,False
+R_2aLg1pNUmyUyafN,No D,no_line_D,1cut,25.0,False
+R_2aLg1pNUmyUyafN,Yes B,yes_line_B,1cut,-10.0,False
+R_2aLg1pNUmyUyafN,Yes C,yes_line_C,1cut,10.0,False
+R_2aLg1pNUmyUyafN,Yes D,yes_line_D,1cut,5.0,False
+R_2aLg1pNUmyUyafN,Yes E,yes_line_E,1cut,-40.0,False
+R_2aLg1pNUmyUyafN,Yes F,yes_line_F,1cut,10.0,False
+R_1hTodwWx3dCHEuv,No 1,no_line_1,1cut,44.0,False
+R_1hTodwWx3dCHEuv,No 2,no_line_2,1cut,40.0,False
+R_1hTodwWx3dCHEuv,No 3,no_line_3,1cut,26.0,False
+R_1hTodwWx3dCHEuv,Yes 1,yes_line_7,1cut,-10.0,False
+R_1hTodwWx3dCHEuv,Yes 2,yes_line_8,1cut,-5.0,False
+R_1hTodwWx3dCHEuv,Yes 3,yes_line_9,1cut,-17.0,False
+R_1hTodwWx3dCHEuv,Yes 4,yes_line_10,1cut,-45.0,False
+R_1hTodwWx3dCHEuv,New Yes 7,7esque,1cut,-5.0,False
+R_1hTodwWx3dCHEuv,New Yes 9,9esque,1cut,15.0,False
+R_1hTodwWx3dCHEuv,New Yes 10,10esque,1cut,-5.0,False
+R_1hTodwWx3dCHEuv,Maybe 1,maybe_4,1cut,50.0,False
+R_1hTodwWx3dCHEuv,Maybe 2,maybe_5,1cut,45.0,False
+R_1hTodwWx3dCHEuv,Maybe 3,maybe_6,1cut,45.0,False
+R_1hTodwWx3dCHEuv,New Maybe 1,new_maybe_1,1cut,15.0,False
+R_1hTodwWx3dCHEuv,New Maybe 2,new_maybe_2,1cut,41.0,False
+R_1hTodwWx3dCHEuv,New Maybe 3,new_maybe_3,1cut,-33.0,False
+R_1hTodwWx3dCHEuv,New Maybe 4,new_maybe_4,1cut,5.0,False
+R_1hTodwWx3dCHEuv,New Maybe 5,new_maybe_5,1cut,0.0,False
+R_1hTodwWx3dCHEuv,New Maybe 6,new_maybe_6,1cut,20.0,False
+R_1hTodwWx3dCHEuv,No A,no_line_A,1cut,50.0,False
+R_1hTodwWx3dCHEuv,No B,no_line_B,1cut,50.0,False
+R_1hTodwWx3dCHEuv,No C,no_line_C,1cut,50.0,False
+R_1hTodwWx3dCHEuv,No D,no_line_D,1cut,42.0,False
+R_1hTodwWx3dCHEuv,Yes B,yes_line_B,1cut,12.0,False
+R_1hTodwWx3dCHEuv,Yes C,yes_line_C,1cut,-3.0,False
+R_1hTodwWx3dCHEuv,Yes D,yes_line_D,1cut,11.0,False
+R_1hTodwWx3dCHEuv,Yes E,yes_line_E,1cut,-39.0,False
+R_1hTodwWx3dCHEuv,Yes F,yes_line_F,1cut,-7.0,False
+R_yOe552T3O8bum1H,No 1,no_line_1,1cut,20.0,False
+R_yOe552T3O8bum1H,No 2,no_line_2,1cut,50.0,False
+R_yOe552T3O8bum1H,No 3,no_line_3,1cut,30.0,False
+R_yOe552T3O8bum1H,Yes 1,yes_line_7,1cut,-50.0,False
+R_yOe552T3O8bum1H,Yes 2,yes_line_8,1cut,-50.0,False
+R_yOe552T3O8bum1H,Yes 3,yes_line_9,1cut,-30.0,False
+R_yOe552T3O8bum1H,Yes 4,yes_line_10,1cut,-50.0,False
+R_yOe552T3O8bum1H,New Yes 7,7esque,1cut,50.0,False
+R_yOe552T3O8bum1H,New Yes 9,9esque,1cut,-20.0,False
+R_yOe552T3O8bum1H,New Yes 10,10esque,1cut,50.0,False
+R_yOe552T3O8bum1H,Maybe 1,maybe_4,1cut,-50.0,False
+R_yOe552T3O8bum1H,Maybe 2,maybe_5,1cut,-20.0,False
+R_yOe552T3O8bum1H,Maybe 3,maybe_6,1cut,20.0,False
+R_yOe552T3O8bum1H,New Maybe 1,new_maybe_1,1cut,30.0,False
+R_yOe552T3O8bum1H,New Maybe 2,new_maybe_2,1cut,-40.0,False
+R_yOe552T3O8bum1H,New Maybe 3,new_maybe_3,1cut,40.0,False
+R_yOe552T3O8bum1H,New Maybe 4,new_maybe_4,1cut,50.0,False
+R_yOe552T3O8bum1H,New Maybe 5,new_maybe_5,1cut,50.0,False
+R_yOe552T3O8bum1H,New Maybe 6,new_maybe_6,1cut,50.0,False
+R_yOe552T3O8bum1H,No A,no_line_A,1cut,-50.0,False
+R_yOe552T3O8bum1H,No B,no_line_B,1cut,-50.0,False
+R_yOe552T3O8bum1H,No C,no_line_C,1cut,-50.0,False
+R_yOe552T3O8bum1H,No D,no_line_D,1cut,-40.0,False
+R_yOe552T3O8bum1H,Yes B,yes_line_B,1cut,50.0,False
+R_yOe552T3O8bum1H,Yes C,yes_line_C,1cut,40.0,False
+R_yOe552T3O8bum1H,Yes D,yes_line_D,1cut,50.0,False
+R_yOe552T3O8bum1H,Yes E,yes_line_E,1cut,50.0,False
+R_yOe552T3O8bum1H,Yes F,yes_line_F,1cut,40.0,False
+R_2Y55QH959rCKwBe,No 1,no_line_1,1cut,-20.0,False
+R_2Y55QH959rCKwBe,No 2,no_line_2,1cut,20.0,False
+R_2Y55QH959rCKwBe,No 3,no_line_3,1cut,-26.0,False
+R_2Y55QH959rCKwBe,Yes 1,yes_line_7,1cut,-50.0,False
+R_2Y55QH959rCKwBe,Yes 2,yes_line_8,1cut,-50.0,False
+R_2Y55QH959rCKwBe,Yes 3,yes_line_9,1cut,-30.0,False
+R_2Y55QH959rCKwBe,Yes 4,yes_line_10,1cut,-50.0,False
+R_2Y55QH959rCKwBe,New Yes 7,7esque,1cut,-10.0,False
+R_2Y55QH959rCKwBe,New Yes 9,9esque,1cut,15.0,False
+R_2Y55QH959rCKwBe,New Yes 10,10esque,1cut,-20.0,False
+R_2Y55QH959rCKwBe,Maybe 1,maybe_4,1cut,50.0,False
+R_2Y55QH959rCKwBe,Maybe 2,maybe_5,1cut,30.0,False
+R_2Y55QH959rCKwBe,Maybe 3,maybe_6,1cut,40.0,False
+R_2Y55QH959rCKwBe,New Maybe 1,new_maybe_1,1cut,30.0,False
+R_2Y55QH959rCKwBe,New Maybe 2,new_maybe_2,1cut,0.0,False
+R_2Y55QH959rCKwBe,New Maybe 3,new_maybe_3,1cut,-40.0,False
+R_2Y55QH959rCKwBe,New Maybe 4,new_maybe_4,1cut,-50.0,False
+R_2Y55QH959rCKwBe,New Maybe 5,new_maybe_5,1cut,-40.0,False
+R_2Y55QH959rCKwBe,New Maybe 6,new_maybe_6,1cut,30.0,False
+R_2Y55QH959rCKwBe,No A,no_line_A,1cut,50.0,False
+R_2Y55QH959rCKwBe,No B,no_line_B,1cut,40.0,False
+R_2Y55QH959rCKwBe,No C,no_line_C,1cut,50.0,False
+R_2Y55QH959rCKwBe,No D,no_line_D,1cut,10.0,False
+R_2Y55QH959rCKwBe,Yes B,yes_line_B,1cut,15.0,False
+R_2Y55QH959rCKwBe,Yes C,yes_line_C,1cut,-30.0,False
+R_2Y55QH959rCKwBe,Yes D,yes_line_D,1cut,20.0,False
+R_2Y55QH959rCKwBe,Yes E,yes_line_E,1cut,-50.0,False
+R_2Y55QH959rCKwBe,Yes F,yes_line_F,1cut,0.0,False
+R_9sh4pIR37U64lfb,No 1,no_line_1,1cut,15.0,False
+R_9sh4pIR37U64lfb,No 2,no_line_2,1cut,30.0,False
+R_9sh4pIR37U64lfb,No 3,no_line_3,1cut,5.0,False
+R_9sh4pIR37U64lfb,Yes 1,yes_line_7,1cut,-25.0,False
+R_9sh4pIR37U64lfb,Yes 2,yes_line_8,1cut,-25.0,False
+R_9sh4pIR37U64lfb,Yes 3,yes_line_9,1cut,-14.0,False
+R_9sh4pIR37U64lfb,Yes 4,yes_line_10,1cut,-30.0,False
+R_9sh4pIR37U64lfb,New Yes 7,7esque,1cut,-25.0,False
+R_9sh4pIR37U64lfb,New Yes 9,9esque,1cut,5.0,False
+R_9sh4pIR37U64lfb,New Yes 10,10esque,1cut,-29.0,False
+R_9sh4pIR37U64lfb,Maybe 1,maybe_4,1cut,40.0,False
+R_9sh4pIR37U64lfb,Maybe 2,maybe_5,1cut,15.0,False
+R_9sh4pIR37U64lfb,Maybe 3,maybe_6,1cut,10.0,False
+R_9sh4pIR37U64lfb,New Maybe 1,new_maybe_1,1cut,4.0,False
+R_9sh4pIR37U64lfb,New Maybe 2,new_maybe_2,1cut,10.0,False
+R_9sh4pIR37U64lfb,New Maybe 3,new_maybe_3,1cut,7.0,False
+R_9sh4pIR37U64lfb,New Maybe 4,new_maybe_4,1cut,-3.0,False
+R_9sh4pIR37U64lfb,New Maybe 5,new_maybe_5,1cut,-10.0,False
+R_9sh4pIR37U64lfb,New Maybe 6,new_maybe_6,1cut,-20.0,False
+R_9sh4pIR37U64lfb,No A,no_line_A,1cut,20.0,False
+R_9sh4pIR37U64lfb,No B,no_line_B,1cut,50.0,False
+R_9sh4pIR37U64lfb,No C,no_line_C,1cut,45.0,False
+R_9sh4pIR37U64lfb,No D,no_line_D,1cut,7.0,False
+R_9sh4pIR37U64lfb,Yes B,yes_line_B,1cut,-40.0,False
+R_9sh4pIR37U64lfb,Yes C,yes_line_C,1cut,5.0,False
+R_9sh4pIR37U64lfb,Yes D,yes_line_D,1cut,4.0,False
+R_9sh4pIR37U64lfb,Yes E,yes_line_E,1cut,-50.0,False
+R_9sh4pIR37U64lfb,Yes F,yes_line_F,1cut,-15.0,False
+R_3fdF6udlM8Cxmn2,No 1,no_line_1,1cut,35.0,False
+R_3fdF6udlM8Cxmn2,No 2,no_line_2,1cut,35.0,False
+R_3fdF6udlM8Cxmn2,No 3,no_line_3,1cut,10.0,False
+R_3fdF6udlM8Cxmn2,Yes 1,yes_line_7,1cut,0.0,False
+R_3fdF6udlM8Cxmn2,Yes 2,yes_line_8,1cut,-5.0,False
+R_3fdF6udlM8Cxmn2,Yes 3,yes_line_9,1cut,0.0,False
+R_3fdF6udlM8Cxmn2,Yes 4,yes_line_10,1cut,-40.0,False
+R_3fdF6udlM8Cxmn2,New Yes 7,7esque,1cut,0.0,False
+R_3fdF6udlM8Cxmn2,New Yes 9,9esque,1cut,40.0,False
+R_3fdF6udlM8Cxmn2,New Yes 10,10esque,1cut,-40.0,False
+R_3fdF6udlM8Cxmn2,Maybe 1,maybe_4,1cut,50.0,False
+R_3fdF6udlM8Cxmn2,Maybe 2,maybe_5,1cut,15.0,False
+R_3fdF6udlM8Cxmn2,Maybe 3,maybe_6,1cut,50.0,False
+R_3fdF6udlM8Cxmn2,New Maybe 1,new_maybe_1,1cut,-40.0,False
+R_3fdF6udlM8Cxmn2,New Maybe 2,new_maybe_2,1cut,10.0,False
+R_3fdF6udlM8Cxmn2,New Maybe 3,new_maybe_3,1cut,5.0,False
+R_3fdF6udlM8Cxmn2,New Maybe 4,new_maybe_4,1cut,-10.0,False
+R_3fdF6udlM8Cxmn2,New Maybe 5,new_maybe_5,1cut,-50.0,False
+R_3fdF6udlM8Cxmn2,New Maybe 6,new_maybe_6,1cut,5.0,False
+R_3fdF6udlM8Cxmn2,No A,no_line_A,1cut,50.0,False
+R_3fdF6udlM8Cxmn2,No B,no_line_B,1cut,50.0,False
+R_3fdF6udlM8Cxmn2,No C,no_line_C,1cut,50.0,False
+R_3fdF6udlM8Cxmn2,No D,no_line_D,1cut,35.0,False
+R_3fdF6udlM8Cxmn2,Yes B,yes_line_B,1cut,25.0,False
+R_3fdF6udlM8Cxmn2,Yes C,yes_line_C,1cut,35.0,False
+R_3fdF6udlM8Cxmn2,Yes D,yes_line_D,1cut,10.0,False
+R_3fdF6udlM8Cxmn2,Yes E,yes_line_E,1cut,-50.0,False
+R_3fdF6udlM8Cxmn2,Yes F,yes_line_F,1cut,0.0,False
+R_1i9eQNz0x41R0gv,No 1,no_line_1,1cut,-17.0,False
+R_1i9eQNz0x41R0gv,No 2,no_line_2,1cut,22.0,False
+R_1i9eQNz0x41R0gv,No 3,no_line_3,1cut,7.0,False
+R_1i9eQNz0x41R0gv,Yes 1,yes_line_7,1cut,-40.0,False
+R_1i9eQNz0x41R0gv,Yes 2,yes_line_8,1cut,-41.0,False
+R_1i9eQNz0x41R0gv,Yes 3,yes_line_9,1cut,0.0,False
+R_1i9eQNz0x41R0gv,Yes 4,yes_line_10,1cut,-42.0,False
+R_1i9eQNz0x41R0gv,New Yes 7,7esque,1cut,-31.0,False
+R_1i9eQNz0x41R0gv,New Yes 9,9esque,1cut,0.0,False
+R_1i9eQNz0x41R0gv,New Yes 10,10esque,1cut,-41.0,False
+R_1i9eQNz0x41R0gv,Maybe 1,maybe_4,1cut,45.0,False
+R_1i9eQNz0x41R0gv,Maybe 2,maybe_5,1cut,39.0,False
+R_1i9eQNz0x41R0gv,Maybe 3,maybe_6,1cut,37.0,False
+R_1i9eQNz0x41R0gv,New Maybe 1,new_maybe_1,1cut,0.0,False
+R_1i9eQNz0x41R0gv,New Maybe 2,new_maybe_2,1cut,18.0,False
+R_1i9eQNz0x41R0gv,New Maybe 3,new_maybe_3,1cut,-11.0,False
+R_1i9eQNz0x41R0gv,New Maybe 4,new_maybe_4,1cut,-31.0,False
+R_1i9eQNz0x41R0gv,New Maybe 5,new_maybe_5,1cut,-31.0,False
+R_1i9eQNz0x41R0gv,New Maybe 6,new_maybe_6,1cut,0.0,False
+R_1i9eQNz0x41R0gv,No A,no_line_A,1cut,39.0,False
+R_1i9eQNz0x41R0gv,No B,no_line_B,1cut,40.0,False
+R_1i9eQNz0x41R0gv,No C,no_line_C,1cut,40.0,False
+R_1i9eQNz0x41R0gv,No D,no_line_D,1cut,6.0,False
+R_1i9eQNz0x41R0gv,Yes B,yes_line_B,1cut,0.0,False
+R_1i9eQNz0x41R0gv,Yes C,yes_line_C,1cut,28.0,False
+R_1i9eQNz0x41R0gv,Yes D,yes_line_D,1cut,28.0,False
+R_1i9eQNz0x41R0gv,Yes E,yes_line_E,1cut,-39.0,False
+R_1i9eQNz0x41R0gv,Yes F,yes_line_F,1cut,0.0,False
+R_3KrwIEiFNwyLrls,No 1,no_line_1,1cut,-29.0,False
+R_3KrwIEiFNwyLrls,No 2,no_line_2,1cut,18.0,False
+R_3KrwIEiFNwyLrls,No 3,no_line_3,1cut,-25.0,False
+R_3KrwIEiFNwyLrls,Yes 1,yes_line_7,1cut,-45.0,False
+R_3KrwIEiFNwyLrls,Yes 2,yes_line_8,1cut,-41.0,False
+R_3KrwIEiFNwyLrls,Yes 3,yes_line_9,1cut,-25.0,False
+R_3KrwIEiFNwyLrls,Yes 4,yes_line_10,1cut,-45.0,False
+R_3KrwIEiFNwyLrls,New Yes 7,7esque,1cut,-30.0,False
+R_3KrwIEiFNwyLrls,New Yes 9,9esque,1cut,-20.0,False
+R_3KrwIEiFNwyLrls,New Yes 10,10esque,1cut,-30.0,False
+R_3KrwIEiFNwyLrls,Maybe 1,maybe_4,1cut,30.0,False
+R_3KrwIEiFNwyLrls,Maybe 2,maybe_5,1cut,-19.0,False
+R_3KrwIEiFNwyLrls,Maybe 3,maybe_6,1cut,30.0,False
+R_3KrwIEiFNwyLrls,New Maybe 1,new_maybe_1,1cut,-30.0,False
+R_3KrwIEiFNwyLrls,New Maybe 2,new_maybe_2,1cut,21.0,False
+R_3KrwIEiFNwyLrls,New Maybe 3,new_maybe_3,1cut,-20.0,False
+R_3KrwIEiFNwyLrls,New Maybe 4,new_maybe_4,1cut,-20.0,False
+R_3KrwIEiFNwyLrls,New Maybe 5,new_maybe_5,1cut,-40.0,False
+R_3KrwIEiFNwyLrls,New Maybe 6,new_maybe_6,1cut,-38.0,False
+R_3KrwIEiFNwyLrls,No A,no_line_A,1cut,45.0,False
+R_3KrwIEiFNwyLrls,No B,no_line_B,1cut,41.0,False
+R_3KrwIEiFNwyLrls,No C,no_line_C,1cut,35.0,False
+R_3KrwIEiFNwyLrls,No D,no_line_D,1cut,32.0,False
+R_3KrwIEiFNwyLrls,Yes B,yes_line_B,1cut,-36.0,False
+R_3KrwIEiFNwyLrls,Yes C,yes_line_C,1cut,15.0,False
+R_3KrwIEiFNwyLrls,Yes D,yes_line_D,1cut,15.0,False
+R_3KrwIEiFNwyLrls,Yes E,yes_line_E,1cut,-50.0,False
+R_3KrwIEiFNwyLrls,Yes F,yes_line_F,1cut,-28.0,False
+R_6rOmpFR4YjwG0BX,No 1,no_line_1,1cut,50.0,False
+R_6rOmpFR4YjwG0BX,No 2,no_line_2,1cut,47.0,False
+R_6rOmpFR4YjwG0BX,No 3,no_line_3,1cut,50.0,False
+R_6rOmpFR4YjwG0BX,Yes 1,yes_line_7,1cut,-30.0,False
+R_6rOmpFR4YjwG0BX,Yes 2,yes_line_8,1cut,-50.0,False
+R_6rOmpFR4YjwG0BX,Yes 3,yes_line_9,1cut,14.0,False
+R_6rOmpFR4YjwG0BX,Yes 4,yes_line_10,1cut,12.0,False
+R_6rOmpFR4YjwG0BX,New Yes 7,7esque,1cut,-11.0,False
+R_6rOmpFR4YjwG0BX,New Yes 9,9esque,1cut,37.0,False
+R_6rOmpFR4YjwG0BX,New Yes 10,10esque,1cut,15.0,False
+R_6rOmpFR4YjwG0BX,Maybe 1,maybe_4,1cut,50.0,False
+R_6rOmpFR4YjwG0BX,Maybe 2,maybe_5,1cut,50.0,False
+R_6rOmpFR4YjwG0BX,Maybe 3,maybe_6,1cut,14.0,False
+R_6rOmpFR4YjwG0BX,New Maybe 1,new_maybe_1,1cut,46.0,False
+R_6rOmpFR4YjwG0BX,New Maybe 2,new_maybe_2,1cut,32.0,False
+R_6rOmpFR4YjwG0BX,New Maybe 3,new_maybe_3,1cut,41.0,False
+R_6rOmpFR4YjwG0BX,New Maybe 4,new_maybe_4,1cut,-7.0,False
+R_6rOmpFR4YjwG0BX,New Maybe 5,new_maybe_5,1cut,-34.0,False
+R_6rOmpFR4YjwG0BX,New Maybe 6,new_maybe_6,1cut,-48.0,False
+R_6rOmpFR4YjwG0BX,No A,no_line_A,1cut,50.0,False
+R_6rOmpFR4YjwG0BX,No B,no_line_B,1cut,50.0,False
+R_6rOmpFR4YjwG0BX,No C,no_line_C,1cut,50.0,False
+R_6rOmpFR4YjwG0BX,No D,no_line_D,1cut,45.0,False
+R_6rOmpFR4YjwG0BX,Yes B,yes_line_B,1cut,15.0,False
+R_6rOmpFR4YjwG0BX,Yes C,yes_line_C,1cut,50.0,False
+R_6rOmpFR4YjwG0BX,Yes D,yes_line_D,1cut,41.0,False
+R_6rOmpFR4YjwG0BX,Yes E,yes_line_E,1cut,-50.0,False
+R_6rOmpFR4YjwG0BX,Yes F,yes_line_F,1cut,0.0,False
+R_eeMg8U5womHNF61,No 1,no_line_1,1cut,10.0,False
+R_eeMg8U5womHNF61,No 2,no_line_2,1cut,41.0,False
+R_eeMg8U5womHNF61,No 3,no_line_3,1cut,29.0,False
+R_eeMg8U5womHNF61,Yes 1,yes_line_7,1cut,0.0,False
+R_eeMg8U5womHNF61,Yes 2,yes_line_8,1cut,-9.0,False
+R_eeMg8U5womHNF61,Yes 3,yes_line_9,1cut,5.0,False
+R_eeMg8U5womHNF61,Yes 4,yes_line_10,1cut,-48.0,False
+R_eeMg8U5womHNF61,New Yes 7,7esque,1cut,0.0,False
+R_eeMg8U5womHNF61,New Yes 9,9esque,1cut,19.0,False
+R_eeMg8U5womHNF61,New Yes 10,10esque,1cut,0.0,False
+R_eeMg8U5womHNF61,Maybe 1,maybe_4,1cut,12.0,False
+R_eeMg8U5womHNF61,Maybe 2,maybe_5,1cut,11.0,False
+R_eeMg8U5womHNF61,Maybe 3,maybe_6,1cut,20.0,False
+R_eeMg8U5womHNF61,New Maybe 1,new_maybe_1,1cut,25.0,False
+R_eeMg8U5womHNF61,New Maybe 2,new_maybe_2,1cut,18.0,False
+R_eeMg8U5womHNF61,New Maybe 3,new_maybe_3,1cut,15.0,False
+R_eeMg8U5womHNF61,New Maybe 4,new_maybe_4,1cut,6.0,False
+R_eeMg8U5womHNF61,New Maybe 5,new_maybe_5,1cut,11.0,False
+R_eeMg8U5womHNF61,New Maybe 6,new_maybe_6,1cut,4.0,False
+R_eeMg8U5womHNF61,No A,no_line_A,1cut,48.0,False
+R_eeMg8U5womHNF61,No B,no_line_B,1cut,50.0,False
+R_eeMg8U5womHNF61,No C,no_line_C,1cut,49.0,False
+R_eeMg8U5womHNF61,No D,no_line_D,1cut,16.0,False
+R_eeMg8U5womHNF61,Yes B,yes_line_B,1cut,11.0,False
+R_eeMg8U5womHNF61,Yes C,yes_line_C,1cut,2.0,False
+R_eeMg8U5womHNF61,Yes D,yes_line_D,1cut,9.0,False
+R_eeMg8U5womHNF61,Yes E,yes_line_E,1cut,-29.0,False
+R_eeMg8U5womHNF61,Yes F,yes_line_F,1cut,0.0,False
+R_ufUR3Su9erPZhyp,No 1,no_line_1,1cut,50.0,False
+R_ufUR3Su9erPZhyp,No 2,no_line_2,1cut,50.0,False
+R_ufUR3Su9erPZhyp,No 3,no_line_3,1cut,30.0,False
+R_ufUR3Su9erPZhyp,Yes 1,yes_line_7,1cut,-50.0,False
+R_ufUR3Su9erPZhyp,Yes 2,yes_line_8,1cut,-50.0,False
+R_ufUR3Su9erPZhyp,Yes 3,yes_line_9,1cut,-20.0,False
+R_ufUR3Su9erPZhyp,Yes 4,yes_line_10,1cut,-50.0,False
+R_ufUR3Su9erPZhyp,New Yes 7,7esque,1cut,-50.0,False
+R_ufUR3Su9erPZhyp,New Yes 9,9esque,1cut,50.0,False
+R_ufUR3Su9erPZhyp,New Yes 10,10esque,1cut,-50.0,False
+R_ufUR3Su9erPZhyp,Maybe 1,maybe_4,1cut,50.0,False
+R_ufUR3Su9erPZhyp,Maybe 2,maybe_5,1cut,30.0,False
+R_ufUR3Su9erPZhyp,Maybe 3,maybe_6,1cut,30.0,False
+R_ufUR3Su9erPZhyp,New Maybe 1,new_maybe_1,1cut,20.0,False
+R_ufUR3Su9erPZhyp,New Maybe 2,new_maybe_2,1cut,15.0,False
+R_ufUR3Su9erPZhyp,New Maybe 3,new_maybe_3,1cut,10.0,False
+R_ufUR3Su9erPZhyp,New Maybe 4,new_maybe_4,1cut,-30.0,False
+R_ufUR3Su9erPZhyp,New Maybe 5,new_maybe_5,1cut,-40.0,False
+R_ufUR3Su9erPZhyp,New Maybe 6,new_maybe_6,1cut,-10.0,False
+R_ufUR3Su9erPZhyp,No A,no_line_A,1cut,50.0,False
+R_ufUR3Su9erPZhyp,No B,no_line_B,1cut,50.0,False
+R_ufUR3Su9erPZhyp,No C,no_line_C,1cut,50.0,False
+R_ufUR3Su9erPZhyp,No D,no_line_D,1cut,30.0,False
+R_ufUR3Su9erPZhyp,Yes B,yes_line_B,1cut,20.0,False
+R_ufUR3Su9erPZhyp,Yes C,yes_line_C,1cut,-10.0,False
+R_ufUR3Su9erPZhyp,Yes D,yes_line_D,1cut,-10.0,False
+R_ufUR3Su9erPZhyp,Yes E,yes_line_E,1cut,-50.0,False
+R_ufUR3Su9erPZhyp,Yes F,yes_line_F,1cut,10.0,False
+R_2dMWycJ8dauXSdx,No 1,no_line_1,1cut,11.0,False
+R_2dMWycJ8dauXSdx,No 2,no_line_2,1cut,0.0,False
+R_2dMWycJ8dauXSdx,No 3,no_line_3,1cut,30.0,False
+R_2dMWycJ8dauXSdx,Yes 1,yes_line_7,1cut,-25.0,False
+R_2dMWycJ8dauXSdx,Yes 2,yes_line_8,1cut,-50.0,False
+R_2dMWycJ8dauXSdx,Yes 3,yes_line_9,1cut,-29.0,False
+R_2dMWycJ8dauXSdx,Yes 4,yes_line_10,1cut,-50.0,False
+R_2dMWycJ8dauXSdx,New Yes 7,7esque,1cut,-50.0,False
+R_2dMWycJ8dauXSdx,New Yes 9,9esque,1cut,9.0,False
+R_2dMWycJ8dauXSdx,New Yes 10,10esque,1cut,-48.0,False
+R_2dMWycJ8dauXSdx,Maybe 1,maybe_4,1cut,50.0,False
+R_2dMWycJ8dauXSdx,Maybe 2,maybe_5,1cut,15.0,False
+R_2dMWycJ8dauXSdx,Maybe 3,maybe_6,1cut,19.0,False
+R_2dMWycJ8dauXSdx,New Maybe 1,new_maybe_1,1cut,30.0,False
+R_2dMWycJ8dauXSdx,New Maybe 2,new_maybe_2,1cut,30.0,False
+R_2dMWycJ8dauXSdx,New Maybe 3,new_maybe_3,1cut,13.0,False
+R_2dMWycJ8dauXSdx,New Maybe 4,new_maybe_4,1cut,9.0,False
+R_2dMWycJ8dauXSdx,New Maybe 5,new_maybe_5,1cut,-44.0,False
+R_2dMWycJ8dauXSdx,New Maybe 6,new_maybe_6,1cut,5.0,False
+R_2dMWycJ8dauXSdx,No A,no_line_A,1cut,40.0,False
+R_2dMWycJ8dauXSdx,No B,no_line_B,1cut,50.0,False
+R_2dMWycJ8dauXSdx,No C,no_line_C,1cut,50.0,False
+R_2dMWycJ8dauXSdx,No D,no_line_D,1cut,32.0,False
+R_2dMWycJ8dauXSdx,Yes B,yes_line_B,1cut,33.0,False
+R_2dMWycJ8dauXSdx,Yes C,yes_line_C,1cut,26.0,False
+R_2dMWycJ8dauXSdx,Yes D,yes_line_D,1cut,11.0,False
+R_2dMWycJ8dauXSdx,Yes E,yes_line_E,1cut,-50.0,False
+R_2dMWycJ8dauXSdx,Yes F,yes_line_F,1cut,-9.0,False
+R_3mk0cu2a0kcfaSa,No 1,no_line_1,1cut,-10.0,False
+R_3mk0cu2a0kcfaSa,No 2,no_line_2,1cut,20.0,False
+R_3mk0cu2a0kcfaSa,No 3,no_line_3,1cut,-31.0,False
+R_3mk0cu2a0kcfaSa,Yes 1,yes_line_7,1cut,-50.0,False
+R_3mk0cu2a0kcfaSa,Yes 2,yes_line_8,1cut,-43.0,False
+R_3mk0cu2a0kcfaSa,Yes 3,yes_line_9,1cut,-33.0,False
+R_3mk0cu2a0kcfaSa,Yes 4,yes_line_10,1cut,-50.0,False
+R_3mk0cu2a0kcfaSa,New Yes 7,7esque,1cut,-5.0,False
+R_3mk0cu2a0kcfaSa,New Yes 9,9esque,1cut,31.0,False
+R_3mk0cu2a0kcfaSa,New Yes 10,10esque,1cut,-13.0,False
+R_3mk0cu2a0kcfaSa,Maybe 1,maybe_4,1cut,50.0,False
+R_3mk0cu2a0kcfaSa,Maybe 2,maybe_5,1cut,37.0,False
+R_3mk0cu2a0kcfaSa,Maybe 3,maybe_6,1cut,20.0,False
+R_3mk0cu2a0kcfaSa,New Maybe 1,new_maybe_1,1cut,-9.0,False
+R_3mk0cu2a0kcfaSa,New Maybe 2,new_maybe_2,1cut,29.0,False
+R_3mk0cu2a0kcfaSa,New Maybe 3,new_maybe_3,1cut,12.0,False
+R_3mk0cu2a0kcfaSa,New Maybe 4,new_maybe_4,1cut,-31.0,False
+R_3mk0cu2a0kcfaSa,New Maybe 5,new_maybe_5,1cut,-50.0,False
+R_3mk0cu2a0kcfaSa,New Maybe 6,new_maybe_6,1cut,-30.0,False
+R_3mk0cu2a0kcfaSa,No A,no_line_A,1cut,50.0,False
+R_3mk0cu2a0kcfaSa,No B,no_line_B,1cut,47.0,False
+R_3mk0cu2a0kcfaSa,No C,no_line_C,1cut,50.0,False
+R_3mk0cu2a0kcfaSa,No D,no_line_D,1cut,50.0,False
+R_3mk0cu2a0kcfaSa,Yes B,yes_line_B,1cut,-33.0,False
+R_3mk0cu2a0kcfaSa,Yes C,yes_line_C,1cut,-25.0,False
+R_3mk0cu2a0kcfaSa,Yes D,yes_line_D,1cut,-28.0,False
+R_3mk0cu2a0kcfaSa,Yes E,yes_line_E,1cut,-50.0,False
+R_3mk0cu2a0kcfaSa,Yes F,yes_line_F,1cut,-34.0,False
+R_3GdfcgvTi8pXOSv,No 1,no_line_1,1cut,18.0,False
+R_3GdfcgvTi8pXOSv,No 2,no_line_2,1cut,48.0,False
+R_3GdfcgvTi8pXOSv,No 3,no_line_3,1cut,35.0,False
+R_3GdfcgvTi8pXOSv,Yes 1,yes_line_7,1cut,-21.0,False
+R_3GdfcgvTi8pXOSv,Yes 2,yes_line_8,1cut,-20.0,False
+R_3GdfcgvTi8pXOSv,Yes 3,yes_line_9,1cut,-18.0,False
+R_3GdfcgvTi8pXOSv,Yes 4,yes_line_10,1cut,-38.0,False
+R_3GdfcgvTi8pXOSv,New Yes 7,7esque,1cut,-13.0,False
+R_3GdfcgvTi8pXOSv,New Yes 9,9esque,1cut,31.0,False
+R_3GdfcgvTi8pXOSv,New Yes 10,10esque,1cut,-9.0,False
+R_3GdfcgvTi8pXOSv,Maybe 1,maybe_4,1cut,43.0,False
+R_3GdfcgvTi8pXOSv,Maybe 2,maybe_5,1cut,29.0,False
+R_3GdfcgvTi8pXOSv,Maybe 3,maybe_6,1cut,36.0,False
+R_3GdfcgvTi8pXOSv,New Maybe 1,new_maybe_1,1cut,12.0,False
+R_3GdfcgvTi8pXOSv,New Maybe 2,new_maybe_2,1cut,31.0,False
+R_3GdfcgvTi8pXOSv,New Maybe 3,new_maybe_3,1cut,-10.0,False
+R_3GdfcgvTi8pXOSv,New Maybe 4,new_maybe_4,1cut,-12.0,False
+R_3GdfcgvTi8pXOSv,New Maybe 5,new_maybe_5,1cut,-27.0,False
+R_3GdfcgvTi8pXOSv,New Maybe 6,new_maybe_6,1cut,-6.0,False
+R_3GdfcgvTi8pXOSv,No A,no_line_A,1cut,49.0,False
+R_3GdfcgvTi8pXOSv,No B,no_line_B,1cut,47.0,False
+R_3GdfcgvTi8pXOSv,No C,no_line_C,1cut,47.0,False
+R_3GdfcgvTi8pXOSv,No D,no_line_D,1cut,23.0,False
+R_3GdfcgvTi8pXOSv,Yes B,yes_line_B,1cut,-4.0,False
+R_3GdfcgvTi8pXOSv,Yes C,yes_line_C,1cut,26.0,False
+R_3GdfcgvTi8pXOSv,Yes D,yes_line_D,1cut,34.0,False
+R_3GdfcgvTi8pXOSv,Yes E,yes_line_E,1cut,-38.0,False
+R_3GdfcgvTi8pXOSv,Yes F,yes_line_F,1cut,-9.0,False
+R_31pzf0Jx1WFjqlw,No 1,no_line_1,1cut,-50.0,False
+R_31pzf0Jx1WFjqlw,No 2,no_line_2,1cut,-39.0,False
+R_31pzf0Jx1WFjqlw,No 3,no_line_3,1cut,-29.0,False
+R_31pzf0Jx1WFjqlw,Yes 1,yes_line_7,1cut,-23.0,False
+R_31pzf0Jx1WFjqlw,Yes 2,yes_line_8,1cut,-50.0,False
+R_31pzf0Jx1WFjqlw,Yes 3,yes_line_9,1cut,-16.0,False
+R_31pzf0Jx1WFjqlw,Yes 4,yes_line_10,1cut,-50.0,False
+R_31pzf0Jx1WFjqlw,New Yes 7,7esque,1cut,-46.0,False
+R_31pzf0Jx1WFjqlw,New Yes 9,9esque,1cut,37.0,False
+R_31pzf0Jx1WFjqlw,New Yes 10,10esque,1cut,-39.0,False
+R_31pzf0Jx1WFjqlw,Maybe 1,maybe_4,1cut,38.0,False
+R_31pzf0Jx1WFjqlw,Maybe 2,maybe_5,1cut,19.0,False
+R_31pzf0Jx1WFjqlw,Maybe 3,maybe_6,1cut,38.0,False
+R_31pzf0Jx1WFjqlw,New Maybe 1,new_maybe_1,1cut,-42.0,False
+R_31pzf0Jx1WFjqlw,New Maybe 2,new_maybe_2,1cut,27.0,False
+R_31pzf0Jx1WFjqlw,New Maybe 3,new_maybe_3,1cut,-33.0,False
+R_31pzf0Jx1WFjqlw,New Maybe 4,new_maybe_4,1cut,-50.0,False
+R_31pzf0Jx1WFjqlw,New Maybe 5,new_maybe_5,1cut,-50.0,False
+R_31pzf0Jx1WFjqlw,New Maybe 6,new_maybe_6,1cut,7.0,False
+R_31pzf0Jx1WFjqlw,No A,no_line_A,1cut,50.0,False
+R_31pzf0Jx1WFjqlw,No B,no_line_B,1cut,50.0,False
+R_31pzf0Jx1WFjqlw,No C,no_line_C,1cut,50.0,False
+R_31pzf0Jx1WFjqlw,No D,no_line_D,1cut,27.0,False
+R_31pzf0Jx1WFjqlw,Yes B,yes_line_B,1cut,-46.0,False
+R_31pzf0Jx1WFjqlw,Yes C,yes_line_C,1cut,15.0,False
+R_31pzf0Jx1WFjqlw,Yes D,yes_line_D,1cut,-25.0,False
+R_31pzf0Jx1WFjqlw,Yes E,yes_line_E,1cut,-22.0,False
+R_31pzf0Jx1WFjqlw,Yes F,yes_line_F,1cut,-23.0,False
+R_1jNGHGsMwnv28ul,No 1,no_line_1,1cut,40.0,False
+R_1jNGHGsMwnv28ul,No 2,no_line_2,1cut,42.0,False
+R_1jNGHGsMwnv28ul,No 3,no_line_3,1cut,25.0,False
+R_1jNGHGsMwnv28ul,Yes 1,yes_line_7,1cut,-25.0,False
+R_1jNGHGsMwnv28ul,Yes 2,yes_line_8,1cut,0.0,False
+R_1jNGHGsMwnv28ul,Yes 3,yes_line_9,1cut,20.0,False
+R_1jNGHGsMwnv28ul,Yes 4,yes_line_10,1cut,22.0,False
+R_1jNGHGsMwnv28ul,New Yes 7,7esque,1cut,0.0,False
+R_1jNGHGsMwnv28ul,New Yes 9,9esque,1cut,-42.0,False
+R_1jNGHGsMwnv28ul,New Yes 10,10esque,1cut,0.0,False
+R_1jNGHGsMwnv28ul,Maybe 1,maybe_4,1cut,50.0,False
+R_1jNGHGsMwnv28ul,Maybe 2,maybe_5,1cut,50.0,False
+R_1jNGHGsMwnv28ul,Maybe 3,maybe_6,1cut,50.0,False
+R_1jNGHGsMwnv28ul,New Maybe 1,new_maybe_1,1cut,50.0,False
+R_1jNGHGsMwnv28ul,New Maybe 2,new_maybe_2,1cut,50.0,False
+R_1jNGHGsMwnv28ul,New Maybe 3,new_maybe_3,1cut,38.0,False
+R_1jNGHGsMwnv28ul,New Maybe 4,new_maybe_4,1cut,23.0,False
+R_1jNGHGsMwnv28ul,New Maybe 5,new_maybe_5,1cut,-18.0,False
+R_1jNGHGsMwnv28ul,New Maybe 6,new_maybe_6,1cut,11.0,False
+R_1jNGHGsMwnv28ul,No A,no_line_A,1cut,50.0,False
+R_1jNGHGsMwnv28ul,No B,no_line_B,1cut,50.0,False
+R_1jNGHGsMwnv28ul,No C,no_line_C,1cut,50.0,False
+R_1jNGHGsMwnv28ul,No D,no_line_D,1cut,50.0,False
+R_1jNGHGsMwnv28ul,Yes B,yes_line_B,1cut,24.0,False
+R_1jNGHGsMwnv28ul,Yes C,yes_line_C,1cut,30.0,False
+R_1jNGHGsMwnv28ul,Yes D,yes_line_D,1cut,27.0,False
+R_1jNGHGsMwnv28ul,Yes E,yes_line_E,1cut,-50.0,False
+R_1jNGHGsMwnv28ul,Yes F,yes_line_F,1cut,6.0,False
+R_2Et5O1r8XPyRY5g,No 1,no_line_1,1cut,-15.0,False
+R_2Et5O1r8XPyRY5g,No 2,no_line_2,1cut,45.0,False
+R_2Et5O1r8XPyRY5g,No 3,no_line_3,1cut,30.0,False
+R_2Et5O1r8XPyRY5g,Yes 1,yes_line_7,1cut,-45.0,False
+R_2Et5O1r8XPyRY5g,Yes 2,yes_line_8,1cut,-41.0,False
+R_2Et5O1r8XPyRY5g,Yes 3,yes_line_9,1cut,-40.0,False
+R_2Et5O1r8XPyRY5g,Yes 4,yes_line_10,1cut,-50.0,False
+R_2Et5O1r8XPyRY5g,New Yes 7,7esque,1cut,-50.0,False
+R_2Et5O1r8XPyRY5g,New Yes 9,9esque,1cut,-30.0,False
+R_2Et5O1r8XPyRY5g,New Yes 10,10esque,1cut,-45.0,False
+R_2Et5O1r8XPyRY5g,Maybe 1,maybe_4,1cut,50.0,False
+R_2Et5O1r8XPyRY5g,Maybe 2,maybe_5,1cut,-25.0,False
+R_2Et5O1r8XPyRY5g,Maybe 3,maybe_6,1cut,-5.0,False
+R_2Et5O1r8XPyRY5g,New Maybe 1,new_maybe_1,1cut,-10.0,False
+R_2Et5O1r8XPyRY5g,New Maybe 2,new_maybe_2,1cut,-6.0,False
+R_2Et5O1r8XPyRY5g,New Maybe 3,new_maybe_3,1cut,-40.0,False
+R_2Et5O1r8XPyRY5g,New Maybe 4,new_maybe_4,1cut,-25.0,False
+R_2Et5O1r8XPyRY5g,New Maybe 5,new_maybe_5,1cut,-50.0,False
+R_2Et5O1r8XPyRY5g,New Maybe 6,new_maybe_6,1cut,-30.0,False
+R_2Et5O1r8XPyRY5g,No A,no_line_A,1cut,50.0,False
+R_2Et5O1r8XPyRY5g,No B,no_line_B,1cut,50.0,False
+R_2Et5O1r8XPyRY5g,No C,no_line_C,1cut,50.0,False
+R_2Et5O1r8XPyRY5g,No D,no_line_D,1cut,10.0,False
+R_2Et5O1r8XPyRY5g,Yes B,yes_line_B,1cut,15.0,False
+R_2Et5O1r8XPyRY5g,Yes C,yes_line_C,1cut,3.0,False
+R_2Et5O1r8XPyRY5g,Yes D,yes_line_D,1cut,-44.0,False
+R_2Et5O1r8XPyRY5g,Yes E,yes_line_E,1cut,-50.0,False
+R_2Et5O1r8XPyRY5g,Yes F,yes_line_F,1cut,-45.0,False
+R_CZz6qgVfnScHiq5,No 1,no_line_1,1cut,-21.0,False
+R_CZz6qgVfnScHiq5,No 2,no_line_2,1cut,-31.0,False
+R_CZz6qgVfnScHiq5,No 3,no_line_3,1cut,37.0,False
+R_CZz6qgVfnScHiq5,Yes 1,yes_line_7,1cut,-33.0,False
+R_CZz6qgVfnScHiq5,Yes 2,yes_line_8,1cut,-9.0,False
+R_CZz6qgVfnScHiq5,Yes 3,yes_line_9,1cut,-19.0,False
+R_CZz6qgVfnScHiq5,Yes 4,yes_line_10,1cut,-31.0,False
+R_CZz6qgVfnScHiq5,New Yes 7,7esque,1cut,-16.0,False
+R_CZz6qgVfnScHiq5,New Yes 9,9esque,1cut,0.0,False
+R_CZz6qgVfnScHiq5,New Yes 10,10esque,1cut,-5.0,False
+R_CZz6qgVfnScHiq5,Maybe 1,maybe_4,1cut,11.0,False
+R_CZz6qgVfnScHiq5,Maybe 2,maybe_5,1cut,7.0,False
+R_CZz6qgVfnScHiq5,Maybe 3,maybe_6,1cut,12.0,False
+R_CZz6qgVfnScHiq5,New Maybe 1,new_maybe_1,1cut,-17.0,False
+R_CZz6qgVfnScHiq5,New Maybe 2,new_maybe_2,1cut,7.0,False
+R_CZz6qgVfnScHiq5,New Maybe 3,new_maybe_3,1cut,-35.0,False
+R_CZz6qgVfnScHiq5,New Maybe 4,new_maybe_4,1cut,-21.0,False
+R_CZz6qgVfnScHiq5,New Maybe 5,new_maybe_5,1cut,-33.0,False
+R_CZz6qgVfnScHiq5,New Maybe 6,new_maybe_6,1cut,-9.0,False
+R_CZz6qgVfnScHiq5,No A,no_line_A,1cut,41.0,False
+R_CZz6qgVfnScHiq5,No B,no_line_B,1cut,41.0,False
+R_CZz6qgVfnScHiq5,No C,no_line_C,1cut,38.0,False
+R_CZz6qgVfnScHiq5,No D,no_line_D,1cut,10.0,False
+R_CZz6qgVfnScHiq5,Yes B,yes_line_B,1cut,-33.0,False
+R_CZz6qgVfnScHiq5,Yes C,yes_line_C,1cut,-15.0,False
+R_CZz6qgVfnScHiq5,Yes D,yes_line_D,1cut,-7.0,False
+R_CZz6qgVfnScHiq5,Yes E,yes_line_E,1cut,-35.0,False
+R_CZz6qgVfnScHiq5,Yes F,yes_line_F,1cut,-16.0,False
+R_3nBCqCUtqVFTrI0,No 1,no_line_1,1cut,23.0,False
+R_3nBCqCUtqVFTrI0,No 2,no_line_2,1cut,12.0,False
+R_3nBCqCUtqVFTrI0,No 3,no_line_3,1cut,12.0,False
+R_3nBCqCUtqVFTrI0,Yes 1,yes_line_7,1cut,0.0,False
+R_3nBCqCUtqVFTrI0,Yes 2,yes_line_8,1cut,21.0,False
+R_3nBCqCUtqVFTrI0,Yes 3,yes_line_9,1cut,10.0,False
+R_3nBCqCUtqVFTrI0,Yes 4,yes_line_10,1cut,-40.0,False
+R_3nBCqCUtqVFTrI0,New Yes 7,7esque,1cut,4.0,False
+R_3nBCqCUtqVFTrI0,New Yes 9,9esque,1cut,-20.0,False
+R_3nBCqCUtqVFTrI0,New Yes 10,10esque,1cut,-26.0,False
+R_3nBCqCUtqVFTrI0,Maybe 1,maybe_4,1cut,22.0,False
+R_3nBCqCUtqVFTrI0,Maybe 2,maybe_5,1cut,-9.0,False
+R_3nBCqCUtqVFTrI0,Maybe 3,maybe_6,1cut,9.0,False
+R_3nBCqCUtqVFTrI0,New Maybe 1,new_maybe_1,1cut,-29.0,False
+R_3nBCqCUtqVFTrI0,New Maybe 2,new_maybe_2,1cut,10.0,False
+R_3nBCqCUtqVFTrI0,New Maybe 3,new_maybe_3,1cut,-9.0,False
+R_3nBCqCUtqVFTrI0,New Maybe 4,new_maybe_4,1cut,-20.0,False
+R_3nBCqCUtqVFTrI0,New Maybe 5,new_maybe_5,1cut,-20.0,False
+R_3nBCqCUtqVFTrI0,New Maybe 6,new_maybe_6,1cut,-15.0,False
+R_3nBCqCUtqVFTrI0,No A,no_line_A,1cut,15.0,False
+R_3nBCqCUtqVFTrI0,No B,no_line_B,1cut,31.0,False
+R_3nBCqCUtqVFTrI0,No C,no_line_C,1cut,31.0,False
+R_3nBCqCUtqVFTrI0,No D,no_line_D,1cut,24.0,False
+R_3nBCqCUtqVFTrI0,Yes B,yes_line_B,1cut,-9.0,False
+R_3nBCqCUtqVFTrI0,Yes C,yes_line_C,1cut,-8.0,False
+R_3nBCqCUtqVFTrI0,Yes D,yes_line_D,1cut,-21.0,False
+R_3nBCqCUtqVFTrI0,Yes E,yes_line_E,1cut,-47.0,False
+R_3nBCqCUtqVFTrI0,Yes F,yes_line_F,1cut,32.0,False
+R_XXOsEe77FrCYtd7,No 1,no_line_1,1cut,-40.0,False
+R_XXOsEe77FrCYtd7,No 2,no_line_2,1cut,20.0,False
+R_XXOsEe77FrCYtd7,No 3,no_line_3,1cut,-20.0,False
+R_XXOsEe77FrCYtd7,Yes 1,yes_line_7,1cut,-50.0,False
+R_XXOsEe77FrCYtd7,Yes 2,yes_line_8,1cut,-30.0,False
+R_XXOsEe77FrCYtd7,Yes 3,yes_line_9,1cut,-10.0,False
+R_XXOsEe77FrCYtd7,Yes 4,yes_line_10,1cut,10.0,False
+R_XXOsEe77FrCYtd7,New Yes 7,7esque,1cut,0.0,False
+R_XXOsEe77FrCYtd7,New Yes 9,9esque,1cut,20.0,False
+R_XXOsEe77FrCYtd7,New Yes 10,10esque,1cut,20.0,False
+R_XXOsEe77FrCYtd7,Maybe 1,maybe_4,1cut,50.0,False
+R_XXOsEe77FrCYtd7,Maybe 2,maybe_5,1cut,30.0,False
+R_XXOsEe77FrCYtd7,Maybe 3,maybe_6,1cut,0.0,False
+R_XXOsEe77FrCYtd7,New Maybe 1,new_maybe_1,1cut,-30.0,False
+R_XXOsEe77FrCYtd7,New Maybe 2,new_maybe_2,1cut,20.0,False
+R_XXOsEe77FrCYtd7,New Maybe 3,new_maybe_3,1cut,20.0,False
+R_XXOsEe77FrCYtd7,New Maybe 4,new_maybe_4,1cut,0.0,False
+R_XXOsEe77FrCYtd7,New Maybe 5,new_maybe_5,1cut,0.0,False
+R_XXOsEe77FrCYtd7,New Maybe 6,new_maybe_6,1cut,0.0,False
+R_XXOsEe77FrCYtd7,No A,no_line_A,1cut,50.0,False
+R_XXOsEe77FrCYtd7,No B,no_line_B,1cut,50.0,False
+R_XXOsEe77FrCYtd7,No C,no_line_C,1cut,22.0,False
+R_XXOsEe77FrCYtd7,No D,no_line_D,1cut,50.0,False
+R_XXOsEe77FrCYtd7,Yes B,yes_line_B,1cut,0.0,False
+R_XXOsEe77FrCYtd7,Yes C,yes_line_C,1cut,10.0,False
+R_XXOsEe77FrCYtd7,Yes D,yes_line_D,1cut,10.0,False
+R_XXOsEe77FrCYtd7,Yes E,yes_line_E,1cut,20.0,False
+R_XXOsEe77FrCYtd7,Yes F,yes_line_F,1cut,10.0,False
+R_PGapHcX7F2JrNlL,No 1,no_line_1,1cut,-20.0,False
+R_PGapHcX7F2JrNlL,No 2,no_line_2,1cut,-20.0,False
+R_PGapHcX7F2JrNlL,No 3,no_line_3,1cut,-30.0,False
+R_PGapHcX7F2JrNlL,Yes 1,yes_line_7,1cut,-30.0,False
+R_PGapHcX7F2JrNlL,Yes 2,yes_line_8,1cut,-50.0,False
+R_PGapHcX7F2JrNlL,Yes 3,yes_line_9,1cut,-50.0,False
+R_PGapHcX7F2JrNlL,Yes 4,yes_line_10,1cut,-50.0,False
+R_PGapHcX7F2JrNlL,New Yes 7,7esque,1cut,-30.0,False
+R_PGapHcX7F2JrNlL,New Yes 9,9esque,1cut,10.0,False
+R_PGapHcX7F2JrNlL,New Yes 10,10esque,1cut,-50.0,False
+R_PGapHcX7F2JrNlL,Maybe 1,maybe_4,1cut,50.0,False
+R_PGapHcX7F2JrNlL,Maybe 2,maybe_5,1cut,-15.0,False
+R_PGapHcX7F2JrNlL,Maybe 3,maybe_6,1cut,50.0,False
+R_PGapHcX7F2JrNlL,New Maybe 1,new_maybe_1,1cut,10.0,False
+R_PGapHcX7F2JrNlL,New Maybe 2,new_maybe_2,1cut,40.0,False
+R_PGapHcX7F2JrNlL,New Maybe 3,new_maybe_3,1cut,-10.0,False
+R_PGapHcX7F2JrNlL,New Maybe 4,new_maybe_4,1cut,-20.0,False
+R_PGapHcX7F2JrNlL,New Maybe 5,new_maybe_5,1cut,-50.0,False
+R_PGapHcX7F2JrNlL,New Maybe 6,new_maybe_6,1cut,-20.0,False
+R_PGapHcX7F2JrNlL,No A,no_line_A,1cut,50.0,False
+R_PGapHcX7F2JrNlL,No B,no_line_B,1cut,50.0,False
+R_PGapHcX7F2JrNlL,No C,no_line_C,1cut,50.0,False
+R_PGapHcX7F2JrNlL,No D,no_line_D,1cut,50.0,False
+R_PGapHcX7F2JrNlL,Yes B,yes_line_B,1cut,-50.0,False
+R_PGapHcX7F2JrNlL,Yes C,yes_line_C,1cut,-50.0,False
+R_PGapHcX7F2JrNlL,Yes D,yes_line_D,1cut,-50.0,False
+R_PGapHcX7F2JrNlL,Yes E,yes_line_E,1cut,-50.0,False
+R_PGapHcX7F2JrNlL,Yes F,yes_line_F,1cut,-50.0,False
+R_2bZQfabnPp5zGxV,No 1,no_line_1,1cut,30.0,False
+R_2bZQfabnPp5zGxV,No 2,no_line_2,1cut,25.0,False
+R_2bZQfabnPp5zGxV,No 3,no_line_3,1cut,31.0,False
+R_2bZQfabnPp5zGxV,Yes 1,yes_line_7,1cut,36.0,False
+R_2bZQfabnPp5zGxV,Yes 2,yes_line_8,1cut,-30.0,False
+R_2bZQfabnPp5zGxV,Yes 3,yes_line_9,1cut,35.0,False
+R_2bZQfabnPp5zGxV,Yes 4,yes_line_10,1cut,26.0,False
+R_2bZQfabnPp5zGxV,New Yes 7,7esque,1cut,-24.0,False
+R_2bZQfabnPp5zGxV,New Yes 9,9esque,1cut,16.0,False
+R_2bZQfabnPp5zGxV,New Yes 10,10esque,1cut,-32.0,False
+R_2bZQfabnPp5zGxV,Maybe 1,maybe_4,1cut,36.0,False
+R_2bZQfabnPp5zGxV,Maybe 2,maybe_5,1cut,-39.0,False
+R_2bZQfabnPp5zGxV,Maybe 3,maybe_6,1cut,19.0,False
+R_2bZQfabnPp5zGxV,New Maybe 1,new_maybe_1,1cut,40.0,False
+R_2bZQfabnPp5zGxV,New Maybe 2,new_maybe_2,1cut,22.0,False
+R_2bZQfabnPp5zGxV,New Maybe 3,new_maybe_3,1cut,-15.0,False
+R_2bZQfabnPp5zGxV,New Maybe 4,new_maybe_4,1cut,-15.0,False
+R_2bZQfabnPp5zGxV,New Maybe 5,new_maybe_5,1cut,-38.0,False
+R_2bZQfabnPp5zGxV,New Maybe 6,new_maybe_6,1cut,15.0,False
+R_2bZQfabnPp5zGxV,No A,no_line_A,1cut,35.0,False
+R_2bZQfabnPp5zGxV,No B,no_line_B,1cut,45.0,False
+R_2bZQfabnPp5zGxV,No C,no_line_C,1cut,25.0,False
+R_2bZQfabnPp5zGxV,No D,no_line_D,1cut,33.0,False
+R_2bZQfabnPp5zGxV,Yes B,yes_line_B,1cut,-18.0,False
+R_2bZQfabnPp5zGxV,Yes C,yes_line_C,1cut,19.0,False
+R_2bZQfabnPp5zGxV,Yes D,yes_line_D,1cut,37.0,False
+R_2bZQfabnPp5zGxV,Yes E,yes_line_E,1cut,-13.0,False
+R_2bZQfabnPp5zGxV,Yes F,yes_line_F,1cut,10.0,False
+R_33dMzf9QgBTvzIa,No 1,no_line_1,1cut,30.0,False
+R_33dMzf9QgBTvzIa,No 2,no_line_2,1cut,49.0,False
+R_33dMzf9QgBTvzIa,No 3,no_line_3,1cut,50.0,False
+R_33dMzf9QgBTvzIa,Yes 1,yes_line_7,1cut,0.0,False
+R_33dMzf9QgBTvzIa,Yes 2,yes_line_8,1cut,0.0,False
+R_33dMzf9QgBTvzIa,Yes 3,yes_line_9,1cut,0.0,False
+R_33dMzf9QgBTvzIa,Yes 4,yes_line_10,1cut,-19.0,False
+R_33dMzf9QgBTvzIa,New Yes 7,7esque,1cut,-10.0,False
+R_33dMzf9QgBTvzIa,New Yes 9,9esque,1cut,11.0,False
+R_33dMzf9QgBTvzIa,New Yes 10,10esque,1cut,14.0,False
+R_33dMzf9QgBTvzIa,Maybe 1,maybe_4,1cut,17.0,False
+R_33dMzf9QgBTvzIa,Maybe 2,maybe_5,1cut,19.0,False
+R_33dMzf9QgBTvzIa,Maybe 3,maybe_6,1cut,31.0,False
+R_33dMzf9QgBTvzIa,New Maybe 1,new_maybe_1,1cut,-10.0,False
+R_33dMzf9QgBTvzIa,New Maybe 2,new_maybe_2,1cut,24.0,False
+R_33dMzf9QgBTvzIa,New Maybe 3,new_maybe_3,1cut,-3.0,False
+R_33dMzf9QgBTvzIa,New Maybe 4,new_maybe_4,1cut,-8.0,False
+R_33dMzf9QgBTvzIa,New Maybe 5,new_maybe_5,1cut,-35.0,False
+R_33dMzf9QgBTvzIa,New Maybe 6,new_maybe_6,1cut,-20.0,False
+R_33dMzf9QgBTvzIa,No A,no_line_A,1cut,50.0,False
+R_33dMzf9QgBTvzIa,No B,no_line_B,1cut,50.0,False
+R_33dMzf9QgBTvzIa,No C,no_line_C,1cut,50.0,False
+R_33dMzf9QgBTvzIa,No D,no_line_D,1cut,50.0,False
+R_33dMzf9QgBTvzIa,Yes B,yes_line_B,1cut,-14.0,False
+R_33dMzf9QgBTvzIa,Yes C,yes_line_C,1cut,-6.0,False
+R_33dMzf9QgBTvzIa,Yes D,yes_line_D,1cut,-7.0,False
+R_33dMzf9QgBTvzIa,Yes E,yes_line_E,1cut,-50.0,False
+R_33dMzf9QgBTvzIa,Yes F,yes_line_F,1cut,0.0,False
+R_2uxDBKloZO3l4p5,No 1,no_line_1,1cut,42.0,False
+R_2uxDBKloZO3l4p5,No 2,no_line_2,1cut,31.0,False
+R_2uxDBKloZO3l4p5,No 3,no_line_3,1cut,0.0,False
+R_2uxDBKloZO3l4p5,Yes 1,yes_line_7,1cut,-30.0,False
+R_2uxDBKloZO3l4p5,Yes 2,yes_line_8,1cut,-50.0,False
+R_2uxDBKloZO3l4p5,Yes 3,yes_line_9,1cut,-50.0,False
+R_2uxDBKloZO3l4p5,Yes 4,yes_line_10,1cut,-50.0,False
+R_2uxDBKloZO3l4p5,New Yes 7,7esque,1cut,-50.0,False
+R_2uxDBKloZO3l4p5,New Yes 9,9esque,1cut,-20.0,False
+R_2uxDBKloZO3l4p5,New Yes 10,10esque,1cut,-50.0,False
+R_2uxDBKloZO3l4p5,Maybe 1,maybe_4,1cut,50.0,False
+R_2uxDBKloZO3l4p5,Maybe 2,maybe_5,1cut,-10.0,False
+R_2uxDBKloZO3l4p5,Maybe 3,maybe_6,1cut,45.0,False
+R_2uxDBKloZO3l4p5,New Maybe 1,new_maybe_1,1cut,-30.0,False
+R_2uxDBKloZO3l4p5,New Maybe 2,new_maybe_2,1cut,20.0,False
+R_2uxDBKloZO3l4p5,New Maybe 3,new_maybe_3,1cut,-40.0,False
+R_2uxDBKloZO3l4p5,New Maybe 4,new_maybe_4,1cut,-45.0,False
+R_2uxDBKloZO3l4p5,New Maybe 5,new_maybe_5,1cut,-50.0,False
+R_2uxDBKloZO3l4p5,New Maybe 6,new_maybe_6,1cut,-40.0,False
+R_2uxDBKloZO3l4p5,No A,no_line_A,1cut,50.0,False
+R_2uxDBKloZO3l4p5,No B,no_line_B,1cut,50.0,False
+R_2uxDBKloZO3l4p5,No C,no_line_C,1cut,50.0,False
+R_2uxDBKloZO3l4p5,No D,no_line_D,1cut,50.0,False
+R_2uxDBKloZO3l4p5,Yes B,yes_line_B,1cut,-40.0,False
+R_2uxDBKloZO3l4p5,Yes C,yes_line_C,1cut,-20.0,False
+R_2uxDBKloZO3l4p5,Yes D,yes_line_D,1cut,-35.0,False
+R_2uxDBKloZO3l4p5,Yes E,yes_line_E,1cut,-30.0,False
+R_2uxDBKloZO3l4p5,Yes F,yes_line_F,1cut,-50.0,False
+R_1o6g2UdSHt2gzKi,No 1,no_line_1,1cut,-8.0,False
+R_1o6g2UdSHt2gzKi,No 2,no_line_2,1cut,4.0,False
+R_1o6g2UdSHt2gzKi,No 3,no_line_3,1cut,7.0,False
+R_1o6g2UdSHt2gzKi,Yes 1,yes_line_7,1cut,-19.0,False
+R_1o6g2UdSHt2gzKi,Yes 2,yes_line_8,1cut,-43.0,False
+R_1o6g2UdSHt2gzKi,Yes 3,yes_line_9,1cut,-31.0,False
+R_1o6g2UdSHt2gzKi,Yes 4,yes_line_10,1cut,-43.0,False
+R_1o6g2UdSHt2gzKi,New Yes 7,7esque,1cut,40.0,False
+R_1o6g2UdSHt2gzKi,New Yes 9,9esque,1cut,20.0,False
+R_1o6g2UdSHt2gzKi,New Yes 10,10esque,1cut,-39.0,False
+R_1o6g2UdSHt2gzKi,Maybe 1,maybe_4,1cut,-48.0,False
+R_1o6g2UdSHt2gzKi,Maybe 2,maybe_5,1cut,-17.0,False
+R_1o6g2UdSHt2gzKi,Maybe 3,maybe_6,1cut,7.0,False
+R_1o6g2UdSHt2gzKi,New Maybe 1,new_maybe_1,1cut,11.0,False
+R_1o6g2UdSHt2gzKi,New Maybe 2,new_maybe_2,1cut,16.0,False
+R_1o6g2UdSHt2gzKi,New Maybe 3,new_maybe_3,1cut,10.0,False
+R_1o6g2UdSHt2gzKi,New Maybe 4,new_maybe_4,1cut,3.0,False
+R_1o6g2UdSHt2gzKi,New Maybe 5,new_maybe_5,1cut,-46.0,False
+R_1o6g2UdSHt2gzKi,New Maybe 6,new_maybe_6,1cut,2.0,False
+R_1o6g2UdSHt2gzKi,No A,no_line_A,1cut,44.0,False
+R_1o6g2UdSHt2gzKi,No B,no_line_B,1cut,49.0,False
+R_1o6g2UdSHt2gzKi,No C,no_line_C,1cut,40.0,False
+R_1o6g2UdSHt2gzKi,No D,no_line_D,1cut,41.0,False
+R_1o6g2UdSHt2gzKi,Yes B,yes_line_B,1cut,15.0,False
+R_1o6g2UdSHt2gzKi,Yes C,yes_line_C,1cut,34.0,False
+R_1o6g2UdSHt2gzKi,Yes D,yes_line_D,1cut,7.0,False
+R_1o6g2UdSHt2gzKi,Yes E,yes_line_E,1cut,-50.0,False
+R_1o6g2UdSHt2gzKi,Yes F,yes_line_F,1cut,12.0,False
+R_ZwUKUhG7ztdMPbr,No 1,no_line_1,1cut,48.0,False
+R_ZwUKUhG7ztdMPbr,No 2,no_line_2,1cut,39.0,False
+R_ZwUKUhG7ztdMPbr,No 3,no_line_3,1cut,25.0,False
+R_ZwUKUhG7ztdMPbr,Yes 1,yes_line_7,1cut,-30.0,False
+R_ZwUKUhG7ztdMPbr,Yes 2,yes_line_8,1cut,-45.0,False
+R_ZwUKUhG7ztdMPbr,Yes 3,yes_line_9,1cut,-50.0,False
+R_ZwUKUhG7ztdMPbr,Yes 4,yes_line_10,1cut,-46.0,False
+R_ZwUKUhG7ztdMPbr,New Yes 7,7esque,1cut,-28.0,False
+R_ZwUKUhG7ztdMPbr,New Yes 9,9esque,1cut,-1.0,False
+R_ZwUKUhG7ztdMPbr,New Yes 10,10esque,1cut,-5.0,False
+R_ZwUKUhG7ztdMPbr,Maybe 1,maybe_4,1cut,50.0,False
+R_ZwUKUhG7ztdMPbr,Maybe 2,maybe_5,1cut,25.0,False
+R_ZwUKUhG7ztdMPbr,Maybe 3,maybe_6,1cut,41.0,False
+R_ZwUKUhG7ztdMPbr,New Maybe 1,new_maybe_1,1cut,-18.0,False
+R_ZwUKUhG7ztdMPbr,New Maybe 2,new_maybe_2,1cut,15.0,False
+R_ZwUKUhG7ztdMPbr,New Maybe 3,new_maybe_3,1cut,-33.0,False
+R_ZwUKUhG7ztdMPbr,New Maybe 4,new_maybe_4,1cut,-50.0,False
+R_ZwUKUhG7ztdMPbr,New Maybe 5,new_maybe_5,1cut,-49.0,False
+R_ZwUKUhG7ztdMPbr,New Maybe 6,new_maybe_6,1cut,-35.0,False
+R_ZwUKUhG7ztdMPbr,No A,no_line_A,1cut,50.0,False
+R_ZwUKUhG7ztdMPbr,No B,no_line_B,1cut,45.0,False
+R_ZwUKUhG7ztdMPbr,No C,no_line_C,1cut,50.0,False
+R_ZwUKUhG7ztdMPbr,No D,no_line_D,1cut,15.0,False
+R_ZwUKUhG7ztdMPbr,Yes B,yes_line_B,1cut,-50.0,False
+R_ZwUKUhG7ztdMPbr,Yes C,yes_line_C,1cut,-36.0,False
+R_ZwUKUhG7ztdMPbr,Yes D,yes_line_D,1cut,18.0,False
+R_ZwUKUhG7ztdMPbr,Yes E,yes_line_E,1cut,-50.0,False
+R_ZwUKUhG7ztdMPbr,Yes F,yes_line_F,1cut,-7.0,False

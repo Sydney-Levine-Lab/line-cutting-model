@@ -2,7 +2,7 @@
 
 julia_version = "1.10.10"
 manifest_format = "2.0"
-project_hash = "b74c133c292875ff45275f994bb0e85fdbeb36df"
+project_hash = "62bec7dd3c1d25f7a3a0a0b72f7dc25ddd169423"
 
 [[deps.AbstractFFTs]]
 deps = ["LinearAlgebra"]
@@ -1380,10 +1380,12 @@ uuid = "bea87d4a-7f5b-5778-9afe-8cc45184846c"
 version = "7.2.1+1"
 
 [[deps.SymbolicPlanners]]
-deps = ["AutoHashEquals", "DataStructures", "DocStringExtensions", "Logging", "PDDL", "Parameters", "Random", "StatsBase"]
-git-tree-sha1 = "19e7c20396268a32cfb1aa7bbba93389ea3fbb70"
+deps = ["DataStructures", "PDDL", "Parameters", "Random", "StatsBase"]
+git-tree-sha1 = "b7d8d6e0eba16c583745c761a3925076a2a94603"
+repo-rev = "b7d8d6e0eba16c583745c761a3925076a2a94603"
+repo-url = "https://github.com/JuliaPlanners/SymbolicPlanners.jl"
 uuid = "b6fe5377-9711-4fad-95b0-be4eed71ecbb"
-version = "0.1.27"
+version = "0.1.9"
 
 [[deps.TOML]]
 deps = ["Dates"]

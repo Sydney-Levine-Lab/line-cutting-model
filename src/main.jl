@@ -96,10 +96,18 @@ const INFO_PROB = env_float("INFO_PROB", 0.5) # probability of seeing where othe
 const INFO_DRAWS = Threads.Atomic{Int}(0)
 const INFO_HITS  = Threads.Atomic{Int}(0)
 
-# How sophisticated their model of others is
-#   "L0" = others are static (no within-round prediction)
-#   "L1" = predict one L0 step for agents before you in the order (only used if INFO == "blind")
-const REASONING = get(ENV, "REASONING", "L0")
+# How sophisticated agents' model of others is (depth of forward prediction).
+#   0 = L0: others are static walls at current positions (no prediction)
+#   1 = predict one round of L0 play for all others, project walls at predicted
+#       positions, then plan from agent's current position
+#   2+ = predict D rounds of L0 play, project walls at final predicted positions,
+#        plan from current position. Higher depth = more forward-looking.
+#
+# At depth >= 1, each predicted round simulates all other agents taking one L0
+# step (treating others as walls, picking action via Boltzmann policy).
+# The focal agent then plans through a world where walls are at others'
+# predicted-future positions, but from its own current position.
+const REASONING_DEPTH = env_int("REASONING_DEPTH", 0)
 
 # How agents search
 #   "astar"         = A*
@@ -207,36 +215,45 @@ function safe_transition(domain::Domain, state::State, act)
 end
 
 """
-Level-1 planning view for agent `k` in a given within-round order.
+Forward-looking planning state for agent `k`.
 
-- `initial_state`: snapshot at start of this timestep
-- `order`: vector of agent indices indicating within-round order
-- `idx_in_order`: position of `k` in `order` (1-based)
-- `policies`: Boltzmann policies for all agents
+Predicts where all *other* agents will be after `depth` rounds of L0 play,
+then projects those predicted positions as walls and returns a single-agent
+planning state for `k` at its *current* position.
 
-Predicts that each agent scheduled before `k` in `order` takes one
-level-0 step (treating others as walls), then builds a single-agent
-projection for `k` in that predicted world.
+Each predicted round: all agents except `k` take one L0 step (each treating
+the rest as walls, picking an action via their Boltzmann policy). Rounds use
+fresh random orders. Agent `k` does NOT move in the prediction — it's just
+imagining where others will go.
+
+- depth=0: equivalent to basic L0 (project others to walls at current positions).
+- depth=1: predict one round of L0 for all others, project walls at predicted
+           positions. Similar to the old L1 heuristic but predicts all agents,
+           not just those preceding k in the round order.
+- depth=2+: deeper forward prediction.
 """
-function level1_planning_state(initial_state::State,
-                               k::Int,
-                               domain::Domain,
-                               policies::AbstractVector{<:BoltzmannPolicy},
-                               order::AbstractVector{Int},
-                               idx_in_order::Int)
-    predicted_state = initial_state
+function predict_others_forward(state::State,
+                                k::Int,
+                                domain::Domain,
+                                policies::AbstractVector{<:BoltzmannPolicy},
+                                depth::Int)
+    predicted_state = state
 
-    # Predict one L0 step for all agents who move before k this round
-    for j in 1:(idx_in_order - 1)
-        other = order[j]
-        # Other's L0 view of the predicted world so far
-        l0_view = project_others_to_walls(predicted_state, other, domain)
-        act_other = SymbolicPlanners.get_action(policies[other], l0_view)
-        # They might try something impossible in prediction; treat that as no move
-        predicted_state = safe_transition(domain, predicted_state, act_other)
+    for _round in 1:depth
+        # All agents except k take one L0 step
+        round_order = randperm(N_AGENTS)
+        for n in round_order
+            if n == k
+                continue  # focal agent doesn't move in the prediction
+            end
+            l0_view = project_others_to_walls(predicted_state, n, domain)
+            act_n = SymbolicPlanners.get_action(policies[n], l0_view)
+            predicted_state = safe_transition(domain, predicted_state, act_n)
+        end
     end
 
-    # Now build k's single-agent view of this predicted world
+    # Project others to walls at their predicted-future positions,
+    # but k is still at its current position (unchanged above).
     return project_others_to_walls(predicted_state, k, domain)
 end
 
@@ -308,12 +325,16 @@ Knobs:
     "random" → order = random permutation each timestep
 
 - INFO:
-    "blind" → agents reason from the beginning-of-round snapshot
-    "full"  → agents reason from the current world (see earlier moves)
+    "blind"   → agents reason from the beginning-of-round snapshot
+    "full"    → agents reason from the current world (see earlier moves)
+    "partial" → each agent independently draws: with probability INFO_PROB
+                sees the current world, otherwise uses the snapshot
 
-- REASONING (only meaningful when INFO == "blind"):
-    "L0" → others are static (no within-round prediction)
-    "L1" → predict one L0 step for agents before you in the order
+- REASONING_DEPTH (meaningful when INFO ∈ {"blind", "partial"} and agent
+  does not receive full info):
+    0  → L0: others are static walls at snapshot positions
+    1+ → predict D rounds of L0 play for all other agents, project walls
+         at their predicted-future positions, plan from current position
 """
 function simulation_step(state::State,
                          policies::AbstractVector{<:BoltzmannPolicy},
@@ -334,44 +355,36 @@ function simulation_step(state::State,
 
         if INFO == "full"
             # Agents see earlier moves and plan from the current world.
-            # REASONING_LEVEL is effectively ignored in this mode.
+            # REASONING_DEPTH is irrelevant in this mode (already has perfect info).
             planning_state = project_others_to_walls(interim_state, k, domain)
 
         elseif INFO == "blind"
-            if REASONING == "L0"
-                # Everyone plans from the same snapshot, treating others as walls.
+            if REASONING_DEPTH == 0
+                # L0: project others to walls at start-of-round positions.
                 planning_state = project_others_to_walls(initial_state, k, domain)
-
-            elseif REASONING == "L1"
-                # Agent k predicts one L0 step from agents before it in `order`,
-                # then plans from that predicted world.
-                planning_state = level1_planning_state(initial_state, k, domain,
-                                                       policies, order, idx)
             else
-                error("Unknown REASONING: $REASONING")
+                # Forward-looking: predict D rounds of L0 for all others,
+                # project walls at predicted positions, plan from current position.
+                planning_state = predict_others_forward(initial_state, k, domain,
+                                                        policies, REASONING_DEPTH)
             end
 
-        # CHANGED add interpolation btw full and blind (March 4 / KC request), should make full/blind obsolete
-        # (meaning we wouln't even need an info know and could replace it w/ a probability)
+        # Interpolation between full and blind (KC request)
         elseif INFO == "partial"
             Threads.atomic_add!(INFO_DRAWS, 1) # DEBUG
             if rand() < INFO_PROB
                 Threads.atomic_add!(INFO_HITS, 1) # DEBUG
+                # Got full info this round
                 planning_state = project_others_to_walls(interim_state, k, domain)
             else
-                if REASONING == "L0"
-                    # Everyone plans from the same snapshot, treating others as walls.
+                # Blind this round — apply reasoning depth
+                if REASONING_DEPTH == 0
                     planning_state = project_others_to_walls(initial_state, k, domain)
-    
-                elseif REASONING == "L1"
-                    # Agent k predicts one L0 step from agents before it in `order`,
-                    # then plans from that predicted world.
-                    planning_state = level1_planning_state(initial_state, k, domain,
-                                                           policies, order, idx)
                 else
-                    error("Unknown REASONING: $REASONING")
-                end  
-            end          
+                    planning_state = predict_others_forward(initial_state, k, domain,
+                                                            policies, REASONING_DEPTH)
+                end
+            end
 
         else
             error("Unknown INFO: $INFO")
@@ -383,11 +396,9 @@ function simulation_step(state::State,
         act = SymbolicPlanners.get_action(policies[k], planning_state)
 
         if INFO == "full"
-            # In full-info mode with a well-designed domain, these actions
-            # should be valid; you *can* still use safe_transition for robustness.
             interim_state = safe_transition(domain, interim_state, act)
         else
-            # In blind modes, invalid moves are expected (collisions, etc.).
+            # In blind/partial modes, invalid moves are expected (collisions, etc.).
             # Interpret them as "bump and stay put".
             interim_state = safe_transition(domain, interim_state, act)
         end
@@ -413,7 +424,7 @@ function run_simulations()
     println("  order = $(ORDER)")
     println("  information = $(INFO)")
     println("  information probability = $(INFO_PROB)")
-    println("  reasoning = $(REASONING)")
+    println("  reasoning depth = $(REASONING_DEPTH)")
     println("  planning = $(PLANNING)")
     println("  maps = $(length(MAP_FILES))")
     println("  runs per map = $(RUNS)")
@@ -561,7 +572,7 @@ function run_simulations()
                 order = ORDER,
                 info = INFO,
                 info_prob = INFO_PROB,
-                reasoning = REASONING,
+                reasoning_depth = REASONING_DEPTH,
                 planning = PLANNING,
                 planning_h_mult = PLANNING_H_MULT,
                 planning_search_noise = PLANNING_SEARCH_NOISE,            

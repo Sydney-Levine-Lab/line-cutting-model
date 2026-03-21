@@ -77,20 +77,36 @@ const HAS_WATER3 = [Compound(Symbol("has-water3"), Term[a]) for a in AGENTS]
 # Modeling knobs
 # --------------------------------------------------------------------
 
-# How agents are scheduled within a timestep.
-# Order is drawn once per run and agents observe it.
+# How agents are scheduled within a timestep
 #   "fixed"  = deterministic order 1..N_AGENTS
-#   "random" = random permutation, drawn once at start of each run
+#   "random" = random permutation each timestep
 const ORDER = get(ENV, "ORDER", "random")
+# possible TODO: implement simultaneous moves,
+# but that would require a conflict-resolution layer (as agents try to move in same cell)
+
+# What information agents use to plan this timestep
+#   "blind" = everyone reasons from the beginning-of-round snapshot
+#   "full"  = each agent reasons from the current world (sees earlier moves)
+const INFO = get(ENV, "INFO", "blind")
+
+# CHANGED March 4: continuous variants btw blinds and full; can ultimately replace blind & full
+# (also added a "partial" INFO knob value to be removed along w/ the entire INFO knob)
+const INFO_PROB = env_float("INFO_PROB", 0.5) # probability of seeing where others go
+# DEBUG: track info draws
+const INFO_DRAWS = Threads.Atomic{Int}(0)
+const INFO_HITS  = Threads.Atomic{Int}(0)
 
 # How sophisticated agents' model of others is (depth of forward prediction).
-#   0 = L0: others are static walls at their last-observed positions
-#   1 = predict one full round of L0 play for all others (in known order),
-#       project walls at predicted positions, plan from current position
-#   2+= predict D rounds ahead
+#   0 = L0: others are static walls at current positions (no prediction)
+#   1 = predict one round of L0 play for all others, project walls at predicted
+#       positions, then plan from agent's current position
+#   2+ = predict D rounds of L0 play, project walls at final predicted positions,
+#        plan from current position. Higher depth = more forward-looking.
 #
-# At depth >= 1, predictions use the known order and observed positions.
-# This is deterministic (no sampling), fast, and cognitively interpretable.
+# At depth >= 1, each predicted round simulates all other agents taking one L0
+# step (treating others as walls, picking action via Boltzmann policy).
+# The focal agent then plans through a world where walls are at others'
+# predicted-future positions, but from its own current position.
 const REASONING_DEPTH = env_int("REASONING_DEPTH", 0)
 
 # How agents search
@@ -173,9 +189,9 @@ end
 
 
 """
-Draw the within-round order of agents (once per run).
+Get the within-round order of agents for this timestep.
 """
-function draw_run_order()
+function get_order()
     if ORDER == "fixed"
         return collect(1:N_AGENTS)
     elseif ORDER == "random"
@@ -183,58 +199,6 @@ function draw_run_order()
     else
         error("Unknown ORDER: $ORDER")
     end
-end
-
-"""
-Extract (x, y) positions for all agents from a PDDL state.
-"""
-function get_all_positions(state::State)
-    return [(state[XLOC[n]], state[YLOC[n]]) for n in 1:N_AGENTS]
-end
-
-"""
-Build a PDDL state where agent `k` is at its current position and all other
-agents are replaced by walls at the positions given in `positions`.
-
-`positions` is a Vector of (x, y) tuples, one per agent.
-"""
-function project_others_to_walls_at(state::State, k::Int, domain::Domain,
-                                     positions::Vector{Tuple{Int,Int}})
-    objtypes = PDDL.get_objtypes(state)
-
-    # Delete all agents except k, record wall positions from `positions`
-    agent_locs = Vector{Tuple{Int,Int}}()
-    for n in 1:N_AGENTS
-        if n == k
-            continue
-        end
-        push!(agent_locs, positions[n])
-        delete!(objtypes, AGENTS[n])
-    end
-
-    walls = copy(state[pddl"(walls)"])
-    for (x, y) in agent_locs
-        walls[y, x] = true
-    end
-
-    fluents = Dict{Term, Any}()
-    for (obj, objtype) in objtypes
-        if objtype == :agent
-            continue
-        end
-        fluents[Compound(:xloc, Term[obj])] = state[Compound(:xloc, Term[obj])]
-        fluents[Compound(:yloc, Term[obj])] = state[Compound(:yloc, Term[obj])]
-    end
-
-    fluents[pddl"(walls)"] = walls
-    fluents[XLOC[k]] = state[XLOC[k]]
-    fluents[YLOC[k]] = state[YLOC[k]]
-    fluents[HAS_FILLED[k]] = state[HAS_FILLED[k]]
-    fluents[HAS_WATER1[k]] = state[HAS_WATER1[k]]
-    fluents[HAS_WATER2[k]] = state[HAS_WATER2[k]]
-    fluents[HAS_WATER3[k]] = state[HAS_WATER3[k]]
-
-    return initstate(domain, objtypes, fluents)
 end
 
 """
@@ -253,97 +217,44 @@ end
 """
 Forward-looking planning state for agent `k`.
 
-Given the known order and observed positions of all agents, predict where
-all other agents will be after `depth` rounds of L0 play, then project
-walls at those predicted positions.
+Predicts where all *other* agents will be after `depth` rounds of L0 play,
+then projects those predicted positions as walls and returns a single-agent
+planning state for `k` at its *current* position.
 
-Each predicted round simulates all agents (except k) taking one L0 step
-in the known order. Each agent in the prediction treats others as walls
-at their current predicted positions and picks an action via Boltzmann policy.
+Each predicted round: all agents except `k` take one L0 step (each treating
+the rest as walls, picking an action via their Boltzmann policy). Rounds use
+fresh random orders. Agent `k` does NOT move in the prediction — it's just
+imagining where others will go.
 
-Agent k does NOT move in the prediction — it stays at its current position
-and imagines where others will go.
-
-- depth=0: not called (handled directly as wall projection)
-- depth=1: one round of L0 prediction for all others
-- depth=2+: deeper forward prediction
+- depth=0: equivalent to basic L0 (project others to walls at current positions).
+- depth=1: predict one round of L0 for all others, project walls at predicted
+           positions. Similar to the old L1 heuristic but predicts all agents,
+           not just those preceding k in the round order.
+- depth=2+: deeper forward prediction.
 """
 function predict_others_forward(state::State,
                                 k::Int,
                                 domain::Domain,
                                 policies::AbstractVector{<:BoltzmannPolicy},
-                                order::AbstractVector{Int},
-                                observed_positions::Vector{Tuple{Int,Int}},
                                 depth::Int)
-    predicted_positions = copy(observed_positions)
+    predicted_state = state
 
     for _round in 1:depth
-        for n in order
+        # All agents except k take one L0 step
+        round_order = randperm(N_AGENTS)
+        for n in round_order
             if n == k
-                continue
+                continue  # focal agent doesn't move in the prediction
             end
-            # Build L0 view for agent n at its predicted position,
-            # with others as walls at their predicted positions.
-            l0_view = build_single_agent_view(state, n, domain,
-                                              predicted_positions[n],
-                                              predicted_positions)
+            l0_view = project_others_to_walls(predicted_state, n, domain)
             act_n = SymbolicPlanners.get_action(policies[n], l0_view)
-            # Simulate: apply action in the L0 view to get new position
-            new_l0_state = safe_transition(domain, l0_view, act_n)
-            # Extract agent n's new position from the single-agent state
-            predicted_positions[n] = (new_l0_state[XLOC[n]], new_l0_state[YLOC[n]])
+            predicted_state = safe_transition(domain, predicted_state, act_n)
         end
     end
 
-    # Project walls at predicted-future positions, k at current position
-    return project_others_to_walls_at(state, k, domain, predicted_positions)
-end
-
-
-"""
-Build a single-agent PDDL state for agent `n`:
-- agent n is placed at `agent_pos`
-- all other agents are walls at positions given in `all_positions`
-- non-agent objects (wells, tanks, finishes) are taken from `ref_state`
-"""
-function build_single_agent_view(ref_state::State, n::Int, domain::Domain,
-                                  agent_pos::Tuple{Int,Int},
-                                  all_positions::Vector{Tuple{Int,Int}})
-    objtypes = PDDL.get_objtypes(ref_state)
-
-    # Delete all agents except n, collect wall positions
-    wall_positions = Vector{Tuple{Int,Int}}()
-    for m in 1:N_AGENTS
-        if m == n
-            continue
-        end
-        push!(wall_positions, all_positions[m])
-        delete!(objtypes, AGENTS[m])
-    end
-
-    walls = copy(ref_state[pddl"(walls)"])
-    for (x, y) in wall_positions
-        walls[y, x] = true
-    end
-
-    fluents = Dict{Term, Any}()
-    for (obj, objtype) in objtypes
-        if objtype == :agent
-            continue
-        end
-        fluents[Compound(:xloc, Term[obj])] = ref_state[Compound(:xloc, Term[obj])]
-        fluents[Compound(:yloc, Term[obj])] = ref_state[Compound(:yloc, Term[obj])]
-    end
-
-    fluents[pddl"(walls)"] = walls
-    fluents[XLOC[n]] = agent_pos[1]
-    fluents[YLOC[n]] = agent_pos[2]
-    fluents[HAS_FILLED[n]] = ref_state[HAS_FILLED[n]]
-    fluents[HAS_WATER1[n]] = ref_state[HAS_WATER1[n]]
-    fluents[HAS_WATER2[n]] = ref_state[HAS_WATER2[n]]
-    fluents[HAS_WATER3[n]] = ref_state[HAS_WATER3[n]]
-
-    return initstate(domain, objtypes, fluents)
+    # Project others to walls at their predicted-future positions,
+    # but k is still at its current position (unchanged above).
+    return project_others_to_walls(predicted_state, k, domain)
 end
 
 
@@ -405,58 +316,95 @@ function project_others_to_walls(state::State, k::Int, domain::Domain)
 end
 
 """
-Run one simulation timestep.
+Run one simulation timestep: each agent takes one action.
 
-Agents move in a fixed order (drawn once per run). Each agent observes:
-- Agents who already moved this timestep: their current (just-moved) position
-- Agents who haven't moved yet: their position after last timestep's move
+Knobs:
 
-With REASONING_DEPTH=0, agents project others to walls at observed positions.
-With REASONING_DEPTH>=1, agents predict D rounds of L0 play (in known order)
-from observed positions, then project walls at predicted positions.
+- ORDER:
+    "fixed"  → order = 1..N_AGENTS
+    "random" → order = random permutation each timestep
 
-Returns (new_state, updated_last_positions).
+- INFO:
+    "blind"   → agents reason from the beginning-of-round snapshot
+    "full"    → agents reason from the current world (see earlier moves)
+    "partial" → each agent independently draws: with probability INFO_PROB
+                sees the current world, otherwise uses the snapshot
+
+- REASONING_DEPTH (meaningful when INFO ∈ {"blind", "partial"} and agent
+  does not receive full info):
+    0  → L0: others are static walls at snapshot positions
+    1+ → predict D rounds of L0 play for all other agents, project walls
+         at their predicted-future positions, plan from current position
 """
 function simulation_step(state::State,
                          policies::AbstractVector{<:BoltzmannPolicy},
-                         domain::Domain,
-                         order::AbstractVector{Int},
-                         last_positions::Vector{Tuple{Int,Int}})
+                         domain::Domain)
 
-    interim_state = state
+    initial_state = state          # snapshot at start of this timestep
+    interim_state = initial_state  # actual evolving world
+
+    order = get_order()
 
     for idx in 1:N_AGENTS
-        k = order[idx]
+        k = order[idx]  # focal agent index
 
-        # --- Build observed positions for agent k ---
-        # Agents before k in the order: already moved this timestep → current position
-        # Agents after k (and k itself): last known position from previous timestep
-        observed = copy(last_positions)
-        for j in 1:(idx - 1)
-            m = order[j]
-            observed[m] = (interim_state[XLOC[m]], interim_state[YLOC[m]])
-        end
+        # -----------------------------
+        # Build the planning state
+        # -----------------------------
+        planning_state = nothing
 
-        # --- Build planning state ---
-        if REASONING_DEPTH == 0
-            # L0: project others to walls at observed positions
-            planning_state = project_others_to_walls_at(interim_state, k, domain, observed)
+        if INFO == "full"
+            # Agents see earlier moves and plan from the current world.
+            # REASONING_DEPTH is irrelevant in this mode (already has perfect info).
+            planning_state = project_others_to_walls(interim_state, k, domain)
+
+        elseif INFO == "blind"
+            if REASONING_DEPTH == 0
+                # L0: project others to walls at start-of-round positions.
+                planning_state = project_others_to_walls(initial_state, k, domain)
+            else
+                # Forward-looking: predict D rounds of L0 for all others,
+                # project walls at predicted positions, plan from current position.
+                planning_state = predict_others_forward(initial_state, k, domain,
+                                                        policies, REASONING_DEPTH)
+            end
+
+        # Interpolation between full and blind (KC request)
+        elseif INFO == "partial"
+            Threads.atomic_add!(INFO_DRAWS, 1) # DEBUG
+            if rand() < INFO_PROB
+                Threads.atomic_add!(INFO_HITS, 1) # DEBUG
+                # Got full info this round
+                planning_state = project_others_to_walls(interim_state, k, domain)
+            else
+                # Blind this round — apply reasoning depth
+                if REASONING_DEPTH == 0
+                    planning_state = project_others_to_walls(initial_state, k, domain)
+                else
+                    planning_state = predict_others_forward(initial_state, k, domain,
+                                                            policies, REASONING_DEPTH)
+                end
+            end
+
         else
-            # Forward-looking: predict D rounds of L0 for all others
-            planning_state = predict_others_forward(interim_state, k, domain,
-                                                     policies, order, observed,
-                                                     REASONING_DEPTH)
+            error("Unknown INFO: $INFO")
         end
 
-        # --- Choose and apply action ---
+        # -----------------------------
+        # Choose and apply action
+        # -----------------------------
         act = SymbolicPlanners.get_action(policies[k], planning_state)
-        interim_state = safe_transition(domain, interim_state, act)
+
+        if INFO == "full"
+            interim_state = safe_transition(domain, interim_state, act)
+        else
+            # In blind/partial modes, invalid moves are expected (collisions, etc.).
+            # Interpret them as "bump and stay put".
+            interim_state = safe_transition(domain, interim_state, act)
+        end
     end
 
-    # Update last_positions to where everyone ended up this timestep
-    new_last_positions = get_all_positions(interim_state)
-
-    return interim_state, new_last_positions
+    return interim_state
 end
 
 
@@ -474,6 +422,8 @@ function run_simulations()
 
     println("Starting simulations:")
     println("  order = $(ORDER)")
+    println("  information = $(INFO)")
+    println("  information probability = $(INFO_PROB)")
     println("  reasoning depth = $(REASONING_DEPTH)")
     println("  planning = $(PLANNING)")
     println("  maps = $(length(MAP_FILES))")
@@ -517,13 +467,8 @@ function run_simulations()
             seed_this_run = BASE_SEED + MAP_SEED_OFFSET * map_index + run
             Random.seed!(seed_this_run)
 
-            # Draw order once per run — agents observe this order
-            run_order = draw_run_order()
-
             # Reset current state
             state = initial_state
-            # Initialize last_positions to starting positions
-            last_positions = get_all_positions(state)
             # Keep previous two states for detecting if an agent is stuck
             state_t_minus_1 = state
             state_t_minus_2 = state
@@ -537,57 +482,64 @@ function run_simulations()
             elapsed_run = @elapsed begin
                 if SAVE_TRAJECTORIES
                     open(traj_path, "w") do io
-                    @printf(io, "# map=%s run=%d seed=%d temp=%.6g order=%s\n",
-                            map, run, seed_this_run, TEMPERATURE, string(run_order))
+                    # write header + t=0 in trajectory file
+                    @printf(io, "# map=%s run=%d seed=%d temp=%.6g\n", map, run, seed_this_run, TEMPERATURE)
                     println(io, "# t=0")
                     show(io, state); println(io)
             
                     for t in 1:TIME_MAX
-                        state, last_positions = simulation_step(state, policies, domain,
-                                                                 run_order, last_positions)
+                        state = simulation_step(state, policies, domain)
 
                         println(io, "# t=$t")
                         show(io, state); println(io)
                 
+                        # Record first time any agent fills tank
                         for n in 1:N_AGENTS
                             if agent_filled[n] == 0 && state[HAS_FILLED[n]]
                                 agent_filled[n] = t
                             end
                         end
 
+                        # Break if stuck for 3 consecutive steps
                         if t>=3 && state == state_t_minus_1 && state_t_minus_1 == state_t_minus_2
                             fill!(agent_filled, -1)
                             break
                         end
                 
+                        # Break if all agents filled tank
                         if all(>(0), agent_filled)
                             break
                         end
 
+                        # Shift states
                         state_t_minus_2 = state_t_minus_1
                         state_t_minus_1 = state
                     end
                 end
                 else
+                    # Run the simulation without saving trajectory log
                     for t in 1:TIME_MAX
-                        state, last_positions = simulation_step(state, policies, domain,
-                                                                 run_order, last_positions)
+                        state = simulation_step(state, policies, domain)
 
+                        # Record first time any agent fills tank
                         for n in 1:N_AGENTS
                             if agent_filled[n] == 0 && state[HAS_FILLED[n]]
                                 agent_filled[n] = t
                             end
                         end
 
+                        # Break if stuck for 3 consecutive steps
                         if t>=3 && state == state_t_minus_1 && state_t_minus_1 == state_t_minus_2
                             fill!(agent_filled, -1)
                             break
                         end
                 
+                        # Break if all agents filled tank
                         if all(>(0), agent_filled)
                             break
                         end
 
+                        # Shift states
                         state_t_minus_2 = state_t_minus_1
                         state_t_minus_1 = state
                     end
@@ -618,7 +570,8 @@ function run_simulations()
                 n_agents = N_AGENTS,
                 run_elapsed_seconds = elapsed_run,
                 order = ORDER,
-                run_order = string(run_order),
+                info = INFO,
+                info_prob = INFO_PROB,
                 reasoning_depth = REASONING_DEPTH,
                 planning = PLANNING,
                 planning_h_mult = PLANNING_H_MULT,
@@ -632,6 +585,12 @@ function run_simulations()
 
         println("Finished map $map_name → wrote $(basename(csv_name))")
     end
+    if INFO == "partial"
+        total = INFO_DRAWS[]
+        hits  = INFO_HITS[]
+        pct   = total > 0 ? round(100.0 * hits / total, digits=2) : 0.0
+        println("\n[DEBUG] Info draws: $hits / $total = $pct% (expected: $(100*INFO_PROB)%)")
+    end    
 end
 
 # Run if called as a script

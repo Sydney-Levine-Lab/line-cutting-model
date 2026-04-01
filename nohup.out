@@ -1,0 +1,206 @@
+Starting simulations:
+  order = random
+  reasoning depth = 2
+  planning = astar
+  maps = 28
+  runs per map = 5
+  threads = 8
+  output dir = /Users/lie-panis/Library/CloudStorage/Dropbox/1. Research projects/2. Ongoing/Cutting the line/line_modeling-worktrees/proj2-nerfed/src/../data/simulations/v3_d2_2026-03-25_011258/raw
+  save trajectories = false
+
+Starting map maybe_6 (thread 8)
+Starting map no_line_1 (thread 4)
+Starting map new_maybe_4 (thread 1)
+Starting map yes_line_D (thread 7)
+Starting map no_line_A (thread 6)
+Starting map no_line_D (thread 5)
+Starting map 9esque (thread 3)
+Starting map yes_line_8 (thread 2)
+[8] map=maybe_6.pddl run=1
+[7] map=no_line_1.pddl run=1
+[6] map=no_line_D.pddl run=1
+[5] map=9esque.pddl run=1
+[2] map=yes_line_8.pddl run=1
+[1] map=new_maybe_4.pddl run=1
+[3] map=yes_line_D.pddl run=1
+[5] map=9esque.pddl run=2
+[8] map=maybe_6.pddl run=2
+[3] map=yes_line_D.pddl run=2
+[5] map=9esque.pddl run=3
+[6] map=no_line_D.pddl run=2
+[7] map=no_line_1.pddl run=2
+[2] map=yes_line_8.pddl run=2
+[5] map=9esque.pddl run=4
+[8] map=maybe_6.pddl run=3
+[1] map=new_maybe_4.pddl run=2
+[3] map=yes_line_D.pddl run=3
+[5] map=9esque.pddl run=5
+[6] map=no_line_D.pddl run=3
+Finished map 9esque → wrote 9esque.csv
+Starting map 10esque (thread 5)
+[5] map=10esque.pddl run=1
+[2] map=yes_line_8.pddl run=3
+[3] map=yes_line_D.pddl run=4
+[8] map=maybe_6.pddl run=4
+[7] map=no_line_1.pddl run=3
+[6] map=no_line_D.pddl run=4
+[3] map=yes_line_D.pddl run=5
+[1] map=new_maybe_4.pddl run=3
+[8] map=maybe_6.pddl run=5
+[7] map=no_line_1.pddl run=4
+[6] map=no_line_D.pddl run=5
+Finished map yes_line_D → wrote yes_line_D.csv
+Starting map yes_line_E (thread 3)
+[3] map=yes_line_E.pddl run=1
+[2] map=yes_line_8.pddl run=4
+Finished map maybe_6 → wrote maybe_6.csv
+Starting map new_maybe_1 (thread 8)
+[8] map=new_maybe_1.pddl run=1
+[7] map=no_line_1.pddl run=5
+[1] map=new_maybe_4.pddl run=4
+[8] map=new_maybe_1.pddl run=2
+Finished map no_line_D → wrote no_line_D.csv
+Starting map yes_line_B (thread 6)
+[4] map=no_line_A.pddl run=1
+[6] map=yes_line_B.pddl run=1
+[8] map=new_maybe_1.pddl run=3
+[4] map=no_line_A.pddl run=2
+[4] map=no_line_A.pddl run=3
+[3] map=yes_line_E.pddl run=2
+Finished map no_line_1 → wrote no_line_1.csv
+Starting map no_line_2 (thread 7)
+[7] map=no_line_2.pddl run=1
+[8] map=new_maybe_1.pddl run=4
+[4] map=no_line_A.pddl run=4
+[7] map=no_line_2.pddl run=2
+[4] map=no_line_A.pddl run=5
+[7] map=no_line_2.pddl run=3
+[8] map=new_maybe_1.pddl run=5
+[6] map=yes_line_B.pddl run=2
+[1] map=new_maybe_4.pddl run=5
+[7] map=no_line_2.pddl run=4
+Finished map no_line_A → wrote no_line_A.csv
+Starting map no_line_B (thread 4)
+[4] map=no_line_B.pddl run=1
+[7] map=no_line_2.pddl run=5
+Finished map new_maybe_1 → wrote new_maybe_1.csv
+Starting map new_maybe_2 (thread 8)
+[8] map=new_maybe_2.pddl run=1
+Finished map no_line_2 → wrote no_line_2.csv
+Starting map no_line_3 (thread 7)
+[7] map=no_line_3.pddl run=1
+[2] map=yes_line_8.pddl run=5
+[3] map=yes_line_E.pddl run=3
+[8] map=new_maybe_2.pddl run=2
+[8] map=new_maybe_2.pddl run=3
+[4] map=no_line_B.pddl run=2
+[6] map=yes_line_B.pddl run=3
+[7] map=no_line_3.pddl run=2
+Finished map new_maybe_4 → wrote new_maybe_4.csv
+Starting map new_maybe_5 (thread 1)
+[1] map=new_maybe_5.pddl run=1
+[8] map=new_maybe_2.pddl run=4
+[3] map=yes_line_E.pddl run=4
+Finished map yes_line_8 → wrote yes_line_8.csv
+Starting map yes_line_9 (thread 2)
+[2] map=yes_line_9.pddl run=1
+[8] map=new_maybe_2.pddl run=5
+[2] map=yes_line_9.pddl run=2
+[4] map=no_line_B.pddl run=3
+[7] map=no_line_3.pddl run=3
+[2] map=yes_line_9.pddl run=3
+Finished map new_maybe_2 → wrote new_maybe_2.csv
+Starting map new_maybe_3 (thread 8)
+[8] map=new_maybe_3.pddl run=1
+[6] map=yes_line_B.pddl run=4
+[1] map=new_maybe_5.pddl run=2
+[2] map=yes_line_9.pddl run=4
+[3] map=yes_line_E.pddl run=5
+[8] map=new_maybe_3.pddl run=2
+[4] map=no_line_B.pddl run=4
+[2] map=yes_line_9.pddl run=5
+[7] map=no_line_3.pddl run=4
+[6] map=yes_line_B.pddl run=5
+Finished map yes_line_9 → wrote yes_line_9.csv
+Starting map yes_line_10 (thread 2)
+[2] map=yes_line_10.pddl run=1
+[8] map=new_maybe_3.pddl run=3
+[1] map=new_maybe_5.pddl run=3
+[4] map=no_line_B.pddl run=5
+[8] map=new_maybe_3.pddl run=4
+[7] map=no_line_3.pddl run=5
+Finished map yes_line_E → wrote yes_line_E.csv
+Starting map yes_line_F (thread 3)
+[3] map=yes_line_F.pddl run=1
+[8] map=new_maybe_3.pddl run=5
+Finished map yes_line_B → wrote yes_line_B.csv
+Starting map yes_line_C (thread 6)
+[6] map=yes_line_C.pddl run=1
+Finished map no_line_B → wrote no_line_B.csv
+Starting map no_line_C (thread 4)
+[4] map=no_line_C.pddl run=1
+[1] map=new_maybe_5.pddl run=4
+[6] map=yes_line_C.pddl run=2
+[2] map=yes_line_10.pddl run=2
+Finished map no_line_3 → wrote no_line_3.csv
+Starting map yes_line_7 (thread 7)
+[7] map=yes_line_7.pddl run=1
+Finished map new_maybe_3 → wrote new_maybe_3.csv
+[3] map=yes_line_F.pddl run=2
+[6] map=yes_line_C.pddl run=3
+[4] map=no_line_C.pddl run=2
+[3] map=yes_line_F.pddl run=3
+[6] map=yes_line_C.pddl run=4
+[4] map=no_line_C.pddl run=3
+[1] map=new_maybe_5.pddl run=5
+[6] map=yes_line_C.pddl run=5
+[7] map=yes_line_7.pddl run=2
+[2] map=yes_line_10.pddl run=3
+[3] map=yes_line_F.pddl run=4
+Finished map yes_line_C → wrote yes_line_C.csv
+[4] map=no_line_C.pddl run=4
+[5] map=10esque.pddl run=2
+[4] map=no_line_C.pddl run=5
+Finished map new_maybe_5 → wrote new_maybe_5.csv
+Starting map new_maybe_6 (thread 1)
+[1] map=new_maybe_6.pddl run=1
+[3] map=yes_line_F.pddl run=5
+[7] map=yes_line_7.pddl run=3
+Finished map no_line_C → wrote no_line_C.csv
+[2] map=yes_line_10.pddl run=4
+[5] map=10esque.pddl run=3
+[7] map=yes_line_7.pddl run=4
+Finished map yes_line_F → wrote yes_line_F.csv
+[1] map=new_maybe_6.pddl run=2
+[7] map=yes_line_7.pddl run=5
+[5] map=10esque.pddl run=4
+[2] map=yes_line_10.pddl run=5
+[1] map=new_maybe_6.pddl run=3
+Finished map yes_line_7 → wrote yes_line_7.csv
+Finished map yes_line_10 → wrote yes_line_10.csv
+Starting map 7esque (thread 2)
+[2] map=7esque.pddl run=1
+[1] map=new_maybe_6.pddl run=4
+[5] map=10esque.pddl run=5
+[2] map=7esque.pddl run=2
+[1] map=new_maybe_6.pddl run=5
+[2] map=7esque.pddl run=3
+[2] map=7esque.pddl run=4
+Finished map new_maybe_6 → wrote new_maybe_6.csv
+[2] map=7esque.pddl run=5
+Finished map 7esque → wrote 7esque.csv
+Finished map 10esque → wrote 10esque.csv
+Starting map maybe_4 (thread 5)
+[1] map=maybe_4.pddl run=1
+[1] map=maybe_4.pddl run=2
+[1] map=maybe_4.pddl run=3
+[1] map=maybe_4.pddl run=4
+[1] map=maybe_4.pddl run=5
+Finished map maybe_4 → wrote maybe_4.csv
+Starting map maybe_5 (thread 1)
+[1] map=maybe_5.pddl run=1
+[1] map=maybe_5.pddl run=2
+[1] map=maybe_5.pddl run=3
+[1] map=maybe_5.pddl run=4
+[1] map=maybe_5.pddl run=5
+Finished map maybe_5 → wrote maybe_5.csv

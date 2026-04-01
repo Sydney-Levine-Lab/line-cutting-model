@@ -1,0 +1,14 @@
+=== Depth sweep started: Mon Mar 23 10:11:11 EDT 2026 ===
+
+--- Starting depth 1 ---
+--- Starting depth 2 ---
+--- Starting depth 0 ---
+
+========================================
+  Depth 0 (5 runs):  2h 17m 28s
+  Depth 1 (5 runs):  20h 05m 59s
+  Depth 2 (2 runs):  0h 00m 46s
+  ──────────────────────────────────────
+  Total:             22h 24m 13s
+========================================
+Finished: Tue Mar 24 08:35:24 EDT 2026

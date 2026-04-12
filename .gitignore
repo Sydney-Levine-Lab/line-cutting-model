@@ -21,3 +21,4 @@ __pycache__/
 # Jupyter auto-checkpoints
 .ipynb_checkpoints/
 
+data/experimental/joe data/cogsci23_figs.key

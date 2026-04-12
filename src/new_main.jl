@@ -1,4 +1,3 @@
-" April 8: used to produce nice-looking graphs, but depth2 has less info than depth1..."
 # Entry point for running multi-agent water-collection simulations.
 #
 # Key modeling assumptions:
@@ -223,42 +222,49 @@ end
 
 Build the planning state for agent `k` at reasoning depth 2.
 
-1. Predict one L0 step for agents before k (same as depth 1).
-2. Skip k — predict L0 steps for agents after k (completing the round
-   as if k hadn't moved; they don't observe k's action).
-3. Predict L0 steps for agents before k again (start of next round).
-4. Build k's planning view: k is still at their CURRENT position, but
-   others are at their predicted positions ~1 full round ahead.
+1. Predict one L0 step for agents before k (same as depth 1) to get
+   the predicted world at the point k would move.
+2. For each candidate action k could take, simulate one full additional
+   round of L0 play (all other agents move once, in order), and evaluate
+   k's steps-to-go in that future world.
+3. Return the planning state that yields the best second-step outcome,
+   so the Boltzmann policy picks the action with the best lookahead value.
 
-This lets A* evaluate k's current actions against where others will be
-after a full additional cycle, without displacing k from their actual
-position.
+Actually — we don't need to enumerate k's actions. We can simulate the
+*next* full round assuming k takes a greedy (depth-1) step, and build
+k's planning view from that second-round predicted world. The A* planner
+then evaluates k's current actions by their consequences in that world.
+
+Simpler approach: predict 2 full rounds of L0 play and plan in that world.
 """
 function build_depth2_state(initial_state::State, k::Int,
                              domain::Domain,
                              policies::AbstractVector{<:BoltzmannPolicy},
                              order::Vector{Int}, idx_in_order::Int)
-    # --- Round 1: predict agents before k (same as depth 1) ---
+    # --- Round 1: same as depth 1 ---
+    # Predict L0 steps for agents before k
     predicted_state = initial_state
     for j_idx in 1:(idx_in_order - 1)
         j = order[j_idx]
         predicted_state = predict_l0_step(predicted_state, j, domain, policies)
     end
 
-    # Skip k — predict agents after k (they act without seeing k's move)
+    # Predict k's own depth-1 move
+    predicted_state = predict_l0_step(predicted_state, k, domain, policies)
+
+    # Predict L0 steps for agents after k (completing the round)
     for j_idx in (idx_in_order + 1):N_AGENTS
         j = order[j_idx]
         predicted_state = predict_l0_step(predicted_state, j, domain, policies)
     end
 
-    # --- Round 2: predict agents before k again ---
+    # --- Round 2: predict L0 steps for agents before k again ---
     for j_idx in 1:(idx_in_order - 1)
         j = order[j_idx]
         predicted_state = predict_l0_step(predicted_state, j, domain, policies)
     end
 
-    # k plans from this world: others are ~1 round ahead,
-    # but k is still at their current position
+    # Now build k's planning view of this 2-rounds-ahead predicted world
     return project_others_to_walls(predicted_state, k, domain)
 end
 

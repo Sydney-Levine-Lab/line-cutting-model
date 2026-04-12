@@ -1,4 +1,4 @@
-" April 8: used to produce nice-looking graphs, but depth2 has less info than depth1..."
+" April 8: Not tested but should be too slow for depth2 (same spirit as the main2 and main_next in failed/)"
 # Entry point for running multi-agent water-collection simulations.
 #
 # Key modeling assumptions:
@@ -8,12 +8,16 @@
 #   technical reasons.
 # - At depth 0, all agents plan from the beginning-of-timestep snapshot
 #   (others become walls at their start-of-round positions).
-# - At depth >= 1, agents predict d rounds of L0 play forward. At depth 1,
-#   agent k predicts one L0 step for each agent before them in the order.
-#   At depth 2, agent k additionally simulates one full round of L0 play
-#   beyond that, to evaluate their current action's consequences.
+# - At depth 1, agents predict one L0 step for agents before them in
+#   the order, giving the most accurate picture of the world at the
+#   moment they act.
+# - At depth >= 2, agents strictly extend depth 1: they use depth-1
+#   walls for collision avoidance (which actions are valid), then
+#   evaluate each candidate action by simulating (depth-1) additional
+#   rounds of L0 play and scoring the post-move position against those
+#   future walls. Falls back to depth-1 if lookahead fails.
 # - A* search with a task-specific heuristic for steps-to-go estimation.
-# - Boltzmann action selection over action values.
+# - Boltzmann action selection at depth 0-1; greedy best-action at depth >= 2.
 
 using PDDL, PlanningDomains, SymbolicPlanners
 using Random, Dates, Printf
@@ -122,7 +126,6 @@ all other agents become walls at their positions in `state`.
 function project_others_to_walls(state::State, k::Int, domain::Domain)
     objtypes = PDDL.get_objtypes(state)
 
-    # Collect positions of other agents, then remove them
     agent_locs = Array{Tuple{Int,Int}}(undef, N_AGENTS - 1)
     idx = 1
     for n in 1:N_AGENTS
@@ -132,15 +135,12 @@ function project_others_to_walls(state::State, k::Int, domain::Domain)
         delete!(objtypes, AGENTS[n])
     end
 
-    # Add walls where other agents stand
     walls = copy(state[pddl"(walls)"])
     for (x, y) in agent_locs
         walls[y, x] = true
     end
 
-    # Build fluent dictionary for the reduced state
     fluents = Dict{Term, Any}()
-
     for (obj, objtype) in objtypes
         objtype == :agent && continue
         fluents[Compound(:xloc, Term[obj])] = state[Compound(:xloc, Term[obj])]
@@ -159,6 +159,49 @@ function project_others_to_walls(state::State, k::Int, domain::Domain)
 end
 
 """
+    build_single_agent_view(ref_state, k, domain, k_pos, wall_positions)
+
+Build a single-agent PDDL state for agent `k`:
+- k is placed at `k_pos`
+- walls at each position in `wall_positions`
+- non-agent objects from `ref_state`
+
+Used during depth >= 2 lookahead to evaluate k at a hypothetical
+post-move position against predicted future walls.
+"""
+function build_single_agent_view(ref_state::State, k::Int, domain::Domain,
+                                  k_pos::Tuple{Int,Int},
+                                  wall_positions::Vector{Tuple{Int,Int}})
+    objtypes = PDDL.get_objtypes(ref_state)
+    for n in 1:N_AGENTS
+        n == k && continue
+        delete!(objtypes, AGENTS[n])
+    end
+
+    walls = copy(ref_state[pddl"(walls)"])
+    for (x, y) in wall_positions
+        walls[y, x] = true
+    end
+
+    fluents = Dict{Term, Any}()
+    for (obj, objtype) in objtypes
+        objtype == :agent && continue
+        fluents[Compound(:xloc, Term[obj])] = ref_state[Compound(:xloc, Term[obj])]
+        fluents[Compound(:yloc, Term[obj])] = ref_state[Compound(:yloc, Term[obj])]
+    end
+
+    fluents[pddl"(walls)"] = walls
+    fluents[XLOC[k]] = k_pos[1]
+    fluents[YLOC[k]] = k_pos[2]
+    fluents[HAS_FILLED[k]] = ref_state[HAS_FILLED[k]]
+    fluents[HAS_WATER1[k]] = ref_state[HAS_WATER1[k]]
+    fluents[HAS_WATER2[k]] = ref_state[HAS_WATER2[k]]
+    fluents[HAS_WATER3[k]] = ref_state[HAS_WATER3[k]]
+
+    return initstate(domain, objtypes, fluents)
+end
+
+"""
 Apply `act` to `state`. If preconditions fail (collision etc.),
 treat it as "no move" and return the state unchanged.
 """
@@ -171,7 +214,7 @@ function safe_transition(domain::Domain, state::State, act)
 end
 
 # --------------------------------------------------------------------
-# Depth-1 prediction
+# Prediction
 # --------------------------------------------------------------------
 
 """
@@ -189,77 +232,138 @@ function predict_l0_step(predicted_state::State, agent_idx::Int,
     return safe_transition(domain, predicted_state, act)
 end
 
+# --------------------------------------------------------------------
+# Depth 1: best picture of the current world
+# --------------------------------------------------------------------
+
 """
     build_depth1_state(initial_state, k, domain, policies, order, idx_in_order)
 
 Build the planning state for agent `k` at reasoning depth 1.
 
-Starting from `initial_state` (beginning-of-timestep snapshot), predict
-one L0 step for each agent that moves before `k` in `order`. Then
-project others to walls for `k` in the resulting predicted world.
+Predict one L0 step for each agent before k in the order. This gives k
+the most accurate picture of the world at the moment k acts: agents
+before k at their predicted post-move positions, agents after k at
+their actual current positions.
 """
 function build_depth1_state(initial_state::State, k::Int,
                              domain::Domain,
                              policies::AbstractVector{<:BoltzmannPolicy},
                              order::Vector{Int}, idx_in_order::Int)
     predicted_state = initial_state
-
-    # Predict one L0 step for each agent before k in the order
     for j_idx in 1:(idx_in_order - 1)
         j = order[j_idx]
         predicted_state = predict_l0_step(predicted_state, j, domain, policies)
     end
-
-    # Now build k's single-agent view of this predicted world
     return project_others_to_walls(predicted_state, k, domain)
 end
 
 # --------------------------------------------------------------------
-# Depth-2 prediction
+# Depth >= 2: depth-1 for collision avoidance + lookahead for routing
 # --------------------------------------------------------------------
 
 """
-    build_depth2_state(initial_state, k, domain, policies, order, idx_in_order)
+    choose_action_with_lookahead(initial_state, k, domain, policies, order,
+                                 idx_in_order, depth)
 
-Build the planning state for agent `k` at reasoning depth 2.
+Choose an action for agent `k` at reasoning depth >= 2.
 
-1. Predict one L0 step for agents before k (same as depth 1).
-2. Skip k — predict L0 steps for agents after k (completing the round
-   as if k hadn't moved; they don't observe k's action).
-3. Predict L0 steps for agents before k again (start of next round).
-4. Build k's planning view: k is still at their CURRENT position, but
-   others are at their predicted positions ~1 full round ahead.
+This strictly extends depth 1: k has all the depth-1 knowledge (accurate
+picture of the current world) PLUS a forward-looking evaluation of each
+candidate action.
 
-This lets A* evaluate k's current actions against where others will be
-after a full additional cycle, without displacing k from their actual
-position.
+1. Build the depth-1 predicted world (best picture of now). This
+   determines which actions are valid and avoids real collisions.
+2. Get candidate actions from the depth-1 planning state.
+3. From the depth-1 predicted world, simulate (depth-1) additional
+   rounds of L0 play for all other agents (in play order, skipping k)
+   to predict where others will be in the future.
+4. For each candidate action, mentally move k there and evaluate the
+   resulting position with A* against the future walls.
+5. Pick the action with the best lookahead value.
+6. If lookahead fails for all actions, fall back to the depth-1
+   Boltzmann policy choice (strictly no worse than depth 1).
 """
-function build_depth2_state(initial_state::State, k::Int,
-                             domain::Domain,
-                             policies::AbstractVector{<:BoltzmannPolicy},
-                             order::Vector{Int}, idx_in_order::Int)
-    # --- Round 1: predict agents before k (same as depth 1) ---
-    predicted_state = initial_state
+function choose_action_with_lookahead(initial_state::State, k::Int,
+                                       domain::Domain,
+                                       policies::AbstractVector{<:BoltzmannPolicy},
+                                       order::Vector{Int},
+                                       idx_in_order::Int,
+                                       depth::Int)
+    # --- Step 1: build depth-1 predicted world ---
+    depth1_predicted = initial_state
     for j_idx in 1:(idx_in_order - 1)
         j = order[j_idx]
-        predicted_state = predict_l0_step(predicted_state, j, domain, policies)
+        depth1_predicted = predict_l0_step(depth1_predicted, j, domain, policies)
+    end
+    depth1_view = project_others_to_walls(depth1_predicted, k, domain)
+
+    # --- Step 2: get candidate actions ---
+    candidate_actions = collect(PDDL.available(domain, depth1_view))
+
+    if isempty(candidate_actions)
+        return SymbolicPlanners.get_action(policies[k], depth1_view)
     end
 
-    # Skip k — predict agents after k (they act without seeing k's move)
-    for j_idx in (idx_in_order + 1):N_AGENTS
-        j = order[j_idx]
-        predicted_state = predict_l0_step(predicted_state, j, domain, policies)
+    # --- Step 3: predict future positions ---
+    # From the depth-1 predicted world, simulate (depth-1) more rounds.
+    # Each round: complete the current cycle (agents after k), then
+    # start the next (agents before k) — always in play order, skipping k.
+    future_state = depth1_predicted
+    for _round in 1:(depth - 1)
+        for j_idx in (idx_in_order + 1):N_AGENTS
+            j = order[j_idx]
+            future_state = predict_l0_step(future_state, j, domain, policies)
+        end
+        for j_idx in 1:(idx_in_order - 1)
+            j = order[j_idx]
+            future_state = predict_l0_step(future_state, j, domain, policies)
+        end
     end
 
-    # --- Round 2: predict agents before k again ---
-    for j_idx in 1:(idx_in_order - 1)
-        j = order[j_idx]
-        predicted_state = predict_l0_step(predicted_state, j, domain, policies)
+    # Collect future wall positions
+    future_walls = Tuple{Int,Int}[]
+    for n in 1:N_AGENTS
+        n == k && continue
+        push!(future_walls, (future_state[XLOC[n]], future_state[YLOC[n]]))
     end
 
-    # k plans from this world: others are ~1 round ahead,
-    # but k is still at their current position
-    return project_others_to_walls(predicted_state, k, domain)
+    # --- Step 4: evaluate each candidate action ---
+    best_action = nothing
+    best_value = -Inf
+    goal = SymbolicPlanners.MinStepsGoal(Term[HAS_FILLED[k]])
+
+    for act in candidate_actions
+        # Mentally apply action to get k's new position
+        test_state = safe_transition(domain, depth1_view, act)
+        k_new_pos = (test_state[XLOC[k]], test_state[YLOC[k]])
+
+        # Build lookahead view: k at new position, future walls
+        lookahead_view = build_single_agent_view(initial_state, k, domain,
+                                                   k_new_pos, future_walls)
+
+        # Evaluate with bounded A*
+        planner = SymbolicPlanners.AStarPlanner(WaterCollectionHeuristic(),
+                                                 max_nodes=2^16)
+        sol = planner(domain, lookahead_view, goal)
+        value = if sol.status == :success
+            -length(sol.plan)
+        else
+            -Inf
+        end
+
+        if value > best_value
+            best_value = value
+            best_action = act
+        end
+    end
+
+    # --- Step 5: fall back to depth-1 if lookahead failed for all actions ---
+    if best_value == -Inf
+        return SymbolicPlanners.get_action(policies[k], depth1_view)
+    end
+
+    return best_action
 end
 
 # --------------------------------------------------------------------
@@ -271,30 +375,33 @@ end
 
 Run one simulation timestep.
 
-At depth 0, all agents plan from the beginning-of-timestep snapshot.
-At depth >= 1, agents predict d rounds of L0 play forward before planning.
-Actions are applied sequentially to the real evolving world.
+- Depth 0: plan from beginning-of-timestep snapshot (Boltzmann policy).
+- Depth 1: predict L0 steps for agents before k, then Boltzmann policy.
+- Depth >= 2: depth-1 walls for collision avoidance, action enumeration
+  with future evaluation for route selection. Falls back to depth-1
+  choice if lookahead fails.
 """
 function simulation_step(state::State,
                          policies::AbstractVector{<:BoltzmannPolicy},
                          domain::Domain,
                          order::Vector{Int})
-    initial_state = state   # snapshot for planning (depth 0) and prediction (depth >= 1)
+    initial_state = state
 
     for idx in 1:N_AGENTS
         k = order[idx]
 
         if DEPTH == 0
             planning_state = project_others_to_walls(initial_state, k, domain)
+            act = SymbolicPlanners.get_action(policies[k], planning_state)
         elseif DEPTH == 1
             planning_state = build_depth1_state(initial_state, k, domain,
                                                  policies, order, idx)
-        elseif DEPTH >= 2
-            planning_state = build_depth2_state(initial_state, k, domain,
-                                                 policies, order, idx)
+            act = SymbolicPlanners.get_action(policies[k], planning_state)
+        else
+            act = choose_action_with_lookahead(initial_state, k, domain,
+                                                policies, order, idx, DEPTH)
         end
 
-        act = SymbolicPlanners.get_action(policies[k], planning_state)
         state = safe_transition(domain, state, act)
     end
 

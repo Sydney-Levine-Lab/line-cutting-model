@@ -1,5 +1,5 @@
 """
-sim_experiment_comparison.py
+new_comparison_utils.py
 
 Compare simulation runs against experimental participant data.
 
@@ -711,7 +711,8 @@ def plot_eval_multi(
     if figsize is None:
         figsize = (max(10, n_tags * 1.2), 5)
 
-    colors = plt.cm.Set2(np.linspace(0, 1, n_exp))
+    #colors = plt.cm.Set2(np.linspace(0, 1, n_exp))
+    colors = ['#2196F3', '#FF9800', '#424242'][:n_exp]
 
     fig, ax = plt.subplots(figsize=figsize)
     bar_width = 0.8 / n_exp

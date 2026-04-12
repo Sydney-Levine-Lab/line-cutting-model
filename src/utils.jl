@@ -12,7 +12,7 @@ function env_int(key::AbstractString, default::Int)
     end
 end
 
-# Read float from ENV
+# Read float from ENV #TODO remove if not used anymore
 function env_float(key::AbstractString, default::Float64)
     raw = strip(get(ENV, key, string(default)))
     try
@@ -96,12 +96,12 @@ function write_snapshot!(outdir::AbstractString, src_dir::AbstractString)
         println(io, "MAP_SEED_OFFSET = ", MAP_SEED_OFFSET)
         println(io, "THREADS = ", Threads.nthreads())
         println(io, "MAP_FILES = ", join(MAP_FILES, ", "))
-        println(io, "ORDER = ", ORDER)
-        println(io, "INFO = ", INFO)
+        #println(io, "ORDER = ", ORDER)
+        #println(io, "INFO = ", INFO)
         println(io, "REASONING_DEPTH = ", REASONING_DEPTH)
-        println(io, "PLANNING = ", PLANNING)
-        println(io, "PLANNING_H_MULT = ", PLANNING_H_MULT)
-        println(io, "PLANNING_SEARCH_NOISE = ", PLANNING_SEARCH_NOISE)
+        #println(io, "PLANNING = ", PLANNING)
+        #println(io, "PLANNING_H_MULT = ", PLANNING_H_MULT)
+        #println(io, "PLANNING_SEARCH_NOISE = ", PLANNING_SEARCH_NOISE)
     end
 end
 

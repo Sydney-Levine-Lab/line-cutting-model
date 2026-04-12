@@ -1,6 +1,38 @@
-# Simulation versions
+# Newer Simulation versions
 
-Tracks changes to the simulation model in `src/main.jl` and corresponding runs.
+Tracks changes to the simulation model in `src/main.jl` and corresponding runs. Older versions under src/failed_attempts_depth.
+
+Depth 2 versions:
+- main.jl (april 7): agents just plan assuming others are walls at future positions rather than predicted current ones (depth1).
+- main2.jl (april 8): cleaner version of that (could be implemented for any depth).
+- main3.jl (april 8): action enumeration, enumerating possible actions for focal agent, using A*, and comparing --- doesn't finish
+- main4.jl (april 8): slightly better than main, where you also predict your own move.
+- main5.jl (april 9): plays the game forward ratehr than enumerates mental actions. 
+- main6.jl (april 9): also allows to modify the depth of reasoning (e.g., implemenmt L1 reasoning)
+
+
+
+
+Ongoing (April 9):
+- depth3 with main4.jl
+- depth2 with main5.jl
+
+
+Other thing to do:
+- try out heuristic L2 reasoning. Should be easy enugh to code.
+
+
+
+
+
+
+
+
+
+
+
+# Older Simulation versions
+
 
 ---
 

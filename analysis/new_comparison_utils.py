@@ -231,23 +231,46 @@ def load_experiments(
 def load_simulations(runs, sim_root=None, recompute=False):
     """
     Load universalization summary DataFrames for a dict of runs.
-
     runs : dict[tag, run_label]   e.g. {"blind_L0": "blind_L0_random_02-06"}
+
+    For each run, prints a summary line: number of maps, number of runs per map,
+    total stuck runs (excluded from metrics), and mean U_AW.
     """
     from build_utils import get_universalization_summary
+    import os, glob
+    import pandas as pd
     sim_root = str(sim_root or DEFAULT_PATHS["sim_root"])
     sims = {}
     for tag, label in runs.items():
         try:
             df = get_universalization_summary(label, sim_root=sim_root,
                                              recompute=recompute)
+            # Map and run counts from raw CSVs
+            raw_dir = os.path.join(sim_root, label, "raw")
+            csvs = glob.glob(os.path.join(raw_dir, "*.csv"))
+            n_maps = len(csvs)
+            n_runs = "?"
+            if csvs:
+                first = pd.read_csv(csvs[0])
+                n_runs = len(first)
+
+            # Stuck-run summary from the universalization summary itself
+            # (build_universalization_summary records n_stuck per map)
+            stuck_str = ""
+            if "n_stuck" in df.columns and "n_runs" in df.columns:
+                total_stuck = int(df["n_stuck"].sum())
+                total_runs = int(df["n_runs"].sum())
+                if total_runs > 0:
+                    pct = 100 * total_stuck / total_runs
+                    stuck_str = f"  stuck={total_stuck}/{total_runs} ({pct:.1f}%)"
+
             sims[tag] = df
-            print(f"  {tag:20s}  {len(df)} maps  "
-                  f"mean U_AW={df['univ_aggregate_welfare'].mean():.3f}")
+            print(f"  {tag:20s}  {n_maps:2d} maps, {n_runs} runs  "
+                  f"mean U_AW={df['univ_aggregate_welfare'].mean():.3f}"
+                  f"{stuck_str}")
         except Exception as e:
             print(f"  {tag:20s}  FAILED — {e}")
     return sims
-
 
 def load_outcome_metrics(outcome_csv=None, recompute=False):
     """Load scenario outcome metrics (one row per stimulus)."""
@@ -864,3 +887,5 @@ def plot_simple_regression(
         fig.savefig(save_path, dpi=300, bbox_inches="tight")
     plt.show()
     return fig, ax
+
+

@@ -310,8 +310,11 @@ function evaluate_action(initial_state::State, k::Int,
 
     k_view = project_others_to_walls(sim_state, k, domain)
     goal = SymbolicPlanners.MinStepsGoal(Term[HAS_FILLED[k]])
-    value_policy = SymbolicPlanners.FunctionalVPolicy(steps_to_go, domain, goal)
-    return SymbolicPlanners.get_value(value_policy, k_view)
+    return -steps_to_go(domain, k_view, goal)   # negate the plan cost
+    #value_policy = SymbolicPlanners.FunctionalVPolicy(steps_to_go, domain, goal)
+    #CHANGED
+    value_policy = SymbolicPlanners.HeuristicVPolicy(steps_to_go, domain, goal)
+    #return SymbolicPlanners.get_value(value_policy, k_view)
 end
 
 """

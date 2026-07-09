@@ -154,18 +154,24 @@ def build_processed_sim_one_map(
         ):
     """
     Build a processed simulation file, for a run type and map name with
-    per-run univerlization metrics,
-    by adding colums to the corresponding raw simulation file.
+    per-run universalization metrics,
+    by adding columns to the corresponding raw simulation file.
 
-    Assumes run type is a subdirectory of sim_data_root, and that raw data is under raw/.
-    Saves to <sim_data_root>/<run_label>/processed/<map_name>.csv
+    Runs where any agent has a non-positive completion time (stuck agent)
+    are flagged and excluded from metric computation.
     """
     sim_root = Path(sim_root)
     raw_path = sim_root / run_label / "raw" / f"{map_name}.csv"
     processed_path = sim_root / run_label / "processed" / f"{map_name}.csv"
 
-    df = pd.read_csv(raw_path) # Load raw simulation data
-    agent_cols = [c for c in df.columns if c.startswith("agent_")] # Should be valid for both dfs
+    df = pd.read_csv(raw_path)
+    agent_cols = [c for c in df.columns if c.startswith("agent_")]
+
+    # Flag stuck runs (any agent with non-positive completion time)
+    df["stuck"] = (df[agent_cols] <= 0).any(axis=1)
+    n_stuck = df["stuck"].sum()
+    if n_stuck > 0:
+        print(f"  WARNING: {map_name} has {n_stuck}/{len(df)} stuck runs (excluded from metrics)")
 
     # Load completion times when agents follow the line
     line_path = Path(line_csv)
@@ -175,12 +181,18 @@ def build_processed_sim_one_map(
 
     for idx, run in df.iterrows():
         world_times = run[agent_cols].to_numpy(dtype=float)
-        metrics = compute_metrics(world=world_times, line=line_times)
-        for k, v in metrics.items():
-            df.loc[idx, k] = v
-        other_metrics = compute_other_metrics(world=world_times)
-        for k, v in other_metrics.items():
-            df.loc[idx, k] = v
+        if run["stuck"]:
+            for k in METRIC_COLS:
+                df.loc[idx, k] = np.nan
+            for k in OTHER_COLS:
+                df.loc[idx, k] = np.nan
+        else:
+            metrics = compute_metrics(world=world_times, line=line_times)
+            for k, v in metrics.items():
+                df.loc[idx, k] = v
+            other_metrics = compute_other_metrics(world=world_times)
+            for k, v in other_metrics.items():
+                df.loc[idx, k] = v
 
     df.to_csv(processed_path, index=False)
 
@@ -212,15 +224,14 @@ def build_processed_sim_all_maps(
     )
 
 
-
 def build_universalization_summary(
     run_label,
     sim_root="../data/simulations",
     output_csv="summary_universalization_metrics.csv"
 ):
     """
-    Build a summary CSV aggregating universalization metrics across all maps
-    for a given run type.
+    Build a summary CSV aggregating universalization metrics across all maps.
+    Excludes stuck runs (marked with NaN metrics).
     """
     sim_root = Path(sim_root)
     processed_dir = sim_root / run_label / "processed"
@@ -234,20 +245,22 @@ def build_universalization_summary(
         map_name = fpath.stem
         df = pd.read_csv(fpath)
 
-        n_runs = len(df)
+        n_total = len(df)
+        n_stuck = df["stuck"].sum() if "stuck" in df.columns else 0
+        n_valid = n_total - n_stuck
 
         row = {
             "map": map_name,
-            "n_runs": n_runs
+            "n_runs": n_total,
+            "n_stuck": int(n_stuck),
+            "n_valid": int(n_valid),
         }
 
-        # copy knob settings from the first run (they are constant within a run_label)
         first = df.iloc[0]
         for col in KNOB_COLS:
             if col in df.columns:
                 row[col] = first[col]
 
-        # compute mean and sd for each metric
         for m in METRIC_COLS:
             mean_val = df[m].mean()
             sd_val = df[m].std(ddof=1)
@@ -256,17 +269,26 @@ def build_universalization_summary(
 
         for m in OTHER_COLS:
             mean_val = df[m].mean()
+            sd_val = df[m].std(ddof=1)
             row[m] = mean_val
+            row[f"{m}_sd"] = sd_val
 
         rows.append(row)
 
     summary_df = pd.DataFrame(rows)
     summary_df.to_csv(output_path, index=False)
 
+    total_stuck = summary_df["n_stuck"].sum()
+    total_runs = summary_df["n_runs"].sum()
+    stuck_pct = 100 * total_stuck / total_runs if total_runs > 0 else 0
+
     print(
         f"Built universalization summary for run_label='{run_label}' "
         f"over {len(rows)} maps and saved to {output_csv}"
     )
+    if total_stuck > 0:
+        print(f"  Excluded {total_stuck}/{total_runs} stuck runs ({stuck_pct:.1f}%)")
+
     return summary_df
 
 

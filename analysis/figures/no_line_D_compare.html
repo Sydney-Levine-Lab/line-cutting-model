@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Trajectory comparison</title>
+<style>
+body { font-family: -apple-system, system-ui, sans-serif; margin: 20px; background: #f8f8f8; }
+h1 { font-size: 18px; margin: 0 0 10px 0; }
+.panels { display: flex; gap: 30px; }
+.panel { background: white; padding: 16px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+.panel h2 { font-size: 14px; margin: 0 0 10px 0; }
+.controls { margin: 10px 0; }
+button { padding: 6px 14px; margin-right: 6px; font-size: 13px; cursor: pointer;
+         background: #4477AA; color: white; border: none; border-radius: 4px; }
+button:hover { background: #2D5A8A; }
+button:disabled { background: #ccc; cursor: not-allowed; }
+.status { font-family: monospace; font-size: 12px; margin: 8px 0; color: #444; }
+canvas { background: white; border: 1px solid #ddd; }
+.divergence { color: #cc4444; font-weight: bold; }
+.legend { font-size: 11px; margin-top: 10px; color: #666; }
+.legend span { display: inline-block; width: 12px; height: 12px; margin-right: 4px;
+               vertical-align: middle; border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<h1 id="title">Trajectory comparison</h1>
+<div class="controls">
+  <button id="playBtn">Play</button>
+  <button id="stepBtn">Step</button>
+  <button id="backBtn">Back</button>
+  <button id="resetBtn">Reset</button>
+  <label style="margin-left:20px; font-size:12px;">
+    Speed:
+    <input type="range" id="speedSlider" min="100" max="2000" value="500" step="100" style="vertical-align:middle;">
+    <span id="speedVal" style="font-family:monospace;">500ms</span>
+  </label>
+</div>
+<div class="status" id="status">t=0</div>
+
+<div class="panels">
+  <div class="panel">
+    <h2 id="labelA"></h2>
+    <canvas id="canvasA" width="500" height="500"></canvas>
+    <div class="legend">
+      <span style="background:#222"></span>walls
+      <span style="background:#4477AA; margin-left:10px;"></span>wells
+      <span style="background:#229944; margin-left:10px;"></span>tanks
+      <span style="background:#CC4444; margin-left:10px;"></span>agents
+      <span style="background:#FFCC00; margin-left:10px;"></span>diverged from other side
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2 id="labelB"></h2>
+    <canvas id="canvasB" width="500" height="500"></canvas>
+  </div>
+</div>
+
+<script>
+const data = {"map": {"name": "no_line_D", "n_rows": 14, "n_cols": 14, "walls": [], "tanks": [[1, 5], [1, 6], [1, 7], [1, 8], [1, 9], [1, 10]], "wells": [[1, 4], [1, 12], [3, 6], [4, 6], [4, 7], [4, 9], [4, 10], [4, 12], [3, 12]], "n_agents": 8}, "states_a": [{"t": 0, "positions": [[7, 8], [8, 8], [9, 8], [10, 8], [11, 8], [12, 8], [13, 8], [14, 8]], "last_actions": [null, null, null, null, null, null, null, null], "diverged": []}, {"t": 1, "positions": [[6, 8], [7, 8], [9, 7], [9, 8], [11, 7], [12, 7], [12, 8], [14, 7]], "last_actions": ["left", "left", "up", "left", "up", "up", "left", "up"], "diverged": [2, 3, 5, 6, 8]}, {"t": 2, "positions": [[5, 8], [6, 8], [8, 7], [8, 8], [10, 7], [12, 6], [11, 8], [13, 7]], "last_actions": ["left", "left", "left", "left", "left", "up", "left", "left"], "diverged": [2, 3, 4, 5, 6, 7, 8]}, {"t": 3, "positions": [[4, 8], [5, 8], [7, 7], [7, 8], [9, 7], [11, 6], [10, 8], [12, 7]], "last_actions": ["left", "left", "left", "left", "left", "left", "left", "left"], "diverged": [2, 3, 4, 5, 6, 7, 8]}, {"t": 4, "positions": [[4, 8], [5, 7], [6, 7], [7, 7], [8, 7], [10, 6], [9, 8], [11, 7]], "last_actions": [null, "up", "left", "up", "left", "left", "left", "left"], "diverged": [2, 3, 4, 5, 6, 7, 8]}, {"t": 5, "positions": [[4, 8], [5, 7], [6, 6], [7, 6], [8, 6], [9, 6], [8, 8], [10, 7]], "last_actions": [null, null, "up", "up", "up", "left", "left", "left"], "diverged": [2, 3, 5, 6, 7, 8]}, {"t": 6, "positions": [[4, 8], [5, 7], [5, 6], [6, 6], [8, 5], [9, 6], [7, 8], [9, 7]], "last_actions": [null, null, "left", "left", "up", "wait", "left", "left"], "diverged": [2, 3, 5, 6, 7, 8]}, {"t": 7, "positions": [[3, 8], [5, 7], [5, 6], [6, 5], [7, 5], [8, 6], [6, 8], [8, 7]], "last_actions": ["left", null, null, "up", "left", "left", "left", "left"], "diverged": [2, 3, 4, 5, 6, 7, 8]}, {"t": 8, "positions": [[2, 8], [6, 7], [5, 6], [5, 5], [7, 4], [7, 6], [5, 8], [7, 7]], "last_actions": ["left", "right", null, "left", "up", "left", "left", "left"], "diverged": [2, 3, 4, 5, 6, 7, 8]}, {"t": 9, "positions": [[2, 8], [5, 7], [5, 6], [4, 5], [6, 4], [6, 6], [4, 8], [7, 7]], "last_actions": [null, "left", null, "left", "left", "left", "left", "wait"], "diverged": [2, 3, 4, 5, 6, 7, 8]}, {"t": 10, "positions": [[3, 8], [5, 6], [5, 6], [3, 5], [5, 4], [6, 5], [4, 8], [6, 7]], "last_actions": ["right", "up", "wait", "left", "left", "up", null, "left"], "diverged": [2, 3, 4, 5, 6, 7, 8]}, {"t": 11, "positions": [[2, 8], [5, 7], [6, 6], [3, 5], [4, 4], [5, 5], [4, 8], [6, 8]], "last_actions": ["left", "down", "right", null, "left", "left", null, "down"], "diverged": [2, 3, 4, 5, 6, 7, 8]}, {"t": 12, "positions": [[3, 8], [5, 8], [5, 6], [3, 5], [3, 4], [4, 5], [4, 8], [6, 9]], "last_actions": ["right", "down", "left", null, "left", "left", null, "down"], "diverged": [2, 3, 4, 5, 6, 7, 8]}, {"t": 13, "positions": [[2, 8], [5, 9], [6, 6], [3, 5], [2, 4], [5, 5], [3, 8], [6, 10]], "last_actions": ["left", "down", "right", null, "left", "right", "left", "down"], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 14, "positions": [[2, 8], [5, 10], [5, 6], [2, 5], [2, 5], [5, 6], [2, 8], [6, 9]], "last_actions": ["wait", "down", "left", "left", "down", "down", "left", "up"], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 15, "positions": [[2, 8], [4, 10], [5, 7], [1, 5], [2, 6], [5, 6], [2, 8], [5, 9]], "last_actions": ["wait", "left", "down", "left", "down", null, "wait", "left"], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 16, "positions": [[2, 8], [3, 10], [4, 7], [1, 5], [2, 6], [5, 6], [2, 8], [5, 9]], "last_actions": ["wait", "left", "left", null, null, null, "wait", null], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 17, "positions": [[2, 8], [2, 10], [4, 8], [2, 5], [2, 6], [5, 6], [1, 8], [5, 9]], "last_actions": ["wait", "left", "down", "right", null, null, "left", null], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 18, "positions": [[2, 8], [1, 10], [3, 8], [1, 5], [2, 6], [5, 5], [0, 8], [5, 9]], "last_actions": ["wait", "left", "left", "left", null, "up", "left", null], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 19, "positions": [[2, 8], [1, 10], [2, 8], [2, 5], [2, 6], [4, 5], [-1, 8], [5, 10]], "last_actions": ["wait", null, "left", "right", null, "left", "left", "down"], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 20, "positions": [[2, 8], [2, 10], [1, 8], [1, 5], [2, 6], [4, 5], [-1, 8], [5, 11]], "last_actions": ["wait", "right", "left", "left", "wait", "wait", "wait", "down"], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 21, "positions": [[2, 8], [1, 10], [0, 8], [2, 5], [2, 6], [5, 5], [-2, 8], [4, 11]], "last_actions": ["wait", "left", "left", "right", "wait", "right", "left", "left"], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 22, "positions": [[2, 8], [2, 10], [-1, 8], [1, 5], [2, 6], [4, 5], [-2, 8], [3, 11]], "last_actions": ["wait", "right", "left", "left", "wait", "left", "wait", "left"], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 23, "positions": [[2, 8], [1, 10], [-2, 8], [2, 5], [2, 6], [3, 5], [-2, 8], [3, 10]], "last_actions": ["wait", "left", "left", "right", "wait", "left", "wait", "up"], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 24, "positions": [[2, 8], [2, 10], [-3, 8], [3, 5], [2, 6], [3, 5], [-2, 8], [2, 10]], "last_actions": ["wait", "right", "left", "right", "wait", "wait", "wait", "left"], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 25, "positions": [[2, 8], [1, 10], [-4, 8], [4, 5], [2, 6], [3, 4], [-3, 8], [2, 10]], "last_actions": ["wait", "left", "left", "right", "wait", "up", "left", null], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 26, "positions": [[2, 8], [1, 10], [-5, 8], [3, 5], [2, 6], [3, 4], [-4, 8], [3, 10]], "last_actions": ["wait", "wait", "left", "left", "wait", "wait", "left", "right"], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 27, "positions": [[2, 8], [2, 10], [-5, 8], [4, 5], [2, 6], [3, 4], [-4, 7], [2, 10]], "last_actions": ["wait", "right", "wait", "right", "wait", "wait", "up", "left"], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 28, "positions": [[3, 8], [1, 10], [-5, 8], [3, 5], [2, 6], [4, 4], [-5, 7], [3, 10]], "last_actions": ["right", "left", "wait", "left", "wait", "right", "left", "right"], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 29, "positions": [[2, 8], [2, 10], [-5, 8], [4, 5], [2, 6], [3, 4], [-5, 7], [2, 10]], "last_actions": ["left", "right", "wait", "right", "wait", "left", null, "left"], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 30, "positions": [[3, 8], [1, 10], [-6, 8], [3, 5], [2, 6], [3, 4], [-4, 7], [3, 10]], "last_actions": ["right", "left", "left", "left", "wait", "wait", "right", "right"], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 31, "positions": [[2, 8], [2, 10], [-5, 8], [4, 5], [2, 6], [3, 5], [-5, 7], [2, 10]], "last_actions": ["left", "right", "right", "right", "wait", "down", "left", "left"], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 32, "positions": [[3, 8], [1, 10], [-6, 8], [5, 5], [2, 6], [3, 5], [-4, 7], [3, 10]], "last_actions": ["right", "left", "left", "right", "wait", "wait", "right", "right"], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 33, "positions": [[2, 8], [2, 10], [-5, 8], [6, 5], [2, 6], [3, 4], [-5, 7], [2, 10]], "last_actions": ["left", "right", "right", "right", "wait", "up", "left", "left"], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 34, "positions": [[3, 8], [1, 10], [-5, 8], [7, 5], [2, 6], [4, 4], [-4, 7], [3, 10]], "last_actions": ["right", "left", "wait", "right", "wait", "right", "right", "right"], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 35, "positions": [[2, 8], [2, 10], [-5, 9], [6, 5], [2, 6], [3, 4], [-5, 7], [2, 10]], "last_actions": ["left", "right", "down", "left", "wait", "left", "left", "left"], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 36, "positions": [[3, 8], [1, 10], [-5, 9], [5, 5], [2, 6], [3, 3], [-4, 7], [3, 10]], "last_actions": ["right", "left", "wait", "left", "wait", "up", "right", "right"], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 37, "positions": [[2, 8], [2, 10], [-5, 8], [6, 5], [2, 6], [2, 3], [-5, 7], [2, 10]], "last_actions": ["left", "right", "up", "right", "wait", "left", "left", "left"], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 38, "positions": [[3, 8], [1, 10], [-6, 8], [5, 5], [2, 6], [2, 3], [-4, 7], [3, 10]], "last_actions": ["right", "left", "left", "left", "wait", "wait", "right", "right"], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 39, "positions": [[2, 8], [2, 10], [-5, 8], [6, 5], [2, 6], [2, 3], [-5, 7], [2, 10]], "last_actions": ["left", "right", "right", "right", "wait", "wait", "left", "left"], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 40, "positions": [[3, 8], [1, 10], [-6, 8], [5, 5], [2, 6], [2, 4], [-4, 7], [3, 10]], "last_actions": ["right", "left", "left", "left", "wait", "down", "right", "right"], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 41, "positions": [[2, 8], [2, 10], [-6, 8], [6, 5], [2, 6], [3, 4], [-5, 7], [2, 10]], "last_actions": ["left", "right", "wait", "right", "wait", "right", "left", "left"], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 42, "positions": [[3, 8], [1, 10], [-6, 8], [5, 5], [2, 6], [2, 4], [-4, 7], [3, 10]], "last_actions": ["right", "left", "wait", "left", "wait", "left", "right", "right"], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 43, "positions": [[2, 8], [2, 10], [-6, 8], [6, 5], [2, 6], [2, 3], [-5, 7], [2, 10]], "last_actions": ["left", "right", "wait", "right", "wait", "up", "left", "left"], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 44, "positions": [[3, 8], [1, 10], [-6, 8], [5, 5], [2, 6], [2, 4], [-4, 7], [3, 10]], "last_actions": ["right", "left", "wait", "left", "wait", "down", "right", "right"], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 45, "positions": [[2, 8], [2, 10], [-5, 8], [6, 5], [2, 6], [3, 4], [-5, 7], [2, 10]], "last_actions": ["left", "right", "right", "right", "wait", "right", "left", "left"], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 46, "positions": [[3, 8], [1, 10], [-5, 9], [5, 5], [2, 6], [2, 4], [-4, 7], [3, 10]], "last_actions": ["right", "left", "down", "left", "wait", "left", "right", "right"], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 47, "positions": [[2, 8], [2, 10], [-5, 9], [6, 5], [2, 6], [2, 4], [-5, 7], [2, 10]], "last_actions": ["left", "right", "wait", "right", "wait", "wait", "left", "left"], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 48, "positions": [[3, 8], [1, 10], [-4, 9], [7, 5], [2, 6], [2, 5], [-4, 7], [3, 10]], "last_actions": ["right", "left", "right", "right", "wait", "down", "right", "right"], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 49, "positions": [[2, 8], [2, 10], [-5, 9], [6, 5], [2, 6], [2, 5], [-5, 7], [2, 10]], "last_actions": ["left", "right", "left", "left", "wait", null, "left", "left"], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 50, "positions": [[3, 8], [1, 10], [-5, 10], [7, 5], [2, 6], [2, 5], [-4, 7], [3, 10]], "last_actions": ["right", "left", "down", "right", "wait", "wait", "right", "right"], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 51, "positions": [[2, 8], [2, 10], [-5, 10], [6, 5], [2, 6], [3, 5], [-5, 7], [2, 10]], "last_actions": ["left", "right", "wait", "left", "wait", "right", "left", "left"], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 52, "positions": [[3, 8], [1, 10], [-5, 9], [5, 5], [2, 6], [2, 5], [-4, 7], [3, 10]], "last_actions": ["right", "left", "up", "left", "wait", "left", "right", "right"], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 53, "positions": [[2, 8], [2, 10], [-5, 9], [6, 5], [2, 6], [2, 5], [-5, 7], [2, 10]], "last_actions": ["left", "right", "wait", "right", "wait", "wait", "left", "left"], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 54, "positions": [[3, 8], [1, 10], [-5, 9], [5, 5], [2, 6], [3, 5], [-4, 7], [3, 10]], "last_actions": ["right", "left", "wait", "left", "wait", "right", "right", "right"], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 55, "positions": [[2, 8], [2, 10], [-4, 9], [4, 5], [2, 6], [2, 5], [-5, 7], [2, 10]], "last_actions": ["left", "right", "right", "left", "wait", "left", "left", "left"], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 56, "positions": [[3, 8], [1, 10], [-5, 9], [5, 5], [2, 6], [2, 5], [-4, 7], [3, 10]], "last_actions": ["right", "left", "left", "right", "wait", "wait", "right", "right"], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 57, "positions": [[2, 8], [2, 10], [-5, 9], [4, 5], [2, 6], [3, 5], [-5, 7], [2, 10]], "last_actions": ["left", "right", "wait", "left", "wait", "right", "left", "left"], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 58, "positions": [[3, 8], [1, 10], [-5, 8], [3, 5], [2, 6], [2, 5], [-4, 7], [3, 10]], "last_actions": ["right", "left", "up", "left", "wait", "left", "right", "right"], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 59, "positions": [[2, 8], [2, 10], [-5, 8], [4, 5], [2, 6], [2, 5], [-5, 7], [2, 10]], "last_actions": ["left", "right", "wait", "right", "wait", "wait", "left", "left"], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 60, "positions": [[3, 8], [1, 10], [-6, 8], [3, 5], [2, 6], [3, 5], [-4, 7], [3, 10]], "last_actions": ["right", "left", "left", "left", "wait", "right", "right", "right"], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 61, "positions": [[2, 8], [2, 10], [-5, 8], [2, 5], [2, 6], [2, 5], [-5, 7], [2, 10]], "last_actions": ["left", "right", "right", "left", "wait", "left", "left", "left"], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 62, "positions": [[3, 8], [1, 10], [-5, 8], [3, 5], [2, 6], [2, 5], [-4, 7], [3, 10]], "last_actions": ["right", "left", "wait", "right", "wait", "wait", "right", "right"], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 63, "positions": [[2, 8], [2, 10], [-5, 9], [4, 5], [2, 6], [3, 5], [-5, 7], [2, 10]], "last_actions": ["left", "right", "down", "right", "wait", "right", "left", "left"], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 64, "positions": [[3, 8], [1, 10], [-5, 9], [3, 5], [2, 6], [2, 5], [-4, 7], [3, 10]], "last_actions": ["right", "left", "wait", "left", "wait", "left", "right", "right"], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 65, "positions": [[2, 8], [2, 10], [-5, 10], [2, 5], [2, 6], [3, 5], [-5, 7], [2, 10]], "last_actions": ["left", "right", "down", "left", "wait", "right", "left", "left"], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 66, "positions": [[3, 8], [1, 10], [-5, 11], [1, 5], [2, 6], [2, 5], [-4, 7], [3, 10]], "last_actions": ["right", "left", "down", "left", "wait", "left", "right", "right"], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 67, "positions": [[2, 8], [2, 10], [-5, 11], [2, 5], [2, 6], [2, 5], [-5, 7], [2, 10]], "last_actions": ["left", "right", "wait", "right", "wait", "wait", "left", "left"], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 68, "positions": [[3, 8], [1, 10], [-6, 11], [1, 5], [2, 6], [3, 5], [-4, 7], [3, 10]], "last_actions": ["right", "left", "left", "left", "wait", "right", "right", "right"], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 69, "positions": [[2, 8], [2, 10], [-7, 11], [2, 5], [2, 6], [2, 5], [-5, 7], [2, 10]], "last_actions": ["left", "right", "left", "right", "wait", "left", "left", "left"], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 70, "positions": [[3, 8], [1, 10], [-7, 11], [1, 5], [2, 6], [3, 5], [-4, 7], [3, 10]], "last_actions": ["right", "left", "wait", "left", "wait", "right", "right", "right"], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 71, "positions": [[2, 8], [2, 10], [-7, 11], [2, 5], [2, 6], [2, 5], [-5, 7], [2, 10]], "last_actions": ["left", "right", "wait", "right", "wait", "left", "left", "left"], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 72, "positions": [[3, 8], [1, 10], [-7, 11], [1, 5], [2, 6], [3, 5], [-4, 7], [3, 10]], "last_actions": ["right", "left", "wait", "left", "wait", "right", "right", "right"], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 73, "positions": [[2, 8], [2, 10], [-8, 11], [0, 5], [2, 6], [2, 5], [-5, 7], [2, 10]], "last_actions": ["left", "right", "left", "left", "wait", "left", "left", "left"], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 74, "positions": [[3, 8], [3, 10], [-8, 11], [1, 5], [2, 6], [2, 5], [-4, 7], [3, 10]], "last_actions": ["right", "right", "wait", "right", "wait", "wait", "right", "right"], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 75, "positions": [[2, 8], [4, 10], [-8, 10], [2, 5], [2, 6], [3, 5], [-5, 7], [2, 10]], "last_actions": ["left", "right", "up", "right", "wait", "right", "left", "left"], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 76, "positions": [[3, 8], [5, 10], [-8, 10], [1, 5], [2, 6], [2, 5], [-4, 7], [3, 10]], "last_actions": ["right", "right", "wait", "left", "wait", "left", "right", "right"], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 77, "positions": [[2, 8], [6, 10], [-8, 9], [0, 5], [2, 6], [3, 5], [-5, 7], [2, 10]], "last_actions": ["left", "right", "up", "left", "wait", "right", "left", "left"], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 78, "positions": [[3, 8], [7, 10], [-8, 8], [1, 5], [2, 6], [2, 5], [-4, 7], [3, 10]], "last_actions": ["right", "right", "up", "right", "wait", "left", "right", "right"], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 79, "positions": [[2, 8], [6, 10], [-8, 8], [0, 5], [2, 6], [3, 5], [-5, 7], [3, 10]], "last_actions": ["left", "left", null, "left", "wait", "right", "left", "wait"], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}], "states_b": [{"t": 0, "positions": [[7, 8], [8, 8], [9, 8], [10, 8], [11, 8], [12, 8], [13, 8], [14, 8]], "last_actions": [null, null, null, null, null, null, null, null], "diverged": []}, {"t": 1, "positions": [[6, 8], [8, 7], [9, 9], [9, 8], [11, 9], [12, 9], [12, 8], [14, 9]], "last_actions": ["left", "up", "down", "left", "down", "down", "left", "down"], "diverged": [2, 3, 5, 6, 8]}, {"t": 2, "positions": [[5, 8], [7, 7], [8, 9], [9, 7], [10, 9], [12, 10], [12, 7], [13, 9]], "last_actions": ["left", "left", "left", "up", "left", "down", "up", "left"], "diverged": [2, 3, 4, 5, 6, 7, 8]}, {"t": 3, "positions": [[4, 8], [6, 7], [8, 10], [9, 6], [9, 9], [11, 10], [12, 6], [12, 9]], "last_actions": ["left", "left", "down", "up", "left", "left", "up", "left"], "diverged": [2, 3, 4, 5, 6, 7, 8]}, {"t": 4, "positions": [[4, 8], [6, 6], [7, 10], [8, 6], [8, 9], [11, 11], [11, 6], [11, 9]], "last_actions": [null, "up", "left", "left", "left", "down", "left", "left"], "diverged": [2, 3, 4, 5, 6, 7, 8]}, {"t": 5, "positions": [[4, 8], [5, 6], [7, 11], [7, 6], [8, 10], [10, 11], [10, 6], [11, 10]], "last_actions": [null, "left", "down", "left", "down", "left", "left", "down"], "diverged": [2, 3, 5, 6, 7, 8]}, {"t": 6, "positions": [[4, 8], [5, 5], [6, 11], [6, 6], [7, 10], [9, 11], [9, 6], [11, 9]], "last_actions": [null, "up", "left", "left", "left", "left", "left", "up"], "diverged": [2, 3, 5, 6, 7, 8]}, {"t": 7, "positions": [[3, 8], [4, 5], [5, 11], [5, 6], [6, 10], [8, 11], [8, 6], [10, 9]], "last_actions": ["left", "left", "left", "left", "left", "left", "left", "left"], "diverged": [2, 3, 4, 5, 6, 7, 8]}, {"t": 8, "positions": [[2, 8], [4, 5], [4, 11], [5, 7], [6, 9], [8, 10], [8, 5], [9, 9]], "last_actions": ["left", null, "left", "down", "up", "up", "up", "left"], "diverged": [2, 3, 4, 5, 6, 7, 8]}, {"t": 9, "positions": [[2, 8], [4, 5], [4, 11], [5, 8], [5, 9], [7, 10], [8, 4], [9, 8]], "last_actions": [null, null, null, "down", "left", "left", "up", "up"], "diverged": [2, 3, 4, 5, 6, 7, 8]}, {"t": 10, "positions": [[3, 8], [4, 5], [4, 11], [4, 8], [5, 10], [6, 10], [7, 4], [8, 8]], "last_actions": ["right", null, null, "left", "down", "left", "left", "left"], "diverged": [2, 3, 4, 5, 6, 7, 8]}, {"t": 11, "positions": [[2, 8], [3, 5], [4, 11], [4, 8], [5, 11], [6, 11], [6, 4], [8, 7]], "last_actions": ["left", "left", null, null, "down", "down", "left", "up"], "diverged": [2, 3, 4, 5, 6, 7, 8]}, {"t": 12, "positions": [[3, 8], [2, 5], [3, 11], [4, 8], [5, 12], [6, 12], [5, 4], [8, 6]], "last_actions": ["right", "left", "left", null, "down", "down", "left", "up"], "diverged": [2, 3, 4, 5, 6, 7, 8]}, {"t": 13, "positions": [[3, 7], [2, 5], [2, 11], [4, 8], [5, 12], [6, 13], [6, 4], [8, 7]], "last_actions": ["up", null, "left", null, null, "down", "right", "down"], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 14, "positions": [[2, 7], [2, 4], [1, 11], [3, 8], [5, 12], [6, 12], [5, 4], [8, 8]], "last_actions": ["left", "up", "left", "left", null, "up", "left", "down"], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 15, "positions": [[3, 7], [2, 4], [1, 11], [2, 8], [5, 12], [6, 11], [4, 4], [8, 7]], "last_actions": ["right", "wait", null, "left", null, "up", "left", "up"], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 16, "positions": [[3, 8], [2, 4], [1, 11], [2, 8], [5, 13], [5, 11], [3, 4], [8, 8]], "last_actions": ["down", "wait", "wait", null, "down", "left", "left", "down"], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 17, "positions": [[3, 7], [3, 4], [2, 11], [3, 8], [4, 13], [4, 11], [3, 5], [8, 7]], "last_actions": ["up", "right", "right", "right", "left", "left", "down", "up"], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 18, "positions": [[3, 7], [3, 3], [2, 12], [2, 8], [5, 13], [4, 11], [3, 5], [7, 7]], "last_actions": ["wait", "up", "down", "left", "right", null, null, "left"], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 19, "positions": [[3, 8], [3, 2], [2, 12], [2, 7], [5, 12], [4, 11], [3, 5], [6, 7]], "last_actions": ["down", "up", "wait", "up", "up", null, null, "left"], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 20, "positions": [[4, 8], [3, 3], [2, 12], [2, 7], [6, 12], [4, 11], [3, 5], [5, 7]], "last_actions": ["right", "down", "wait", "wait", "right", null, null, "left"], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 21, "positions": [[5, 8], [3, 4], [2, 13], [2, 6], [6, 11], [3, 11], [2, 5], [5, 7]], "last_actions": ["right", "down", "down", "up", "up", "left", "left", null], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 22, "positions": [[5, 8], [2, 4], [1, 13], [2, 6], [5, 11], [3, 10], [2, 5], [5, 7]], "last_actions": ["wait", "left", "left", "wait", "left", "up", null, null], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 23, "positions": [[4, 8], [3, 4], [1, 13], [2, 6], [4, 11], [2, 10], [2, 5], [5, 7]], "last_actions": ["left", "right", "wait", "wait", "left", "left", "wait", null], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 24, "positions": [[4, 8], [2, 4], [2, 13], [2, 7], [3, 11], [2, 10], [2, 5], [5, 8]], "last_actions": ["wait", "left", "right", "down", "left", null, "wait", "down"], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 25, "positions": [[5, 8], [2, 4], [3, 13], [2, 8], [2, 11], [2, 9], [2, 6], [5, 9]], "last_actions": ["right", "wait", "right", "down", "left", "up", "down", "down"], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 26, "positions": [[4, 8], [2, 3], [2, 13], [2, 8], [1, 11], [3, 9], [2, 5], [5, 10]], "last_actions": ["left", "up", "left", "wait", "left", "right", "up", "down"], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 27, "positions": [[5, 8], [1, 3], [2, 12], [2, 8], [1, 11], [2, 9], [2, 4], [5, 11]], "last_actions": ["right", "left", "up", "wait", null, "left", "up", "down"], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 28, "positions": [[4, 8], [1, 3], [2, 12], [2, 7], [1, 11], [3, 9], [2, 4], [4, 11]], "last_actions": ["left", "wait", "wait", "up", "wait", "right", "wait", "left"], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 29, "positions": [[5, 8], [1, 3], [2, 13], [2, 6], [2, 11], [3, 10], [3, 4], [3, 11]], "last_actions": ["right", "wait", "down", "up", "right", "down", "right", "left"], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 30, "positions": [[6, 8], [1, 2], [2, 14], [2, 7], [3, 11], [2, 10], [3, 4], [4, 11]], "last_actions": ["right", "up", "down", "down", "right", "left", "wait", "right"], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 31, "positions": [[7, 8], [1, 3], [1, 14], [2, 6], [3, 10], [2, 10], [2, 4], [5, 11]], "last_actions": ["right", "down", "left", "up", "up", "wait", "left", "right"], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 32, "positions": [[7, 8], [1, 3], [1, 14], [2, 7], [3, 10], [2, 11], [2, 3], [4, 11]], "last_actions": ["wait", "wait", "wait", "down", "wait", "down", "up", "left"], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 33, "positions": [[7, 9], [2, 3], [1, 14], [2, 8], [2, 10], [3, 11], [2, 4], [5, 11]], "last_actions": ["down", "right", "wait", "down", "left", "right", "down", "right"], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 34, "positions": [[7, 8], [3, 3], [2, 14], [2, 9], [2, 9], [3, 11], [3, 4], [5, 10]], "last_actions": ["up", "right", "right", "down", "up", "wait", "right", "up"], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 35, "positions": [[6, 8], [4, 3], [3, 14], [2, 8], [2, 9], [4, 11], [2, 4], [5, 9]], "last_actions": ["left", "right", "right", "up", "wait", "right", "left", "up"], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 36, "positions": [[6, 8], [4, 3], [3, 14], [2, 9], [2, 9], [3, 11], [2, 3], [5, 8]], "last_actions": ["wait", "wait", "wait", "down", "wait", "left", "up", "up"], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 37, "positions": [[5, 8], [4, 2], [3, 13], [2, 9], [3, 9], [4, 11], [2, 3], [4, 8]], "last_actions": ["left", "up", "up", "wait", "right", "right", "wait", "left"], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 38, "positions": [[5, 9], [4, 3], [2, 13], [2, 10], [2, 9], [3, 11], [1, 3], [3, 8]], "last_actions": ["down", "down", "left", "down", "left", "left", "left", "left"], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 39, "positions": [[5, 8], [4, 2], [2, 13], [2, 9], [2, 9], [4, 11], [1, 2], [3, 7]], "last_actions": ["up", "up", "wait", "up", "wait", "right", "up", "up"], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 40, "positions": [[5, 8], [4, 3], [2, 14], [2, 8], [2, 8], [5, 11], [1, 2], [3, 8]], "last_actions": ["wait", "down", "down", "up", "up", "right", "wait", "down"], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 41, "positions": [[5, 7], [4, 3], [2, 13], [2, 8], [2, 9], [5, 12], [1, 2], [3, 7]], "last_actions": ["up", "wait", "up", "wait", "down", "down", "wait", "up"], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 42, "positions": [[5, 6], [4, 4], [1, 13], [2, 7], [2, 10], [5, 13], [2, 2], [2, 7]], "last_actions": ["up", "down", "left", "up", "down", "down", "right", "left"], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 43, "positions": [[5, 6], [5, 4], [2, 13], [2, 6], [3, 10], [5, 14], [2, 3], [2, 7]], "last_actions": ["wait", "right", "right", "up", "right", "down", "down", null], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 43, "positions": [[5, 6], [5, 4], [2, 13], [2, 6], [3, 10], [5, 14], [2, 3], [2, 7]], "last_actions": ["wait", "right", "right", "up", "right", "down", "down", null], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 43, "positions": [[5, 6], [5, 4], [2, 13], [2, 6], [3, 10], [5, 14], [2, 3], [2, 7]], "last_actions": ["wait", "right", "right", "up", "right", "down", "down", null], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 43, "positions": [[5, 6], [5, 4], [2, 13], [2, 6], [3, 10], [5, 14], [2, 3], [2, 7]], "last_actions": ["wait", "right", "right", "up", "right", "down", "down", null], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 43, "positions": [[5, 6], [5, 4], [2, 13], [2, 6], [3, 10], [5, 14], [2, 3], [2, 7]], "last_actions": ["wait", "right", "right", "up", "right", "down", "down", null], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 43, "positions": [[5, 6], [5, 4], [2, 13], [2, 6], [3, 10], [5, 14], [2, 3], [2, 7]], "last_actions": ["wait", "right", "right", "up", "right", "down", "down", null], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 43, "positions": [[5, 6], [5, 4], [2, 13], [2, 6], [3, 10], [5, 14], [2, 3], [2, 7]], "last_actions": ["wait", "right", "right", "up", "right", "down", "down", null], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 43, "positions": [[5, 6], [5, 4], [2, 13], [2, 6], [3, 10], [5, 14], [2, 3], [2, 7]], "last_actions": ["wait", "right", "right", "up", "right", "down", "down", null], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 43, "positions": [[5, 6], [5, 4], [2, 13], [2, 6], [3, 10], [5, 14], [2, 3], [2, 7]], "last_actions": ["wait", "right", "right", "up", "right", "down", "down", null], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 43, "positions": [[5, 6], [5, 4], [2, 13], [2, 6], [3, 10], [5, 14], [2, 3], [2, 7]], "last_actions": ["wait", "right", "right", "up", "right", "down", "down", null], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 43, "positions": [[5, 6], [5, 4], [2, 13], [2, 6], [3, 10], [5, 14], [2, 3], [2, 7]], "last_actions": ["wait", "right", "right", "up", "right", "down", "down", null], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 43, "positions": [[5, 6], [5, 4], [2, 13], [2, 6], [3, 10], [5, 14], [2, 3], [2, 7]], "last_actions": ["wait", "right", "right", "up", "right", "down", "down", null], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 43, "positions": [[5, 6], [5, 4], [2, 13], [2, 6], [3, 10], [5, 14], [2, 3], [2, 7]], "last_actions": ["wait", "right", "right", "up", "right", "down", "down", null], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 43, "positions": [[5, 6], [5, 4], [2, 13], [2, 6], [3, 10], [5, 14], [2, 3], [2, 7]], "last_actions": ["wait", "right", "right", "up", "right", "down", "down", null], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 43, "positions": [[5, 6], [5, 4], [2, 13], [2, 6], [3, 10], [5, 14], [2, 3], [2, 7]], "last_actions": ["wait", "right", "right", "up", "right", "down", "down", null], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 43, "positions": [[5, 6], [5, 4], [2, 13], [2, 6], [3, 10], [5, 14], [2, 3], [2, 7]], "last_actions": ["wait", "right", "right", "up", "right", "down", "down", null], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 43, "positions": [[5, 6], [5, 4], [2, 13], [2, 6], [3, 10], [5, 14], [2, 3], [2, 7]], "last_actions": ["wait", "right", "right", "up", "right", "down", "down", null], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 43, "positions": [[5, 6], [5, 4], [2, 13], [2, 6], [3, 10], [5, 14], [2, 3], [2, 7]], "last_actions": ["wait", "right", "right", "up", "right", "down", "down", null], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 43, "positions": [[5, 6], [5, 4], [2, 13], [2, 6], [3, 10], [5, 14], [2, 3], [2, 7]], "last_actions": ["wait", "right", "right", "up", "right", "down", "down", null], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 43, "positions": [[5, 6], [5, 4], [2, 13], [2, 6], [3, 10], [5, 14], [2, 3], [2, 7]], "last_actions": ["wait", "right", "right", "up", "right", "down", "down", null], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 43, "positions": [[5, 6], [5, 4], [2, 13], [2, 6], [3, 10], [5, 14], [2, 3], [2, 7]], "last_actions": ["wait", "right", "right", "up", "right", "down", "down", null], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 43, "positions": [[5, 6], [5, 4], [2, 13], [2, 6], [3, 10], [5, 14], [2, 3], [2, 7]], "last_actions": ["wait", "right", "right", "up", "right", "down", "down", null], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 43, "positions": [[5, 6], [5, 4], [2, 13], [2, 6], [3, 10], [5, 14], [2, 3], [2, 7]], "last_actions": ["wait", "right", "right", "up", "right", "down", "down", null], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 43, "positions": [[5, 6], [5, 4], [2, 13], [2, 6], [3, 10], [5, 14], [2, 3], [2, 7]], "last_actions": ["wait", "right", "right", "up", "right", "down", "down", null], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 43, "positions": [[5, 6], [5, 4], [2, 13], [2, 6], [3, 10], [5, 14], [2, 3], [2, 7]], "last_actions": ["wait", "right", "right", "up", "right", "down", "down", null], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 43, "positions": [[5, 6], [5, 4], [2, 13], [2, 6], [3, 10], [5, 14], [2, 3], [2, 7]], "last_actions": ["wait", "right", "right", "up", "right", "down", "down", null], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 43, "positions": [[5, 6], [5, 4], [2, 13], [2, 6], [3, 10], [5, 14], [2, 3], [2, 7]], "last_actions": ["wait", "right", "right", "up", "right", "down", "down", null], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 43, "positions": [[5, 6], [5, 4], [2, 13], [2, 6], [3, 10], [5, 14], [2, 3], [2, 7]], "last_actions": ["wait", "right", "right", "up", "right", "down", "down", null], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 43, "positions": [[5, 6], [5, 4], [2, 13], [2, 6], [3, 10], [5, 14], [2, 3], [2, 7]], "last_actions": ["wait", "right", "right", "up", "right", "down", "down", null], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 43, "positions": [[5, 6], [5, 4], [2, 13], [2, 6], [3, 10], [5, 14], [2, 3], [2, 7]], "last_actions": ["wait", "right", "right", "up", "right", "down", "down", null], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 43, "positions": [[5, 6], [5, 4], [2, 13], [2, 6], [3, 10], [5, 14], [2, 3], [2, 7]], "last_actions": ["wait", "right", "right", "up", "right", "down", "down", null], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 43, "positions": [[5, 6], [5, 4], [2, 13], [2, 6], [3, 10], [5, 14], [2, 3], [2, 7]], "last_actions": ["wait", "right", "right", "up", "right", "down", "down", null], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 43, "positions": [[5, 6], [5, 4], [2, 13], [2, 6], [3, 10], [5, 14], [2, 3], [2, 7]], "last_actions": ["wait", "right", "right", "up", "right", "down", "down", null], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 43, "positions": [[5, 6], [5, 4], [2, 13], [2, 6], [3, 10], [5, 14], [2, 3], [2, 7]], "last_actions": ["wait", "right", "right", "up", "right", "down", "down", null], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 43, "positions": [[5, 6], [5, 4], [2, 13], [2, 6], [3, 10], [5, 14], [2, 3], [2, 7]], "last_actions": ["wait", "right", "right", "up", "right", "down", "down", null], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 43, "positions": [[5, 6], [5, 4], [2, 13], [2, 6], [3, 10], [5, 14], [2, 3], [2, 7]], "last_actions": ["wait", "right", "right", "up", "right", "down", "down", null], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}, {"t": 43, "positions": [[5, 6], [5, 4], [2, 13], [2, 6], [3, 10], [5, 14], [2, 3], [2, 7]], "last_actions": ["wait", "right", "right", "up", "right", "down", "down", null], "diverged": [1, 2, 3, 4, 5, 6, 7, 8]}], "label_a": "Real L1", "label_b": "L1 heuristic"};
+const map = data.map;
+const statesA = data.states_a;
+const statesB = data.states_b;
+
+document.getElementById('labelA').textContent = data.label_a;
+document.getElementById('labelB').textContent = data.label_b;
+document.getElementById('title').textContent =
+    'Map: ' + map.name + ' — ' + statesA.length + ' steps';
+
+// Drawing setup
+const canvasA = document.getElementById('canvasA');
+const canvasB = document.getElementById('canvasB');
+const cellSize = Math.floor(Math.min(canvasA.width / map.n_cols,
+                                       canvasA.height / map.n_rows));
+const offX = (canvasA.width - cellSize * map.n_cols) / 2;
+const offY = (canvasA.height - cellSize * map.n_rows) / 2;
+
+function cellRect(x, y) {
+    return { x: offX + (x - 1) * cellSize, y: offY + (y - 1) * cellSize, w: cellSize, h: cellSize };
+}
+
+function drawMap(ctx, state) {
+    ctx.fillStyle = '#fafafa';
+    ctx.fillRect(0, 0, canvasA.width, canvasA.height);
+
+    // grid
+    ctx.strokeStyle = '#eee';
+    ctx.lineWidth = 1;
+    for (let c = 0; c <= map.n_cols; c++) {
+        ctx.beginPath();
+        ctx.moveTo(offX + c * cellSize, offY);
+        ctx.lineTo(offX + c * cellSize, offY + map.n_rows * cellSize);
+        ctx.stroke();
+    }
+    for (let r = 0; r <= map.n_rows; r++) {
+        ctx.beginPath();
+        ctx.moveTo(offX, offY + r * cellSize);
+        ctx.lineTo(offX + map.n_cols * cellSize, offY + r * cellSize);
+        ctx.stroke();
+    }
+
+    // walls
+    ctx.fillStyle = '#222';
+    for (const [x, y] of map.walls) {
+        const r = cellRect(x, y);
+        ctx.fillRect(r.x, r.y, r.w, r.h);
+    }
+    // wells
+    ctx.fillStyle = '#4477AA';
+    for (const [x, y] of map.wells) {
+        const r = cellRect(x, y);
+        ctx.fillRect(r.x + 2, r.y + 2, r.w - 4, r.h - 4);
+    }
+    // tanks
+    ctx.fillStyle = '#229944';
+    for (const [x, y] of map.tanks) {
+        const r = cellRect(x, y);
+        ctx.fillRect(r.x + 2, r.y + 2, r.w - 4, r.h - 4);
+    }
+    // agents
+    state.positions.forEach((pos, i) => {
+        const [x, y] = pos;
+        const r = cellRect(x, y);
+        const isDiverged = state.diverged.includes(i + 1);
+        ctx.fillStyle = isDiverged ? '#FFCC00' : '#CC4444';
+        ctx.beginPath();
+        ctx.arc(r.x + r.w/2, r.y + r.h/2, r.w * 0.4, 0, 2 * Math.PI);
+        ctx.fill();
+        ctx.fillStyle = 'white';
+        ctx.font = 'bold ' + Math.floor(r.w * 0.5) + 'px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(String(i + 1), r.x + r.w/2, r.y + r.h/2);
+    });
+}
+
+let step = 0;
+let playing = false;
+let playInterval = null;
+let speed = 500;
+
+function render() {
+    const ctxA = canvasA.getContext('2d');
+    const ctxB = canvasB.getContext('2d');
+    drawMap(ctxA, statesA[step]);
+    drawMap(ctxB, statesB[step]);
+    const sA = statesA[step];
+    const nDiverged = sA.diverged.length;
+    let html = 't=' + sA.t + ' (step ' + step + '/' + (statesA.length - 1) + ')';
+    if (nDiverged > 0) {
+        html += ' — <span class="divergence">' + nDiverged +
+                ' agent(s) diverged: ' + sA.diverged.join(', ') + '</span>';
+    }
+    document.getElementById('status').innerHTML = html;
+}
+
+function stepForward() {
+    if (step < statesA.length - 1) {
+        step++;
+        render();
+    } else {
+        pause();
+    }
+}
+
+function stepBack() {
+    if (step > 0) {
+        step--;
+        render();
+    }
+}
+
+function play() {
+    if (playing) return;
+    playing = true;
+    document.getElementById('playBtn').textContent = 'Pause';
+    playInterval = setInterval(() => {
+        if (step < statesA.length - 1) {
+            step++;
+            render();
+        } else {
+            pause();
+        }
+    }, speed);
+}
+
+function pause() {
+    playing = false;
+    document.getElementById('playBtn').textContent = 'Play';
+    if (playInterval) {
+        clearInterval(playInterval);
+        playInterval = null;
+    }
+}
+
+document.getElementById('playBtn').onclick = () => { playing ? pause() : play(); };
+document.getElementById('stepBtn').onclick = () => { pause(); stepForward(); };
+document.getElementById('backBtn').onclick = () => { pause(); stepBack(); };
+document.getElementById('resetBtn').onclick = () => { pause(); step = 0; render(); };
+document.getElementById('speedSlider').oninput = (e) => {
+    speed = parseInt(e.target.value);
+    document.getElementById('speedVal').textContent = speed + 'ms';
+    if (playing) { pause(); play(); }
+};
+
+render();
+</script>
+
+</body>
+</html>

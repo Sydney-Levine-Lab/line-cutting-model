@@ -1,0 +1,44 @@
+Starting simulations (main3 — LEVEL×DEPTH):
+  level = 0
+  depth = 2
+  maps = 28
+  runs per map = 1
+  threads = 8
+  output dir = /Users/lie-panis/Library/CloudStorage/Dropbox/1. Research projects/2. Ongoing/Cutting the line/line_modeling-worktrees/proj2-nerfed/src/../data/simulations/real_L1_main9_2026-04-27_214320/raw
+  save trajectories = false
+
+Starting map no_line_1 (thread 2)
+Starting map new_maybe_4 (thread 7)
+Starting map yes_line_8 (thread 1)
+Starting map yes_line_D (thread 4)
+Starting map no_line_A (thread 8)
+Starting map 9esque (thread 5)
+Starting map no_line_D (thread 3)
+Starting map maybe_6 (thread 6)
+[6] map=9esque.pddl run=1
+[8] map=yes_line_D.pddl run=1
+[2] map=yes_line_8.pddl run=1
+[1] map=no_line_A.pddl run=1
+[5] map=no_line_D.pddl run=1
+[7] map=new_maybe_4.pddl run=1
+[4] map=maybe_6.pddl run=1
+[3] map=no_line_1.pddl run=1
+Finished map no_line_A → wrote no_line_A.csv
+Starting map no_line_B (thread 4)
+[4] map=no_line_B.pddl run=1
+Finished map no_line_D → wrote no_line_D.csv
+Starting map yes_line_B (thread 6)
+[6] map=yes_line_B.pddl run=1
+Finished map yes_line_D → wrote yes_line_D.csv
+Starting map yes_line_E (thread 1)
+[1] map=yes_line_E.pddl run=1
+Finished map no_line_B → wrote no_line_B.csv
+Starting map no_line_C (thread 4)
+[4] map=no_line_C.pddl run=1
+Finished map 9esque → wrote 9esque.csv
+Starting map 10esque (thread 5)
+[5] map=10esque.pddl run=1
+Finished map no_line_1 → wrote no_line_1.csv
+Starting map no_line_2 (thread 8)
+[8] map=no_line_2.pddl run=1
+Finished map no_line_C → wrote no_line_C.csv

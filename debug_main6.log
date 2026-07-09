@@ -1,0 +1,59 @@
+Starting simulations (main3 — LEVEL×DEPTH):
+  level = 0
+  depth = 2
+  maps = 1
+  runs per map = 1
+  threads = 1
+  output dir = /Users/lie-panis/Library/CloudStorage/Dropbox/1. Research projects/2. Ongoing/Cutting the line/line_modeling-worktrees/proj2-nerfed/src/../data/simulations/debug_main6_yesE_2026-04-27_081233/raw
+  save trajectories = true
+
+Starting map yes_line_E (thread 1)
+[1] map=yes_line_E.pddl run=1
+ERROR: LoadError: TaskFailedException
+
+    nested task error: type PlannerHeuristic has no field heuristic
+    Stacktrace:
+      [1] getproperty(x::PlannerHeuristic{ForwardPlanner, typeof(identity), typeof(identity)}, f::Symbol)
+        @ Base ./Base.jl:37
+      [2] (::SymbolicPlanners.var"#29#30"{Bool, GenericDomain, GenericState, MinStepsGoal})()
+        @ SymbolicPlanners ~/.julia/packages/SymbolicPlanners/ACEf6/src/heuristics/memoized.jl:43
+      [3] get!(default::SymbolicPlanners.var"#29#30"{Bool, GenericDomain, GenericState, MinStepsGoal}, h::Dict{Tuple{UInt64, UInt64, UInt64}, Float32}, key::Tuple{UInt64, UInt64, UInt64})
+        @ Base ./dict.jl:479
+      [4] (::MemoizedHeuristic{PlannerHeuristic{ForwardPlanner, typeof(identity), typeof(identity)}})(domain::GenericDomain, state::GenericState, spec::MinStepsGoal; precompute::Bool)
+        @ SymbolicPlanners ~/.julia/packages/SymbolicPlanners/ACEf6/src/heuristics/memoized.jl:40
+      [5] MemoizedHeuristic
+        @ ~/.julia/packages/SymbolicPlanners/ACEf6/src/heuristics/memoized.jl:37 [inlined]
+      [6] evaluate_action(initial_state::GenericState, k::Int64, first_action::Compound, domain::GenericDomain, policies::Vector{BoltzmannPolicy}, order::Vector{Int64}, idx_in_order::Int64, lookahead_rounds::Int64, level::Int64, steps_to_go::MemoizedHeuristic{PlannerHeuristic{ForwardPlanner, typeof(identity), typeof(identity)}})
+        @ Main ~/Library/CloudStorage/Dropbox/1. Research projects/2. Ongoing/Cutting the line/line_modeling-worktrees/proj2-nerfed/src/main6_d.jl:331
+      [7] choose_forward_action(initial_state::GenericState, k::Int64, domain::GenericDomain, policies::Vector{BoltzmannPolicy}, steps_to_go::MemoizedHeuristic{PlannerHeuristic{ForwardPlanner, typeof(identity), typeof(identity)}}, order::Vector{Int64}, idx_in_order::Int64, depth::Int64, level::Int64)
+        @ Main ~/Library/CloudStorage/Dropbox/1. Research projects/2. Ongoing/Cutting the line/line_modeling-worktrees/proj2-nerfed/src/main6_d.jl:379
+      [8] simulation_step(state::GenericState, policies::Vector{BoltzmannPolicy}, domain::GenericDomain, order::Vector{Int64}, steps_to_go::MemoizedHeuristic{PlannerHeuristic{ForwardPlanner, typeof(identity), typeof(identity)}})
+        @ Main ~/Library/CloudStorage/Dropbox/1. Research projects/2. Ongoing/Cutting the line/line_modeling-worktrees/proj2-nerfed/src/main6_d.jl:437
+      [9] (::var"#36#39"{Vector{BoltzmannPolicy}, MemoizedHeuristic{PlannerHeuristic{ForwardPlanner, typeof(identity), typeof(identity)}}, GenericDomain, String, Int64, Vector{Int64}, Vector{Int64}, Int64})(io::IOStream)
+        @ Main ~/Library/CloudStorage/Dropbox/1. Research projects/2. Ongoing/Cutting the line/line_modeling-worktrees/proj2-nerfed/src/main6_d.jl:514
+     [10] open(::var"#36#39"{Vector{BoltzmannPolicy}, MemoizedHeuristic{PlannerHeuristic{ForwardPlanner, typeof(identity), typeof(identity)}}, GenericDomain, String, Int64, Vector{Int64}, Vector{Int64}, Int64}, ::String, ::Vararg{String}; kwargs::@Kwargs{})
+        @ Base ./io.jl:396
+     [11] open
+        @ ./io.jl:393 [inlined]
+     [12] macro expansion
+        @ ~/Library/CloudStorage/Dropbox/1. Research projects/2. Ongoing/Cutting the line/line_modeling-worktrees/proj2-nerfed/src/main6_d.jl:507 [inlined]
+     [13] macro expansion
+        @ ./timing.jl:395 [inlined]
+     [14] macro expansion
+        @ ~/Library/CloudStorage/Dropbox/1. Research projects/2. Ongoing/Cutting the line/line_modeling-worktrees/proj2-nerfed/src/main6_d.jl:505 [inlined]
+     [15] (::var"#100#threadsfor_fun#37"{var"#100#threadsfor_fun#35#38"{Base.OneTo{Int64}}})(tid::Int64; onethread::Bool)
+        @ Main ./threadingconstructs.jl:215
+     [16] #100#threadsfor_fun
+        @ ./threadingconstructs.jl:182 [inlined]
+     [17] (::Base.Threads.var"#1#2"{var"#100#threadsfor_fun#37"{var"#100#threadsfor_fun#35#38"{Base.OneTo{Int64}}}, Int64})()
+        @ Base.Threads ./threadingconstructs.jl:154
+Stacktrace:
+ [1] threading_run(fun::var"#100#threadsfor_fun#37"{var"#100#threadsfor_fun#35#38"{Base.OneTo{Int64}}}, static::Bool)
+   @ Base.Threads ./threadingconstructs.jl:172
+ [2] macro expansion
+   @ ./threadingconstructs.jl:220 [inlined]
+ [3] run_simulations()
+   @ Main ~/Library/CloudStorage/Dropbox/1. Research projects/2. Ongoing/Cutting the line/line_modeling-worktrees/proj2-nerfed/src/main6_d.jl:471
+ [4] top-level scope
+   @ ~/Library/CloudStorage/Dropbox/1. Research projects/2. Ongoing/Cutting the line/line_modeling-worktrees/proj2-nerfed/src/main6_d.jl:604
+in expression starting at /Users/lie-panis/Library/CloudStorage/Dropbox/1. Research projects/2. Ongoing/Cutting the line/line_modeling-worktrees/proj2-nerfed/src/main6_d.jl:603

@@ -83,8 +83,12 @@ const PLAY_ORDER = let
     end
 end
 
-const RUN_LABEL     = get(ENV, "RUN_LABEL", "user_run")
-const USE_TIMESTAMP = true
+const RUN_LABEL = get(ENV, "RUN_LABEL", "user_run")
+# USE_TIMESTAMP=false gives a stable, reproducible output path — required
+# for idempotent cluster array jobs (a task can check whether its own CSV
+# already exists and skip). Default true for interactive use, where you
+# usually don't want to clobber the previous run.
+const USE_TIMESTAMP = env_bool("USE_TIMESTAMP", true)
 const RUN_ID = USE_TIMESTAMP ?
     RUN_LABEL * "_" * Dates.format(now(), "yyyy-mm-dd_HHMMSS") :
     RUN_LABEL
@@ -99,7 +103,11 @@ const SRC_DIR     = @__DIR__
 const DOMAIN_FILE = joinpath(SRC_DIR, "domain.pddl")
 const MAPS_DIR    = joinpath(SRC_DIR, "maps")
 
-const DEFAULT_MAP_FILES = [
+# CANONICAL_MAP_FILES defines the authoritative map ordering. A map's
+# position here (1-based) is its CANONICAL INDEX, which is what seeds are
+# derived from. This must never be reordered: doing so silently changes
+# every seed and makes past runs irreproducible. Append new maps at the end.
+const CANONICAL_MAP_FILES = [
     "no_line_1.pddl", "no_line_2.pddl", "no_line_3.pddl",
     "yes_line_7.pddl", "yes_line_8.pddl", "yes_line_9.pddl", "yes_line_10.pddl",
     "7esque.pddl", "9esque.pddl", "10esque.pddl",
@@ -110,19 +118,32 @@ const DEFAULT_MAP_FILES = [
     "yes_line_B.pddl", "yes_line_C.pddl", "yes_line_D.pddl", "yes_line_E.pddl", "yes_line_F.pddl",
 ]
 
+const CANONICAL_INDEX = Dict(m => i for (i, m) in enumerate(CANONICAL_MAP_FILES))
+
+"""
+Seed for a given map and run. Keyed on the map's CANONICAL index, so
+`MAPS="yes_line_8" RUNS=1 RUN_OFFSET=2` yields exactly the same seed as
+run 3 of yes_line_8 inside a full 28-map sweep. This is what makes
+split/array cluster jobs reproduce single-job runs.
+"""
+seed_for(map_file::AbstractString, run_global::Int) =
+    BASE_SEED + MAP_SEED_OFFSET * CANONICAL_INDEX[map_file] + run_global
+
 # MAPS env var: comma-separated list of map names, with or without .pddl.
 # Example: MAPS="yes_line_E,new_maybe_6" julia main.jl
 function _parse_maps_env()
     raw = get(ENV, "MAPS", "")
-    isempty(raw) && return DEFAULT_MAP_FILES
+    isempty(raw) && return CANONICAL_MAP_FILES
     parts = String[]
     for p in split(raw, ',')
         s = strip(p)
         isempty(s) && continue
         endswith(s, ".pddl") || (s = s * ".pddl")
+        haskey(CANONICAL_INDEX, s) ||
+            error("Unknown map '$(s)'. Must be one of: $(join(CANONICAL_MAP_FILES, ", "))")
         push!(parts, String(s))
     end
-    return isempty(parts) ? DEFAULT_MAP_FILES : parts
+    return isempty(parts) ? CANONICAL_MAP_FILES : parts
 end
 const MAP_FILES = _parse_maps_env()
 
@@ -613,7 +634,7 @@ function run_simulations()
             run_global = RUN_OFFSET + run
             VERBOSE && tprintln("[$(Threads.threadid())] map=$(map) run=$(run_global)")
 
-            seed_this_run = BASE_SEED + MAP_SEED_OFFSET * map_index + run_global
+            seed_this_run = seed_for(map, run_global)
             Random.seed!(seed_this_run)
 
             state           = initial_state

@@ -50,25 +50,52 @@ Verified poster stats:
 | 8 | Fixed order collapses run variance on easy maps but NOT congested ones | no_line_1 SD≈1.5 timesteps; yes_line_8 means 67–83 across runs (Boltzmann ties cascade under congestion) |
 | 9 | Compute cost tracks congestion, 18x spread | realL1 cells: no_line_2 ≈700s … yes_line_8 ≈12.5-13k s (cluster, cold cache, 1 thread) |
 | 10 | Old fill-run seeds were fine | none of the April/May fill scripts passed MAPS subsets, so the (now-fixed) seed bug never bit production data |
+| 11 | **L0 "stuck" = synchronized period-2 limit cycles**, not deadlock | zapknot (seed 271237): 5 agents flip right/left in unison at x=13/14 for 936 timesteps to TIME_MAX; 0 fallbacks, 0 waits; locks in 2 steps after the last zap |
+| 12 | **Ghosts were the system's only noise source; jitter hypothesis CONFIRMED** | ghostknot, same seed: identical cycle on identical cells (agent 6: 279 oscillations at (13,4)/(14,4)) but wandering ghosts eventually break it; escapes at t=88–400 |
+| 13 | **Stuck detector is blind to cycles at ANY patience** | period-2 never yields equal consecutive states; both zap L0 strands and old-code depth-2 strands end at TIME_MAX, not via the detector. STUCK_PATIENCE arm is moot — dropped |
+| 14 | **Old-code depth-2 stranding ≠ L0 cycles: CONFIDENT FROZEN WAITERS, robust to noise** | nm3_forensics run 3 (old code, ghosts): agents 3,4,7 FROZEN in final window — agent 7: wait×15, all tag=OK — while ghosts wander around them for ~900 timesteps. Fallback only 1–2% overall |
+| 15 | **-Inf cliff is NOT the depth-2 stranding mechanism** | waiters never hit -Inf: rollouts return finite values ⇒ FALLBACK_PENALTY predicted ≈no effect (falsification arm) |
+| 16 | **THE ZENO BUG (ancestral, in poster data too): depth-2 evaluation has no step cost within the horizon** | agent 7's 15 waits: best=0.0000 gap=0.0000 — EVERY candidate's rollout ends with k filled ⇒ all evaluate to flat 0.0 ⇒ exact tie ⇒ strict `>` keeps the FIRST candidate in PDDL.available()'s arbitrary order = `wait` ⇒ agent procrastinates one square from the tank, forever. Refutes the "confident margin" reading of #14 (Claude's prediction was wrong; Julien's "did we make a mistake?" was right). Deterministic re-tie each timestep also explains noise-immunity |
 
-**Leading hypothesis for #3/#6 (UNCONFIRMED — one experiment pending):**
-ghosts are annealing noise. Finished agents wander; their movement
-perturbs stuck agents' planning views every timestep, re-rolling
-Boltzmann ties until mutual-blocking knots dissolve (slowly — hence the
-slow-ghost runs). Zap removes the jitter source; knots become absorbing
-states; stuck detector fires. If confirmed: not a bug — a result. It
-means the system relied on goal-less agents for exploration noise, and
-the principled fix is agent-level noise (higher TEMPERATURE), not corpses.
+**MECHANISM (resolved 07-13 evening, findings #11–15). Two distinct
+failure modes:**
 
-**Decisive experiment (launched locally 07-13, results pending):**
-`zapknot` / `ghostknot` — L0, yes_line_E, seed 271237, summary
-trajectories → stuck_forensics + visualizer. Knot of mutually-blocking
-agents that dissolves under ghosts ⇒ jitter hypothesis. Stranded agents
-in open space ⇒ state corruption after all (then: TRAJECTORY_LEVEL=full
-state diff around first [zap]).
+- **Depth 0 (and zap runs generally): deterministic tie cycles.** Near-
+  equal A* routes + temp 1e-4 argmax ⇒ position-parity flip-flop,
+  synchronized across agents. Broken by ANY noise: ghost wandering
+  (slowly) or TEMPERATURE (predicted: quickly — Wave 2 tests this).
+  Others-as-walls is NOT a bug; it is the L0 model. The cycles are an
+  emergent cost of determinism.
+- **Depth 2 (old code): TWO ingredients.** (a) THE ZENO BUG (#16): flat
+  0.0 for any within-horizon fill + first-wins ties ⇒ permanent
+  procrastination at the goal line. A plain accounting bug, ancestral,
+  present in the poster data. (b) Frozen-crowd pessimism: rollout
+  evaluates futures with others frozen; projected jams look impassable
+  though real ones disperse ⇒ over-selection of wait/yield near
+  congestion (the real -Inf fallbacks, e.g. 29% on yes_line_8 old code,
+  are this). How much of depth-2's worse fit is (a) vs (b) is now THE
+  open question: fix (a), rerun, re-fit. If depth-2 still fits worse
+  with the bug fixed, the resource-rational story stands on (b); if the
+  fit gap closes, the paper's framing changes materially.
 
-Also pending: `nm3_forensics` — 10 old-code depth-2 runs on new_maybe_3
-(the old data's worst map) for forensics on the ORIGINAL stuck mechanism.
+**Why depth 2 fits humans worse than depth 1 (working explanation for
+paper/coauthors):** both share the others-as-walls assumption; depth 1
+applies it closed-loop at horizon 1 where it is nearly true and re-plans
+every step (errors never compound — 0 stuck ever); depth 2 rolls a
+misspecified model open-loop and commits, amplifying the model-of-others
+error (the model-based-RL short-rollout lesson). Behaviorally: hesitation
+and yielding near congestion, self-confirming jams, TIME_MAX exhaustions —
+distorting universalized welfare precisely on the congested maps where
+human universalization judgments are most diagnostic. Deeper planning
+multiplies the error of a cheap model of others; the heuristic's myopia
+is protective. Framing for the paper: our depth-2 is a NAIVE forward
+simulator — smarter variants (others keep acting during evaluation,
+sampled/expected-value rollouts, re-plan awareness) are the follow-up
+model space, not a patch.
+
+`nm3_forensics`: 3/10 runs analyzed (runs 1–2 likely completed; run 3 is
+the TIME_MAX strander with frozen waiters). Re-run forensics when all 10
+land and the CSV exists for exact finished/stranded splits.
 
 ---
 
@@ -110,6 +137,8 @@ behavior:
 | STUCK_PATIENCE | 3 | identical states before "stuck" (period-2 oscillation invisible at any value) |
 | FALLBACK_PENALTY | inf | finite ⇒ graded rollout evaluation (no -Inf cliff) |
 | TEMPERATURE | 0.0001 | Boltzmann; raise to inject agent-level noise |
+| EVAL_STEPCOST | false | true = rollout evaluation counts k's spent actions (fixes Zeno bug #16). false = historical flat-0 |
+| TIEBREAK | first | random = uniform among tied-best candidates (uses run RNG). first = historical list-order |
 | TRAJECTORY_LEVEL | none | summary = forensics/visualizer-ready; full = state dumps |
 | USE_TIMESTAMP | true | false ⇒ stable path for idempotent array cells |
 
@@ -161,20 +190,24 @@ WHEN LOCAL RUNS FINISH (tonight):
    TRUE DEADLOCK + wait/OK (confident hesitation) vs OSCILLATION
    (detector blind spot) vs LAG. This is the paper's robustness section.
 
-CLUSTER (gate on #3's verdict — do not launch the factorial blind):
-5. If jitter confirmed → depth-0 temperature rescue, cheap:
-   `COND=zap_d0`, `COND=ghost_d0`, `COND=zap_temp_d0` (temp 0.05),
-   optionally TEMP_OVERRIDE sweep {0.01, 0.05, 0.2}. Question: does
-   agent-level noise substitute for ghost jitter? If yes, the fix for
-   future code is temperature, not ghosts — cognitively principled
-   (softmax noise) and removes the weird dependence on goal-less agents.
-6. Then depth-2: `COND=penalty` (graded evaluation) vs inf — does
-   removing the -Inf cliff cut old-style stuck/fallback rates, and does
-   it change fit to humans? (If fragility is fixable but fit advantage
-   of L1h persists ⇒ cleanest possible paper story.)
-7. STUCK_PATIENCE: only worth cluster time if forensics finds
-   FROZEN-but-would-escape patterns; otherwise skip (oscillation is
-   invisible to the detector at any patience — forensics covers it).
+CLUSTER (Wave 1 = L0_ghost / L1h_ghost / realL1_ghost launched 07-13;
+420 cells, ghost mode, trajectories on, seed-matched to zap runs):
+5. Wave 2 (launch when queue thins): `COND=ghost_d0`, `COND=zap_d0`,
+   `COND=zap_temp_d0` (temp 0.05). PREDICTION: temp arm ≈ 0 stranding
+   (cycles are ties; noise breaks them).
+6. Wave 3 (re-revised after #16): the PRIORITY arm is now the Zeno fix —
+   depth-2, ghosts, EVAL_STEPCOST=true TIEBREAK=random, full 28 maps
+   n=5 (`realL1_fixed_eval` via run_array with those envs). Question:
+   with correct accounting, (i) do the strands vanish? (ii) does real L1
+   still fit humans worse than L1h? That answer decides the paper's
+   framing. Panel arms (ghost_fixed census, penalty falsification,
+   d2+temp) remain useful but secondary. Local first: rerun
+   nm3 seed of run 3 with EVAL_STEPCOST=true — does agent 7 fill?
+7. STUCK_PATIENCE arm: DROPPED (finding #13 — moot at any value).
+8. Wave 1 analysis when realL1_ghost completes: flatten → fit all three
+   to Joe's judgments → rank maps by fit gap (L1h vs realL1) → forensics
+   + visualizer on the worst → does the fit gap track waiter density?
+   That is the paper's Section 4.
 
 PAPER (post-Rio):
 - Robustness/mechanism section from #4-#6.

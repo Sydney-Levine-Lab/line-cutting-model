@@ -107,6 +107,22 @@ const FALLBACK_PENALTY = let
     raw in ("inf", "infinite", "") ? Inf : parse(Float64, raw)
 end
 const PENALIZED_ROLLOUTS = Threads.Atomic{Int}(0)
+
+# EVAL_STEPCOST=true : depth>=2 rollout evaluation counts k's actions spent,
+#   so "fill in 1 step" beats "fill in 2 steps". The historical evaluation
+#   (false) returns flat 0.0 for any within-horizon fill, making `wait` tie
+#   with progress next to the goal — the Zeno procrastination bug
+#   (finding #16). Default false = reproduce historical behavior.
+# TIEBREAK=first|random : how depth>=2 argmax resolves exact value ties.
+#   Historical "first" keeps the first candidate in PDDL.available()'s
+#   arbitrary order (deterministic, order-dependent). "random" samples
+#   uniformly among the tied best (uses the run RNG; reproducible by seed).
+const EVAL_STEPCOST = env_bool("EVAL_STEPCOST", false)
+const TIEBREAK = let
+    raw = lowercase(strip(get(ENV, "TIEBREAK", "first")))
+    raw in ("first", "random") || error("TIEBREAK must be first|random")
+    raw
+end
 # USE_TIMESTAMP=false gives a stable, reproducible output path — required
 # for idempotent cluster array jobs (a task can check whether its own CSV
 # already exists and skip). Default true for interactive use, where you
@@ -431,6 +447,12 @@ function evaluate_action(initial_state::State, k::Int,
 
     # Apply k's candidate first action
     sim_state = safe_transition(domain, sim_state, first_action)
+    k_steps = 1   # k has now spent one action
+
+    # Early exit: filled within round 1
+    if sim_state[HAS_FILLED[k]]
+        return EVAL_STEPCOST ? -Float64(k_steps) : 0.0
+    end
 
     # Agents after k take their step (completing round 1)
     for j_idx in (idx_in_order + 1):length(order)
@@ -442,11 +464,15 @@ function evaluate_action(initial_state::State, k::Int,
     # Simulate additional full rounds
     for _round in 2:lookahead_rounds
         sim_state = simulate_round(sim_state, domain, policies, order, level)
+        k_steps += 1
+        if sim_state[HAS_FILLED[k]]
+            return EVAL_STEPCOST ? -Float64(k_steps) : 0.0
+        end
     end
 
     # Evaluate k's position at the end
     if sim_state[HAS_FILLED[k]]
-        return 0.0
+        return EVAL_STEPCOST ? -Float64(k_steps) : 0.0
     end
 
     k_view = project_others_to_walls(sim_state, k, domain)
@@ -455,9 +481,13 @@ function evaluate_action(initial_state::State, k::Int,
     if !isfinite(cost) && isfinite(FALLBACK_PENALTY)
         # Graded evaluation: unreachable-from-rollout is bad, not fatal.
         Threads.atomic_add!(PENALIZED_ROLLOUTS, 1)
-        return -FALLBACK_PENALTY
+        return EVAL_STEPCOST ? -(Float64(k_steps) + FALLBACK_PENALTY) : -FALLBACK_PENALTY
     end
-    return -cost
+    # Total cost-to-go: actions already spent in the rollout + A* remainder.
+    # Legacy mode ignores k_steps — which makes "fill in 1 step" and "fill in
+    # 2 steps" identical (both 0.0) and lets `wait` tie with progress: the
+    # Zeno bug (STATUS.md finding #16).
+    return EVAL_STEPCOST ? -(Float64(k_steps) + cost) : -cost
 end
 
 """
@@ -500,6 +530,7 @@ function choose_forward_action(initial_state::State, k::Int,
     best_action = nothing
     best_value = -Inf
     second_best_value = -Inf
+    tied_best = Any[]   # candidates within TIE_EPS of best (TIEBREAK=random)
 
     log_pairs = (DEBUG_EVAL || log_io !== nothing) ?
                 Vector{Tuple{Any,Float64}}() : nothing
@@ -509,13 +540,21 @@ function choose_forward_action(initial_state::State, k::Int,
                                  order, idx_in_order, lookahead_rounds,
                                  level, steps_to_go)
         log_pairs !== nothing && push!(log_pairs, (act, Float64(value)))
-        if value > best_value
+        if value > best_value + 1e-9
             second_best_value = best_value
             best_value = value
             best_action = act
+            empty!(tied_best); push!(tied_best, act)
+        elseif value > best_value - 1e-9   # exact tie with current best
+            push!(tied_best, act)
+            second_best_value = max(second_best_value, value)
         elseif value > second_best_value
             second_best_value = value
         end
+    end
+
+    if TIEBREAK == "random" && length(tied_best) > 1 && best_value > -Inf
+        best_action = tied_best[rand(1:length(tied_best))]
     end
 
     if DEBUG_EVAL
@@ -636,6 +675,7 @@ function run_simulations()
     println("  depth = $(DEPTH)")
     println("  play order = $(PLAY_ORDER)")
     println("  zap on fill = $(ZAP)   stuck patience = $(STUCK_PATIENCE)   fallback penalty = $(FALLBACK_PENALTY)")
+    println("  eval stepcost = $(EVAL_STEPCOST)   tiebreak = $(TIEBREAK)   temperature = $(TEMPERATURE)")
     println("  maps = $(length(MAP_FILES))")
     println("  runs per map = $(RUNS) (offset $(RUN_OFFSET))")
     println("  threads = $(Threads.nthreads())")
@@ -796,6 +836,8 @@ function run_simulations()
                 zap                 = ZAP,
                 stuck_patience      = STUCK_PATIENCE,
                 fallback_penalty    = string(FALLBACK_PENALTY),
+                eval_stepcost       = EVAL_STEPCOST,
+                tiebreak            = TIEBREAK,
             )
         end
 

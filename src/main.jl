@@ -65,7 +65,11 @@ const N_AGENTS    = 8
 const RUNS        = env_int("RUNS", 5)
 const RUN_OFFSET  = env_int("RUN_OFFSET", 0)   # for split cluster runs
 const TIME_MAX    = 1000
-const TEMPERATURE = 0.0001
+# Boltzmann temperature. Historical default 0.0001 (near-argmax; ties
+# broken randomly). Higher values inject per-agent action noise — the
+# principled replacement for ghost jitter if the annealing hypothesis
+# holds (see STATUS.md, Goal 2).
+const TEMPERATURE = parse(Float64, get(ENV, "TEMPERATURE", "0.0001"))
 const DEPTH       = env_int("DEPTH", 0)  # forward simulation rounds
 const LEVEL       = env_int("LEVEL", 0)  # nested reasoning depth
 
@@ -84,6 +88,25 @@ const PLAY_ORDER = let
 end
 
 const RUN_LABEL = get(ENV, "RUN_LABEL", "user_run")
+
+# --- Diagnostic knobs (defaults reproduce the July 2026 behavior) ---
+# ZAP=false            : finished agents stay in the world as "ghosts"
+#                        (pre-July behavior); they keep acting and blocking.
+# STUCK_PATIENCE=N     : declare a run stuck after N identical consecutive
+#                        states (default 3 = historical). NOTE: period-2
+#                        oscillation is invisible to this detector at any N.
+# FALLBACK_PENALTY=X   : in depth>=2 evaluation, score unreachable rollout
+#                        states as -X (finite) instead of -Inf. Removes the
+#                        evaluation "cliff": momentarily-blocked candidates
+#                        stay comparable instead of being annihilated.
+#                        Default "inf" = historical -Inf behavior.
+const ZAP            = env_bool("ZAP", true)
+const STUCK_PATIENCE = env_int("STUCK_PATIENCE", 3)
+const FALLBACK_PENALTY = let
+    raw = lowercase(strip(get(ENV, "FALLBACK_PENALTY", "inf")))
+    raw in ("inf", "infinite", "") ? Inf : parse(Float64, raw)
+end
+const PENALIZED_ROLLOUTS = Threads.Atomic{Int}(0)
 # USE_TIMESTAMP=false gives a stable, reproducible output path — required
 # for idempotent cluster array jobs (a task can check whether its own CSV
 # already exists and skip). Default true for interactive use, where you
@@ -428,7 +451,13 @@ function evaluate_action(initial_state::State, k::Int,
 
     k_view = project_others_to_walls(sim_state, k, domain)
     goal = SymbolicPlanners.MinStepsGoal(Term[HAS_FILLED[k]])
-    return -SymbolicPlanners.compute(steps_to_go, domain, k_view, goal)
+    cost = SymbolicPlanners.compute(steps_to_go, domain, k_view, goal)
+    if !isfinite(cost) && isfinite(FALLBACK_PENALTY)
+        # Graded evaluation: unreachable-from-rollout is bad, not fatal.
+        Threads.atomic_add!(PENALIZED_ROLLOUTS, 1)
+        return -FALLBACK_PENALTY
+    end
+    return -cost
 end
 
 """
@@ -606,6 +635,7 @@ function run_simulations()
     println("  level = $(LEVEL)")
     println("  depth = $(DEPTH)")
     println("  play order = $(PLAY_ORDER)")
+    println("  zap on fill = $(ZAP)   stuck patience = $(STUCK_PATIENCE)   fallback penalty = $(FALLBACK_PENALTY)")
     println("  maps = $(length(MAP_FILES))")
     println("  runs per map = $(RUNS) (offset $(RUN_OFFSET))")
     println("  threads = $(Threads.nthreads())")
@@ -639,10 +669,10 @@ function run_simulations()
 
             state           = initial_state
             state_t_minus_1 = state
-            state_t_minus_2 = state
             agent_filled    = fill(0, N_AGENTS)
             active          = trues(N_AGENTS)
-            last_zap_t      = 0   # deadlock check only compares states with the same agent set
+            last_zap_t      = 0   # comparisons suspended on zap steps (object set changes)
+            same_count      = 0   # consecutive identical states seen so far
 
             traj_path = joinpath(TRAJECTORY_DIR,
                                  "trajectory_$(map_name)_run$(run_global).log")
@@ -651,9 +681,9 @@ function run_simulations()
                 io_handle = SAVE_TRAJ ? open(traj_path, "w") : nothing
                 try
                     if io_handle !== nothing
-                        @printf(io_handle, "# map=%s run=%d seed=%d temp=%.6g level=%d depth=%d order=%s zap_on_fill=true trajectory_level=%s\n",
+                        @printf(io_handle, "# map=%s run=%d seed=%d temp=%.6g level=%d depth=%d order=%s zap_on_fill=%s stuck_patience=%d fallback_penalty=%s trajectory_level=%s\n",
                                 map, run_global, seed_this_run, TEMPERATURE, LEVEL, DEPTH,
-                                string(PLAY_ORDER), TRAJECTORY_LEVEL)
+                                string(PLAY_ORDER), string(ZAP), STUCK_PATIENCE, string(FALLBACK_PENALTY), TRAJECTORY_LEVEL)
                         println(io_handle, "# t=0")
                         show(io_handle, state); println(io_handle)
                     end
@@ -680,14 +710,24 @@ function run_simulations()
                             end
                         end
                         if !isempty(newly_filled)
-                            state = remove_agents(state, domain, newly_filled)
-                            for n in newly_filled
-                                active[n] = false
-                            end
-                            last_zap_t = t
-                            if io_handle !== nothing
-                                @printf(io_handle, "[zap] t=%d removed=%s\n",
-                                        t, string(newly_filled))
+                            if ZAP
+                                state = remove_agents(state, domain, newly_filled)
+                                for n in newly_filled
+                                    active[n] = false
+                                end
+                                last_zap_t = t
+                                if io_handle !== nothing
+                                    @printf(io_handle, "[zap] t=%d removed=%s\n",
+                                            t, string(newly_filled))
+                                end
+                            else
+                                # Ghost mode: finished agents remain in the
+                                # world (and in round_order), acting and
+                                # blocking, as in the pre-July code.
+                                if io_handle !== nothing
+                                    @printf(io_handle, "[filled] t=%d agents=%s (ghosts remain)\n",
+                                            t, string(newly_filled))
+                                end
                             end
                         end
 
@@ -699,10 +739,20 @@ function run_simulations()
                             break
                         end
 
-                        # Deadlock detection: three identical consecutive states.
-                        # Only compare once we're >= 3 steps past the last zap, so
-                        # all compared states share the same agent set.
-                        if t - last_zap_t >= 3 && state == state_t_minus_1 && state_t_minus_1 == state_t_minus_2
+                        # Deadlock detection: STUCK_PATIENCE identical
+                        # consecutive states (default 3 = historical).
+                        # A zap changes the object set, so comparisons are
+                        # suspended until the step after; the counter resets.
+                        # KNOWN BLIND SPOT: period-2 oscillation never
+                        # produces equal consecutive states at any patience.
+                        if t == last_zap_t
+                            same_count = 0
+                        elseif state == state_t_minus_1
+                            same_count += 1
+                        else
+                            same_count = 0
+                        end
+                        if same_count >= STUCK_PATIENCE - 1
                             for n in 1:N_AGENTS
                                 agent_filled[n] == 0 && (agent_filled[n] = -1)
                             end
@@ -713,7 +763,6 @@ function run_simulations()
                             break
                         end
 
-                        state_t_minus_2 = state_t_minus_1
                         state_t_minus_1 = state
                     end
                 finally
@@ -744,6 +793,9 @@ function run_simulations()
                 level               = LEVEL,
                 depth               = DEPTH,
                 order               = string(PLAY_ORDER),
+                zap                 = ZAP,
+                stuck_patience      = STUCK_PATIENCE,
+                fallback_penalty    = string(FALLBACK_PENALTY),
             )
         end
 
@@ -757,6 +809,9 @@ function run_simulations()
         fallbacks = FALLBACK_COUNT[]
         pct = total > 0 ? round(100.0 * fallbacks / total, digits=2) : 0.0
         println("\n[depth>=2 stats] fallbacks: $fallbacks / $total decisions ($pct%)")
+        if isfinite(FALLBACK_PENALTY)
+            println("[depth>=2 stats] penalized rollouts (would have been -Inf): $(PENALIZED_ROLLOUTS[])")
+        end
     end
 end
 

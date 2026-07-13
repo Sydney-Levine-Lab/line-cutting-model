@@ -29,13 +29,6 @@
 #   TAG=realL1_fixedorder_zap DEPTH=2       sbatch cluster/run_array.sbatch
 #   TAG=realL2_fixedorder_zap DEPTH=2 LEVEL=1 sbatch cluster/run_array.sbatch
 #
-# Runs 0-4:    sbatch --array=0-139%100   cluster/run_array.sbatch   (default)
-# Runs 5-9:    sbatch --array=140-279%100 cluster/run_array.sbatch
-# Runs 10-19:  sbatch --array=280-559%100 cluster/run_array.sbatch
-#
-# task_id -> (map, run):  MAP_IDX = task % 28,  RUN_IDX = task / 28
-# So task 0..27 are all 28 maps at run 0; 28..55 at run 1; etc.
-#
 # Resubmit stragglers:  sbatch --array=17,43,91 cluster/run_array.sbatch
 # ====================================================================
 #SBATCH --job-name=lines
@@ -64,9 +57,9 @@ MAPS_ARR=(no_line_1 no_line_2 no_line_3 \
           no_line_A no_line_B no_line_C no_line_D \
           yes_line_B yes_line_C yes_line_D yes_line_E yes_line_F)
 
-N_MAPS=${#MAPS_ARR[@]}
-RUN_IDX=$(( SLURM_ARRAY_TASK_ID / N_MAPS ))
-MAP_IDX=$(( SLURM_ARRAY_TASK_ID % N_MAPS ))
+N_RUNS=5
+MAP_IDX=$(( SLURM_ARRAY_TASK_ID / N_RUNS ))
+RUN_IDX=$(( SLURM_ARRAY_TASK_ID % N_RUNS ))
 MAP_NAME="${MAPS_ARR[$MAP_IDX]}"
 
 LEVEL="${LEVEL:-0}"
@@ -98,6 +91,10 @@ RUNS=1 \
 RUN_OFFSET="$RUN_IDX" \
 LEVEL="$LEVEL" \
 DEPTH="$DEPTH" \
+ZAP="${ZAP:-true}" \
+TEMPERATURE="${TEMPERATURE:-0.0001}" \
+FALLBACK_PENALTY="${FALLBACK_PENALTY:-inf}" \
+STUCK_PATIENCE="${STUCK_PATIENCE:-3}" \
 RUN_LABEL="$RUN_LABEL" \
 USE_TIMESTAMP=false \
 TRAJECTORY_LEVEL="${TRAJECTORY_LEVEL:-none}" \

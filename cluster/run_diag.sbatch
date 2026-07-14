@@ -86,7 +86,7 @@ case "$COND" in
   *) echo "unknown COND=$COND" >&2; exit 1 ;;
 esac
 
-TAG="diag_${COND}"
+TAG="diag_${COND}${TAG_SUFFIX:+_$TAG_SUFFIX}"
 RUN_LABEL="${TAG}/${MAP_NAME}_run${RUN_IDX}"
 OUT_CSV="data/simulations/${RUN_LABEL}/raw/${MAP_NAME}.csv"
 

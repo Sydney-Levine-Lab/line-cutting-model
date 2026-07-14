@@ -113,6 +113,8 @@ RUN_LABEL="$RUN_LABEL" \
 USE_TIMESTAMP=false \
 TRAJECTORY_LEVEL=summary \
 WRITE_SNAPSHOT=true \
+EVAL_STEPCOST="${EVAL_STEPCOST:-false}" \
+TIEBREAK="${TIEBREAK:-first} \
 julia --project=src -t 1 src/main.jl
 
 echo "end=$(date -Is)"

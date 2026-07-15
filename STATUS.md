@@ -55,6 +55,10 @@ Verified poster stats:
 | 13 | **Stuck detector is blind to cycles at ANY patience** | period-2 never yields equal consecutive states; both zap L0 strands and old-code depth-2 strands end at TIME_MAX, not via the detector. STUCK_PATIENCE arm is moot — dropped |
 | 14 | **Old-code depth-2 stranding ≠ L0 cycles: CONFIDENT FROZEN WAITERS, robust to noise** | nm3_forensics run 3 (old code, ghosts): agents 3,4,7 FROZEN in final window — agent 7: wait×15, all tag=OK — while ghosts wander around them for ~900 timesteps. Fallback only 1–2% overall |
 | 15 | **-Inf cliff is NOT the depth-2 stranding mechanism** | waiters never hit -Inf: rollouts return finite values ⇒ FALLBACK_PENALTY predicted ≈no effect (falsification arm) |
+| 17 | **Three-arm gradient confirms both fix components (Julien's design)** | flat-zero evaluations on new_maybe_3: fixed (stepcost+random) = 0/0/0; legacy+random ties = 214 (random tie-break mitigates); legacy+first = 2042 and climbing (locks in). Also observed live in fully_broken: agents 6-8 on the zero plateau at t=725 while agent 1 shows GENUINE margin hesitation (wait=-21 > up=-22 > left=-28) — mechanism (b) is real and SURVIVES the fix, as it should: stepcost adds a constant across horizon-end candidates |
+| 20 | **Noise dose-response is an INVERTED-U; zap+T=0.5 Pareto-DOMINATES the ghost baseline** | d0 panel, n=20/map: ghost 3 stuck/fill 60.9; zap-T1e-4 18/44.1; zap-T0.05 18 (no-op, identical set); **zap-T0.5: 4 stuck / fill 50.1 — ghost-level robustness, 11 steps faster (ghosts obstruct ~17 steps: zap survivors 44.1)**; zap-T1.0: 42 stuck / 67.2 — WORSE on both axes (Claude's T1≈0 prediction failed; too little noise → absorbing cycles, too much → diffusive dithering past TIME_MAX). Owed check: T1 strands should classify MOVING in forensics. zap+T0.5 = candidate config for the NEXT project/revision only — adopting any T moves every fit (model-version decision) |
+| 18 | **Temperature cannot substitute for ghost jitter (Wave 2; Claude's prediction FAILED)** | 7-map panel n=20: ghost_d0 3/140 stuck, zap_d0 18/140, zap_temp_d0 (T=0.05) 18/140 with the IDENTICAL stranding set (diff = empty). Reason: L0 cycles are strict-preference alternations (~1-step gaps); at T=0.05 a 1-step gap gives e^-20 odds — surgical-tie noise can't touch strict preferences. Ghosts break cycles by moving WALLS (changing route lengths), not by flipping ties. T large enough to matter (~0.5-1) would degrade all models |
+| 19 | **FIT VERDICT: heuristic beats corrected forward simulation** | Joe univ: bootstrap_pairwise(L1h-ghost vs realL1-fixed) ΔΔR² = +0.027 [+0.002, +0.052], p=.017 (matched-config contrast, Julien's choice — use this one). Fix closed ~3/4 of the fit gap (ΔR² .26/.28 → .363) but L1h (.391-.398) still leads. Gaps proportionally larger on Joe moral (.155 vs .081) and Logan pooled (.079 vs .037) — run the same pairwise on both. Equal fit would have been WEAKER evidence (non-discriminative); the significant gap means human judgments track the heuristic's outcome profile specifically where it diverges from simulation |
 | 16 | **THE ZENO BUG (ancestral, in poster data too): depth-2 evaluation has no step cost within the horizon** | agent 7's 15 waits: best=0.0000 gap=0.0000 — EVERY candidate's rollout ends with k filled ⇒ all evaluate to flat 0.0 ⇒ exact tie ⇒ strict `>` keeps the FIRST candidate in PDDL.available()'s arbitrary order = `wait` ⇒ agent procrastinates one square from the tank, forever. Refutes the "confident margin" reading of #14 (Claude's prediction was wrong; Julien's "did we make a mistake?" was right). Deterministic re-tie each timestep also explains noise-immunity |
 
 **MECHANISM (resolved 07-13 evening, findings #11–15). Two distinct
@@ -114,6 +118,16 @@ land and the CSV exists for exact finished/stranded splits.
   models (memoization warm-up made mean cost depend on RUNS).
 - **D5: Seeds keyed on CANONICAL_MAP_FILES index** — never reorder that
   list; append only. Verified backward-compatible with May full sweeps.
+- **D7 (07-14): PRODUCTION CONFIG FROZEN = Wave 1.** Ghost mode (ZAP=false),
+  EVAL_STEPCOST=true, TIEBREAK=random, TEMPERATURE=1e-4, fixed order,
+  canonical seeds. Rationale: zap requires a noise source (finding #12);
+  temperature cannot be one at model-preserving levels (finding #18);
+  ghosts are therefore retained AS PART OF THE ENVIRONMENT DEFINITION,
+  not as a cognitive claim — paper gets one honest paragraph + future-work
+  options (explicit environmental noise model; harness period-2 detection;
+  agents with memory/inertia that don't cycle). L0_ghost / L1h_ghost /
+  realL1_fixed ARE the production dataset. NOTE: realL1_fixed pairs with
+  ghost-mode L0/L1h — its own zap flag is false too.
 - **D6: elapsed-seconds is a questionable cognitive-cost measure**
   (mixes hardware/cache); consider mechanism counts (A* expansions,
   evaluate_action calls) for the paper's ΔR²-vs-compute figure. UNRESOLVED
@@ -204,6 +218,47 @@ CLUSTER (Wave 1 = L0_ghost / L1h_ghost / realL1_ghost launched 07-13;
    d2+temp) remain useful but secondary. Local first: rerun
    nm3 seed of run 3 with EVAL_STEPCOST=true — does agent 7 fill?
 7. STUCK_PATIENCE arm: DROPPED (finding #13 — moot at any value).
+7-ext. EXTENSION FAILURE POST-MORTEM (07-14): array 17904311
+   (--array=140-279) failed instantly — run_array.sbatch stripes
+   MAP-MAJOR (MAP_IDX = task/5), so the task space is exactly 0-139 and
+   task 140 indexes map #28 of 28 → set -u unbound. Claude's extension
+   recipe was wrong. FIX shipped: wrapper-level RUN_OFFSET knob + loud
+   bounds guard. Extensions are now: RUN_OFFSET=5 TAG=... sbatch
+   cluster/run_array.sbatch (keep default --array=0-139). Lesson added
+   to checklist: eyeball "Submitted batch job" AND the first task's log.
+7-pre. ROBUSTNESS QUEUE (07-14, Julien's items — paper-stage, not poster):
+   (i) Stuck-run scoring: report BOTH exclude and TIME_MAX-rescored (-1
+   -> 1000) variants; only L0_ghost (2/140) affected in the frozen config,
+   and rescoring widens the L1h-L0 contrast — no ranking risk. Ghost vs
+   zap = inclusion-pessimistic vs censoring-optimistic bias pair (Julien's
+   observation): truth bracketed between treatments; report both.
+   (ii) Temperature dose-response: TEMP_OVERRIDE={0.5,1.0} zap_temp_d0
+   arms (needs TAG_SUFFIX line in run_diag.sbatch first — collision
+   otherwise). At T=1 a 1-step gap = e^-1 (~27%% wrong picks): expect
+   stranding ~0 AND fill inflation everywhere. Diagnostic now; adopting
+   any T is a model-version decision (all models move, May comparability
+   lost).
+   (iii) Zap viability at final config: free check = fit
+   L1h_fixedorder_zap_flat (data already local; expect ~.39). Missing
+   cell = zap + stepcost + random at depth 2: EVAL_STEPCOST=true
+   TIEBREAK=random COND=zap_fixed sbatch run_diag.sbatch. Estimate:
+   rankings robust to zap, numbers wiggle, L0 needs stuck policy.
+   Poster ships on May data regardless (PDF July 15); the PRINTED poster
+   (conference July 23) can absorb any update.
+7a. POST-VERDICT QUEUE (07-14): L2h_ghost launched (Julien). Next:
+   realL2_fixed (LEVEL=1 DEPTH=2, frozen config) — the one run that can
+   still change the story: legacy realL2 already fits .373 WITH the Zeno
+   bug; if fixed realL2 joins the heuristic cluster, the claim narrows to
+   "naive (level-0) forward simulation fits worse; better opponent models
+   match at ~40x cost". Expensive (legacy ~37k s/map). Then n=10
+   extensions (--array=140-279) for L0_ghost / L1h_ghost / realL1_fixed
+   to tighten the +0.027 CI. SKIP L3h / real L3 (level row already flat).
+7b. realL1_fixed launched 07-13 (job 17814474), knobs verified in cell
+   logs (eval stepcost = true, tiebreak = random). Seed-matched pair with
+   realL1_ghost = the (a)-vs-(b) decomposition. realL1_ghost NOT canceled
+   — it is the legacy-evaluation baseline of the pair. L0/L1h unaffected
+   by the fix (knobs live only in the DEPTH>=2 code path) — Wave 1's
+   L0_ghost / L1h_ghost are already the correct comparison partners.
 8. Wave 1 analysis when realL1_ghost completes: flatten → fit all three
    to Joe's judgments → rank maps by fit gap (L1h vs realL1) → forensics
    + visualizer on the worst → does the fit gap track waiter density?

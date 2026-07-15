@@ -58,8 +58,18 @@ MAPS_ARR=(no_line_1 no_line_2 no_line_3 \
           yes_line_B yes_line_C yes_line_D yes_line_E yes_line_F)
 
 N_RUNS=5
+# RUN_OFFSET (wrapper-level): shift the run indices of this whole array.
+# Extensions: RUN_OFFSET=5 sbatch cluster/run_array.sbatch  -> runs 5-9.
+# The task space is ALWAYS 0-139 (map-major stripe); --array past 139 is
+# invalid and now fails loudly instead of dying on an unbound index.
+RUN_OFFSET="${RUN_OFFSET:-0}"
 MAP_IDX=$(( SLURM_ARRAY_TASK_ID / N_RUNS ))
-RUN_IDX=$(( SLURM_ARRAY_TASK_ID % N_RUNS ))
+RUN_IDX=$(( SLURM_ARRAY_TASK_ID % N_RUNS + RUN_OFFSET ))
+if (( MAP_IDX >= ${#MAPS_ARR[@]} )); then
+    echo "ERROR: task $SLURM_ARRAY_TASK_ID exceeds the 0-139 map-major task space." >&2
+    echo "       For additional runs keep --array=0-139 and set RUN_OFFSET=5 (etc.)." >&2
+    exit 1
+fi
 MAP_NAME="${MAPS_ARR[$MAP_IDX]}"
 
 LEVEL="${LEVEL:-0}"

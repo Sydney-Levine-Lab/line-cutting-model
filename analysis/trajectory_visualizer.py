@@ -29,6 +29,9 @@ DECISION_RE = re.compile(
     r'chose=([\w-]+)\(agent(\d+)\)\s+tag=(\w+)'
 )
 
+# [zap] t=12 removed=[1, 4]   (new-script logs; absent from old ghost logs)
+ZAP_RE = re.compile(r'\[zap\]\s+t=(\d+)\s+removed=\[([0-9,\s]*)\]')
+
 # Action name → (dx, dy)
 ACTION_DELTAS = {
     'up':    (0, -1),
@@ -43,27 +46,38 @@ ACTION_DELTAS = {
 
 
 def parse_decisions(log_path):
-    """Parse trajectory log, return list of {t, idx, k, pos, action, agent, tag}."""
+    """Parse trajectory log.
+
+    Returns (decisions, zaps):
+      decisions : list of {t, idx, k, pos, action, agent, tag}
+      zaps      : dict {t: [agent_ids removed at end of timestep t]}
+                  (empty for old ghost-style logs, which never zap)
+    """
     rows = []
+    zaps = {}
     with open(log_path) as f:
         for line in f:
             m = DECISION_RE.match(line)
-            if not m:
+            if m:
+                rows.append({
+                    't': int(m.group(1)),
+                    'idx': int(m.group(2)),
+                    'k': int(m.group(3)),
+                    'x': int(m.group(4)),
+                    'y': int(m.group(5)),
+                    'action': m.group(6),
+                    'agent': int(m.group(7)),
+                    'tag': m.group(8),
+                })
                 continue
-            rows.append({
-                't': int(m.group(1)),
-                'idx': int(m.group(2)),
-                'k': int(m.group(3)),
-                'x': int(m.group(4)),
-                'y': int(m.group(5)),
-                'action': m.group(6),
-                'agent': int(m.group(7)),
-                'tag': m.group(8),
-            })
-    return rows
+            m = ZAP_RE.match(line)
+            if m:
+                agents = [int(a) for a in m.group(2).replace(' ', '').split(',') if a]
+                zaps.setdefault(int(m.group(1)), []).extend(agents)
+    return rows, zaps
 
 
-def reconstruct_states(decisions, initial_positions, max_t=None):
+def reconstruct_states(decisions, initial_positions, max_t=None, zaps=None):
     """Build agent positions at each timestep from the trajectory log.
 
     Strategy: trust the `pos=(x,y)` in each [decision] line as ground truth
@@ -71,33 +85,41 @@ def reconstruct_states(decisions, initial_positions, max_t=None):
     Between timesteps, an agent's position at end of timestep T is its
     position at the start of timestep T+1's earliest decision for that agent.
 
-    Returns: list of {t: int, positions: list[(x,y)], last_actions: list}
+    Zap-aware: if `zaps` is given ({t: [agents]}), agents removed at the
+    end of timestep t have position None from t+1 on and are listed in
+    each state's 'done' set. Old ghost-style logs pass zaps={} and behave
+    exactly as before.
+
+    Returns: list of {t, positions, last_actions, last_tags, done}
+    where positions[i] is (x,y) or None if agent i+1 has been removed.
     """
     n_agents = len(initial_positions)
-    
-    # Snapshot at t=0 from initial positions
+    zaps = zaps or {}
+
     states = [{'t': 0,
                 'positions': [tuple(p) for p in initial_positions],
-                'last_actions': [None] * n_agents}]
-    
-    # Group decisions by t
+                'last_actions': [None] * n_agents,
+                'last_tags': [None] * n_agents,
+                'done': []}]
+
     by_t = {}
     for d in decisions:
         by_t.setdefault(d['t'], []).append(d)
-    
-    ts_sorted = sorted(by_t.keys())
+
+    ts_sorted = sorted(set(by_t.keys()) | set(zaps.keys()))
     if max_t is not None:
         ts_sorted = [t for t in ts_sorted if t <= max_t]
-    
-    # Track agent positions across time. Start from initial.
+
     current_pos = [tuple(p) for p in initial_positions]
-    
+    done = set()
+
     for t in ts_sorted:
-        decs = sorted(by_t[t], key=lambda d: d['idx'])
+        decs = sorted(by_t.get(t, []), key=lambda d: d['idx'])
         last_actions = [None] * n_agents
+        last_tags = [None] * n_agents
         for d in decs:
             agent = d['agent']
-            if agent < 1 or agent > n_agents:
+            if agent < 1 or agent > n_agents or agent in done:
                 continue
             # Use the logged position as ground truth for this agent at this t
             current_pos[agent-1] = (d['x'], d['y'])
@@ -105,10 +127,19 @@ def reconstruct_states(decisions, initial_positions, max_t=None):
             dx, dy = ACTION_DELTAS.get(d['action'], (0, 0))
             current_pos[agent-1] = (d['x'] + dx, d['y'] + dy)
             last_actions[agent-1] = d['action']
+            last_tags[agent-1] = d['tag']
+        # Zaps happen at END of timestep t: agent visible this frame,
+        # gone from the next.
+        for agent in zaps.get(t, []):
+            if 1 <= agent <= n_agents:
+                done.add(agent)
         states.append({
             't': t,
-            'positions': [tuple(p) for p in current_pos],
+            'positions': [None if (i + 1) in done else tuple(p)
+                           for i, p in enumerate(current_pos)],
             'last_actions': last_actions,
+            'last_tags': last_tags,
+            'done': sorted(done),
         })
     return states
 
@@ -125,11 +156,11 @@ def build_visualization(map_path, log_real, log_heur, output,
     map_obj = load_map(map_path)
     initial_positions = map_obj.agents
 
-    real_decs = parse_decisions(log_real)
-    heur_decs = parse_decisions(log_heur)
+    real_decs, real_zaps = parse_decisions(log_real)
+    heur_decs, heur_zaps = parse_decisions(log_heur)
 
-    states_real = reconstruct_states(real_decs, initial_positions, max_t)
-    states_heur = reconstruct_states(heur_decs, initial_positions, max_t)
+    states_real = reconstruct_states(real_decs, initial_positions, max_t, zaps=real_zaps)
+    states_heur = reconstruct_states(heur_decs, initial_positions, max_t, zaps=heur_zaps)
 
     # Pad shorter sequence with last state repeated
     max_len = max(len(states_real), len(states_heur))
@@ -138,11 +169,14 @@ def build_visualization(map_path, log_real, log_heur, output,
     while len(states_heur) < max_len:
         states_heur.append({**states_heur[-1], 't': states_heur[-1]['t']})
 
-    # Mark agents whose position differs between sides at each timestep
+    # Mark agents whose position differs between sides at each timestep.
+    # Only counted when the agent is still present on BOTH sides; an agent
+    # finished on one side and active on the other shows up via the
+    # 'done' lists instead.
     for sr, sh in zip(states_real, states_heur):
         diverged = []
         for i, (pr, ph) in enumerate(zip(sr['positions'], sh['positions'])):
-            if pr != ph:
+            if pr is not None and ph is not None and pr != ph:
                 diverged.append(i + 1)
         sr['diverged'] = diverged
         sh['diverged'] = diverged
@@ -237,6 +271,8 @@ canvas { background: white; border: 1px solid #ddd; }
       <span style="background:#229944; margin-left:10px;"></span>tanks
       <span style="background:#CC4444; margin-left:10px;"></span>agents
       <span style="background:#FFCC00; margin-left:10px;"></span>diverged from other side
+      <span style="border:3px solid #FF8800; background:white; margin-left:10px;"></span>last decision was FALLBACK
+      <span style="margin-left:10px;">(finished agents vanish from the board in zap logs)</span>
     </div>
   </div>
 
@@ -307,15 +343,26 @@ function drawMap(ctx, state) {
         const r = cellRect(x, y);
         ctx.fillRect(r.x + 2, r.y + 2, r.w - 4, r.h - 4);
     }
-    // agents
+    // agents (position === null means finished & removed from the world)
     state.positions.forEach((pos, i) => {
+        if (pos === null) return;
         const [x, y] = pos;
         const r = cellRect(x, y);
         const isDiverged = state.diverged.includes(i + 1);
+        const tag = state.last_tags ? state.last_tags[i] : null;
         ctx.fillStyle = isDiverged ? '#FFCC00' : '#CC4444';
         ctx.beginPath();
         ctx.arc(r.x + r.w/2, r.y + r.h/2, r.w * 0.4, 0, 2 * Math.PI);
         ctx.fill();
+        // orange ring = this agent's last decision was a FALLBACK
+        // (every rollout returned -Inf; it acted as L1h)
+        if (tag === 'FALLBACK') {
+            ctx.strokeStyle = '#FF8800';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.arc(r.x + r.w/2, r.y + r.h/2, r.w * 0.46, 0, 2 * Math.PI);
+            ctx.stroke();
+        }
         ctx.fillStyle = 'white';
         ctx.font = 'bold ' + Math.floor(r.w * 0.5) + 'px sans-serif';
         ctx.textAlign = 'center';
@@ -338,8 +385,15 @@ function render() {
     drawMap(ctxA, statesA[step]);
     drawMap(ctxB, statesB[step]);
     const sA = statesA[step];
+    const sB = statesB[step];
     const nDiverged = sA.diverged.length;
     let html = 't=' + sA.t + ' (step ' + step + '/' + (statesA.length - 1) + ')';
+    if (sA.done && sA.done.length > 0) {
+        html += ' — ' + data.label_a + ' done: [' + sA.done.join(',') + ']';
+    }
+    if (sB.done && sB.done.length > 0) {
+        html += ' — ' + data.label_b + ' done: [' + sB.done.join(',') + ']';
+    }
     if (nDiverged > 0) {
         html += ' — <span class="divergence">' + nDiverged +
                 ' agent(s) diverged: ' + sA.diverged.join(', ') + '</span>';

@@ -22,3 +22,15 @@ __pycache__/
 .ipynb_checkpoints/
 
 data/experimental/joe data/cogsci23_figs.key
+
+# Python virtual environment
+.venv/
+
+# Archives / generated clutter
+*.zip
+nohup.out
+/0
+*.log
+
+# Keep experimental participant-level data out of Git for now
+data/experimental/*.parquet

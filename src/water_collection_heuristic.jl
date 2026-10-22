@@ -1,165 +1,196 @@
-# Heuristic for the water-collection (well → tank → finish) task.
+# Goal-matched distance guide for collecting and depositing water.
 
 using PDDL
 using SymbolicPlanners
 import SymbolicPlanners: precompute!, is_precomputed, compute
 
-# --------------------------------------------------------------------
-# WaterCollectionHeuristic: type and constructor
-# --------------------------------------------------------------------
- 
-""" 
-    WaterCollectionHeuristic
-    
-    Heuristic for the water-collection task:
-    1. Agents must first go to a well to collect water.
-    2. They must then go to a tank to fill it with collected water.
-    3. Finally, they must go to a finish point.
-
-    The heuristic estimates the remaining number of steps
-    for each agent based on:
-    - which phase of the task they are in (no water yet / has water / has filled), and
-    - their current position,
-
-    and returns the maximum remaining number of steps,
-    ie a measure of global completion time.
-
-    It precomputes:
-    - `min_well_tank_dists`: minimum distance from each well to any tank,
-    - `min_tank_goal_dists`: minimum distance from each tank to any finish point,
-
-    and implements `precompute!`, `is_precomputed`, and `compute` so it can be
-    used as a heuristic by SymbolicPlanners and queried by the planner and
-    Boltzmann policy as a distance-to-go estimate.
 """
-struct WaterCollectionHeuristic <: Heuristic
-    min_well_tank_dists::Dict{Const, Int}
-    min_tank_goal_dists::Dict{Const, Int}
+    WaterCollectionHeuristic()
+
+Distance to `has-filled`, including the three collection actions and the
+deposit action. Finish squares and post-deposit travel are not part of this
+goal. Already deposited agents therefore have distance zero.
+
+A reverse breadth-first search precomputes distances over position and four
+water phases: empty, collect1, collect2, and full. Movement is allowed only
+when empty or full, as in `domain.pddl`. Wells and tanks are service objects,
+not walkable cells. All legal adjacent service positions are considered.
+
+Other agent objects are ignored in this distance calculation. In the actual
+single-agent planning views their positions are already represented as walls,
+so the distances are exact for that fixed view. In a multi-agent state they
+are a relaxation and their maximum remains an admissible lower bound.
+
+Only the most recent geometry is cached. Wall contents and all well/tank
+coordinates are checked before reuse, including direct calls to `compute`.
+Unsupported goals use zero, preserving uninformed shortest-path search.
+"""
+mutable struct WaterCollectionHeuristic <: Heuristic
+    walls::BitMatrix
+    well_locs::Vector{Tuple{Int,Int}}
+    tank_locs::Vector{Tuple{Int,Int}}
+    distances::Array{Float64,3}
+    prepared::Bool
 end
 
-# Constructor for the heuristic: two dictionaries for both precomputed minimum distances
-function WaterCollectionHeuristic()
-    min_well_tank_dists = Dict{Const, Int}()
-    min_tank_goal_dists = Dict{Const, Int}()
-    return WaterCollectionHeuristic(min_well_tank_dists, min_tank_goal_dists)
-end
+WaterCollectionHeuristic() = WaterCollectionHeuristic(
+    falses(0, 0), Tuple{Int,Int}[], Tuple{Int,Int}[],
+    Array{Float64,3}(undef, 0, 0, 4), false,
+)
 
-# --------------------------------------------------------------------
-# Internal helpers
-# --------------------------------------------------------------------
-
-# Return (x,y) location of an object (a well, tank, or agent) in a state
 function get_obj_loc(state::State, obj::Const)
-    xloc = state[Compound(:xloc, Term[obj])]
-    yloc = PDDL.get_fluent(state, Compound(:yloc, Term[obj]))
-    return (xloc, yloc)
+    return (state[Compound(:xloc, Term[obj])],
+            state[Compound(:yloc, Term[obj])])
 end
 
-# Return (minimum distance, nearest_object) for a set of objects
-function find_nearest_obj(agent_loc, objs, state)
-    min_dist = Inf
-    min_obj = nothing
-    for obj in objs
-        obj_loc = get_obj_loc(state, obj)
-        dist = sum(abs.(obj_loc .- agent_loc))
-        if dist < min_dist
-            min_dist = dist
-            min_obj = obj
-        end
-    end
-    return min_dist, min_obj
+function _water_object_locations(state::State, kind::Symbol)
+    return sort!(Tuple{Int,Int}[get_obj_loc(state, obj)
+                               for obj in PDDL.get_objects(state, kind)])
 end
 
-# --------------------------------------------------------------------
-# Extend SymbolicPlanners heuristic interface
-# --------------------------------------------------------------------
+# This guide only claims a lower bound for positive deposit goals with unit
+# action costs. Coordinate, has-completed, disjunctive, and weighted goals
+# deliberately fall back to h=0 rather than reusing the water-task estimate.
+function _water_goal_agents(spec::Specification)
+    spec isa SymbolicPlanners.MinStepsGoal || return nothing
+    agents = Const[]
+    for term in SymbolicPlanners.get_goal_terms(spec)
+        term isa Compound || return nothing
+        term.name == Symbol("has-filled") || return nothing
+        length(term.args) == 1 && term.args[1] isa Const || return nothing
+        push!(agents, term.args[1])
+    end
+    return agents
+end
 
-# Precompute both minimum distances
-function precompute!(h::WaterCollectionHeuristic, domain::Domain, state::State, spec::Specification)
-    wells = PDDL.get_objects(state, :well)
-    tanks = PDDL.get_objects(state, :tank)
-    finishes = PDDL.get_objects(state, :finish)
+function is_precomputed(h::WaterCollectionHeuristic,
+                        domain::Domain, state::State, spec::Specification)
+    h.prepared || return false
+    h.walls == state[pddl"(walls)"] || return false
+    h.well_locs == _water_object_locations(state, :well) || return false
+    return h.tank_locs == _water_object_locations(state, :tank)
+end
 
-    empty!(h.min_well_tank_dists)
-    empty!(h.min_tank_goal_dists)
-
-    well_locs = [get_obj_loc(state, w) for w in wells]
-    tank_locs = [get_obj_loc(state, t) for t in tanks]
-    finish_locs = [get_obj_loc(state, f) for f in finishes]
-
-    for (w, well_loc) in zip(wells, well_locs)
-        min_dist = typemax(Int)
-        for tank_loc in tank_locs
-            well_tank_dist = sum(abs.(well_loc .- tank_loc))
-            min_dist = min(well_tank_dist, min_dist)
+function _water_service_cells(passable::BitMatrix, locations)
+    height, width = size(passable)
+    cells = falses(height, width)
+    for (x, y) in locations
+        for (dx, dy) in ((0, -1), (0, 1), (-1, 0), (1, 0))
+            nx, ny = x + dx, y + dy
+            if 1 <= nx <= width && 1 <= ny <= height && passable[ny, nx]
+                cells[ny, nx] = true
+            end
         end
-        h.min_well_tank_dists[w] = min_dist
+    end
+    return cells
+end
+
+function precompute!(h::WaterCollectionHeuristic,
+                     domain::Domain, state::State, spec::Specification)
+    # A* invokes precompute! before checking its initial goal. Finished ghosts
+    # and unsupported goals need no distance table at all.
+    goal_agents = _water_goal_agents(spec)
+    goal_agents === nothing && return h
+    isempty(goal_agents) && return h
+    present_agents = PDDL.get_objects(state, :agent)
+    if all(a -> a in present_agents, goal_agents) &&
+       all(a -> state[Compound(Symbol("has-filled"), Term[a])], goal_agents)
+        return h
+    end
+    is_precomputed(h, domain, state, spec) && return h
+    h.walls = copy(BitMatrix(state[pddl"(walls)"]))
+    h.well_locs = _water_object_locations(state, :well)
+    h.tank_locs = _water_object_locations(state, :tank)
+    height, width = size(h.walls)
+
+    passable = .!h.walls
+    for (x, y) in Iterators.flatten((h.well_locs, h.tank_locs))
+        1 <= x <= width && 1 <= y <= height && (passable[y, x] = false)
+    end
+    well_service = _water_service_cells(passable, h.well_locs)
+    tank_service = _water_service_cells(passable, h.tank_locs)
+    distances = fill(Inf, height, width, 4)
+    queue = Tuple{Int,Int,Int}[]
+    sizehint!(queue, 4 * height * width)
+
+    # Any full agent next to any tank can deposit in one action. Starting all
+    # reverse searches at distance one makes this an ordinary unit-edge BFS.
+    for cell in findall(tank_service)
+        y, x = Tuple(cell)
+        distances[y, x, 4] = 1.0
+        push!(queue, (x, y, 4))
     end
 
-    for (t, tank_loc) in zip(tanks, tank_locs)
-        min_dist = typemax(Int)
-        for finish_loc in finish_locs
-            tank_goal_dist = sum(abs.(finish_loc .- tank_loc))
-            min_dist = min(tank_goal_dist, min_dist)
+    head = 1
+    while head <= length(queue)
+        x, y, phase = queue[head]
+        head += 1
+        predecessor_distance = distances[y, x, phase] + 1.0
+
+        if phase == 1 || phase == 4
+            for (dx, dy) in ((0, -1), (0, 1), (-1, 0), (1, 0))
+                nx, ny = x + dx, y + dy
+                if 1 <= nx <= width && 1 <= ny <= height &&
+                   passable[ny, nx] && isinf(distances[ny, nx, phase])
+                    distances[ny, nx, phase] = predecessor_distance
+                    push!(queue, (nx, ny, phase))
+                end
+            end
         end
-        h.min_tank_goal_dists[t] = min_dist
+
+        # Reversing collect3, collect2, or collect1 changes the phase at the
+        # same adjacent well cell. Partially collected agents cannot move.
+        if phase > 1 && well_service[y, x] &&
+           isinf(distances[y, x, phase - 1])
+            distances[y, x, phase - 1] = predecessor_distance
+            push!(queue, (x, y, phase - 1))
+        end
     end
 
+    h.distances = distances
+    h.prepared = true
     return h
 end
 
+function compute(h::WaterCollectionHeuristic,
+                 domain::Domain, state::State, spec::Specification)
+    goal_agents = _water_goal_agents(spec)
+    goal_agents === nothing && return 0.0
+    isempty(goal_agents) && return 0.0
+    present_agents = PDDL.get_objects(state, :agent)
+    any(a -> !(a in present_agents), goal_agents) && return 0.0
 
-# Check if the heuristic has already precomputed the minimum distances
-function is_precomputed(h::WaterCollectionHeuristic,
-                        domain::Domain, state::State, spec::Specification)
-    return isdefined(h, :min_well_tank_dists) && isdefined(h, :min_tank_goal_dists)
-end
+    # Deposit clears water flags. Check the requested completion predicate
+    # before interpreting those flags, including for wandering ghosts.
+    unfinished = Const[a for a in goal_agents
+                       if !state[Compound(Symbol("has-filled"), Term[a])]]
+    isempty(unfinished) && return 0.0
+    is_precomputed(h, domain, state, spec) || precompute!(h, domain, state, spec)
 
-# Compute the heuristic
-function compute(h::WaterCollectionHeuristic, domain::Domain, state::State, spec::Specification)
-    # Precompute if necessary
-    if !is_precomputed(h, domain, state, spec)
-        precompute!(h, domain, state, spec)
+    max_distance = 0.0
+    height, width, _ = size(h.distances)
+    for agent in unfinished
+        x, y = get_obj_loc(state, agent)
+        # Out-of-grid/occupied initial locations are outside the gridworld's
+        # legal-state invariant; h=0 is conservative for such direct queries.
+        1 <= x <= width && 1 <= y <= height || return 0.0
+        (h.walls[y, x] || (x, y) in h.well_locs ||
+         (x, y) in h.tank_locs) && return 0.0
+        water1 = state[Compound(Symbol("has-water1"), Term[agent])]
+        water2 = state[Compound(Symbol("has-water2"), Term[agent])]
+        water3 = state[Compound(Symbol("has-water3"), Term[agent])]
+        phase = if water3 && !water1 && !water2
+            4
+        elseif !water3 && water1 && water2
+            3
+        elseif !water3 && water1 && !water2
+            2
+        elseif !water3 && !water1 && !water2
+            1
+        else
+            return 0.0 # A noncanonical flag combination has no claimed bound.
+        end
+        max_distance = max(max_distance, h.distances[y, x, phase])
     end
-
-    # Find max heuristic distance to goal across agents
-    max_dist = 0
-
-    agents = PDDL.get_objects(state, :agent)
-    wells = PDDL.get_objects(state, :well)
-    tanks = PDDL.get_objects(state, :tank)
-    finishes = PDDL.get_objects(state, :finish)
-
-    for a in agents 
-        entire_completed = Compound(Symbol("has-completed"), Term[a])
-        task_completed = Compound(Symbol("has-filled"), Term[a])
-        water_collected = state[Compound(Symbol("has-water1"), Term[a])] || state[Compound(Symbol("has-water2"), Term[a])] || state[Compound(Symbol("has-water3"), Term[a])]
-            
-        #condition, agent has completed the tanks
-        if state[entire_completed]
-            continue
-        end
-
-        agent_loc = get_obj_loc(state, a)
-        agent_dist = Inf
-
-        #condition, agent hasn't gotten the water yet
-        if !water_collected
-            min_well_dist, min_well = find_nearest_obj(agent_loc, wells, state)
-            min_tank_dist = h.min_well_tank_dists[min_well]
-            min_goal_dist = minimum([h.min_tank_goal_dists[t] for t in keys(h.min_tank_goal_dists)])
-            agent_dist = min_well_dist + min_tank_dist + min_goal_dist
-        elseif !state[task_completed] # agent has collected water, but hasn't stored it in a tank yet
-            min_tank_dist, min_tank = find_nearest_obj(agent_loc, tanks, state)
-            min_goal_dist = h.min_tank_goal_dists[min_tank]
-            agent_dist = min_tank_dist + min_goal_dist
-        else # agent has filled the tank with water
-            min_goal_dist, _ = find_nearest_obj(agent_loc, finishes, state)
-            agent_dist = min_goal_dist
-        end
-
-        max_dist = max(max_dist, agent_dist)
-    end 
-    return max_dist
+    return max_distance
 end
-

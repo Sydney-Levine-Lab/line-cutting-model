@@ -1,4 +1,12 @@
-# STATUS — line-cutting model (updated 2026-07-13)
+# STATUS — line-cutting model
+
+## 2026-10-15 — n=50 extension
+- L0_ghost, L1h_ghost, L2h_ghost, realL1_fixed: 50 runs/map (runs 0-49), same frozen config as July (D7), canonical seeds, RUN_OFFSET 10-45.
+- realL2_fixed: 1300/1400 at this download; 12 hard maps incomplete (35-49/50), still running. Re-download + re-flatten when done; until then compare real L2 only on its first 10 runs or flag unequal n.
+- Stuck runs (excluded downstream): L0 21/1400 (9esque 3, maybe_6 5, new_maybe_2 2, yes_line_E 5, yes_line_F 6); realL1 1/1400 (new_maybe_6); L1h/L2h 0.
+- Full report: data/simulations/flatten_report_2026-10-15.txt. Poster-era flat dirs kept as *_flat_poster.
+
+## 2026-07-13 - poster material
 
 Single source of truth for: what's decided, what's known, what's open,
 which code and data to trust. Update this file when any of those change.

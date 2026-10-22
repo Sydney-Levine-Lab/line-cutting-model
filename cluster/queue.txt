@@ -1,0 +1,8 @@
+# Robustness arms, Oct 15. Fast (depth 0/1) first, depth-2 overnight. Frozen D7 config except the one knob named in the TAG.
+# Arm C: no ghosts (zap) + T=0.5
+ZAP=true TEMPERATURE=0.5 TAG=L0_zap_T05  DEPTH=0 sbatch cluster/run_array.sbatch
+ZAP=true TEMPERATURE=0.5 TAG=L1h_zap_T05 DEPTH=1 sbatch cluster/run_array.sbatch
+# depth-2 arms (slow: yes_line_8 cells take hours)
+ZAP=false TEMPERATURE=0.5 EVAL_STEPCOST=true TIEBREAK=random TAG=realL1_fixed_T05 DEPTH=2 sbatch cluster/run_array.sbatch
+ZAP=true  TEMPERATURE=0.5 EVAL_STEPCOST=true TIEBREAK=random TAG=realL1_zap_T05   DEPTH=2 sbatch cluster/run_array.sbatch
+ZAP=false ORDER=8,7,6,5,4,3,2,1 EVAL_STEPCOST=true TIEBREAK=random TAG=realL1_fixed_rev DEPTH=2 sbatch cluster/run_array.sbatch

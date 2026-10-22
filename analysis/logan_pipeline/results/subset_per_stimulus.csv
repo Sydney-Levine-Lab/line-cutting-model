@@ -1,0 +1,352 @@
+outcome,contrast,stimulus,map,retained,contrib_R2
+univ (US),L1 heuristic − L0,maybe_4_1cut,maybe_4,False,0.0068879133335716875
+univ (US),L1 heuristic − L0,maybe_5_1cut,maybe_5,False,0.0006214304530865245
+univ (US),L1 heuristic − L0,maybe_6_1cut,maybe_6,False,0.09657198941882587
+univ (US),L1 heuristic − L0,new_maybe_1_1cut,new_maybe_1,False,-0.0003480493187772165
+univ (US),L1 heuristic − L0,new_maybe_2_1cut,new_maybe_2,False,0.0037430216757220703
+univ (US),L1 heuristic − L0,new_maybe_3_1cut,new_maybe_3,True,-0.0030835869229416425
+univ (US),L1 heuristic − L0,new_maybe_3_bad,new_maybe_3,False,-0.004818627194622204
+univ (US),L1 heuristic − L0,new_maybe_3_badder,new_maybe_3,True,-0.005360827279522359
+univ (US),L1 heuristic − L0,new_maybe_4_1cut,new_maybe_4,True,-0.012536861658915658
+univ (US),L1 heuristic − L0,new_maybe_4_bad,new_maybe_4,True,-0.010415364119921942
+univ (US),L1 heuristic − L0,new_maybe_5_1cut,new_maybe_5,True,0.030059681692945824
+univ (US),L1 heuristic − L0,new_maybe_5_bad,new_maybe_5,True,0.02726414634884907
+univ (US),L1 heuristic − L0,new_maybe_6_1cut,new_maybe_6,True,-0.009273836559262028
+univ (US),L1 heuristic − L0,new_no_1_1cut,no_line_1,True,-0.0011191433062973165
+univ (US),L1 heuristic − L0,new_no_2_1cut,no_line_2,True,0.0011002069428088222
+univ (US),L1 heuristic − L0,new_no_3_1cut,no_line_3,False,-0.0016099926505048062
+univ (US),L1 heuristic − L0,new_yes_10_1cut,yes_line_10,True,0.01917131058461678
+univ (US),L1 heuristic − L0,new_yes_10_bad,yes_line_10,True,0.01598712382071398
+univ (US),L1 heuristic − L0,new_yes_10mod_1cut,10esque,False,0.01449839029914354
+univ (US),L1 heuristic − L0,new_yes_7_1cut,yes_line_7,True,0.023920250722369807
+univ (US),L1 heuristic − L0,new_yes_7esque_1cut,7esque,False,0.013546052705796525
+univ (US),L1 heuristic − L0,new_yes_8_1cut,yes_line_8,False,0.02242556774433148
+univ (US),L1 heuristic − L0,new_yes_9_1cut,yes_line_9,True,0.003238046652119533
+univ (US),L1 heuristic − L0,new_yes_9esque_1cut,9esque,False,0.006792760672659735
+univ (US),L1 heuristic − L0,noline_A_1cut,no_line_A,True,0.02176952425367289
+univ (US),L1 heuristic − L0,noline_B_1cut,no_line_B,True,0.02585407650462864
+univ (US),L1 heuristic − L0,noline_C_1cut,no_line_C,True,0.023020873045165972
+univ (US),L1 heuristic − L0,noline_D_1cut,no_line_D,False,0.0020478174317821707
+univ (US),L1 heuristic − L0,yesline_B_1cut,yes_line_B,False,0.002852602364636011
+univ (US),L1 heuristic − L0,yesline_B_bad,yes_line_B,False,0.005921072856425811
+univ (US),L1 heuristic − L0,yesline_B_badder,yes_line_B,False,0.006306823432536574
+univ (US),L1 heuristic − L0,yesline_C_1cut,yes_line_C,True,0.02034718711675399
+univ (US),L1 heuristic − L0,yesline_C_bad,yes_line_C,False,0.020290565720137127
+univ (US),L1 heuristic − L0,yesline_C_badder,yes_line_C,False,0.014769979549993524
+univ (US),L1 heuristic − L0,yesline_D_1cut,yes_line_D,False,0.001587170521953794
+univ (US),L1 heuristic − L0,yesline_D_bad,yes_line_D,False,0.001446150258530503
+univ (US),L1 heuristic − L0,yesline_D_badder,yes_line_D,True,0.0003843506280492574
+univ (US),L1 heuristic − L0,yesline_E_1cut,yes_line_E,True,-0.01663637903644479
+univ (US),L1 heuristic − L0,yesline_F_1cut,yes_line_F,True,0.01591064560376589
+univ (US),L1 heuristic − real L1,maybe_4_1cut,maybe_4,False,-0.008817033906595263
+univ (US),L1 heuristic − real L1,maybe_5_1cut,maybe_5,False,-0.00014529872150667925
+univ (US),L1 heuristic − real L1,maybe_6_1cut,maybe_6,False,0.004306995708844939
+univ (US),L1 heuristic − real L1,new_maybe_1_1cut,new_maybe_1,False,0.0009629059492936424
+univ (US),L1 heuristic − real L1,new_maybe_2_1cut,new_maybe_2,False,-0.0009718685995784002
+univ (US),L1 heuristic − real L1,new_maybe_3_1cut,new_maybe_3,True,-0.007497090434258567
+univ (US),L1 heuristic − real L1,new_maybe_3_bad,new_maybe_3,False,-0.012515967871848511
+univ (US),L1 heuristic − real L1,new_maybe_3_badder,new_maybe_3,True,-0.01408436707109533
+univ (US),L1 heuristic − real L1,new_maybe_4_1cut,new_maybe_4,True,-0.015104706917424073
+univ (US),L1 heuristic − real L1,new_maybe_4_bad,new_maybe_4,True,-0.013895776870113811
+univ (US),L1 heuristic − real L1,new_maybe_5_1cut,new_maybe_5,True,0.008626477215382511
+univ (US),L1 heuristic − real L1,new_maybe_5_bad,new_maybe_5,True,0.006949954999161673
+univ (US),L1 heuristic − real L1,new_maybe_6_1cut,new_maybe_6,True,0.01857140258720608
+univ (US),L1 heuristic − real L1,new_no_1_1cut,no_line_1,True,-0.001067336605727109
+univ (US),L1 heuristic − real L1,new_no_2_1cut,no_line_2,True,-0.0016004687031440663
+univ (US),L1 heuristic − real L1,new_no_3_1cut,no_line_3,False,-0.00047283917587502707
+univ (US),L1 heuristic − real L1,new_yes_10_1cut,yes_line_10,True,0.0008116635616246988
+univ (US),L1 heuristic − real L1,new_yes_10_bad,yes_line_10,True,0.0006432706362305849
+univ (US),L1 heuristic − real L1,new_yes_10mod_1cut,10esque,False,-0.006123917581417765
+univ (US),L1 heuristic − real L1,new_yes_7_1cut,yes_line_7,True,0.00802344755269954
+univ (US),L1 heuristic − real L1,new_yes_7esque_1cut,7esque,False,0.018506760114288735
+univ (US),L1 heuristic − real L1,new_yes_8_1cut,yes_line_8,False,0.038351243366181786
+univ (US),L1 heuristic − real L1,new_yes_9_1cut,yes_line_9,True,-0.004040009203142879
+univ (US),L1 heuristic − real L1,new_yes_9esque_1cut,9esque,False,-0.0018326273433656676
+univ (US),L1 heuristic − real L1,noline_A_1cut,no_line_A,True,0.0026270170227222643
+univ (US),L1 heuristic − real L1,noline_B_1cut,no_line_B,True,0.0032294059046521673
+univ (US),L1 heuristic − real L1,noline_C_1cut,no_line_C,True,0.004591852705817518
+univ (US),L1 heuristic − real L1,noline_D_1cut,no_line_D,False,-0.0063109507783726095
+univ (US),L1 heuristic − real L1,yesline_B_1cut,yes_line_B,False,0.0008466460853919443
+univ (US),L1 heuristic − real L1,yesline_B_bad,yes_line_B,False,-0.000943969857757886
+univ (US),L1 heuristic − real L1,yesline_B_badder,yes_line_B,False,-0.0011690758620396056
+univ (US),L1 heuristic − real L1,yesline_C_1cut,yes_line_C,True,-0.004242549299605606
+univ (US),L1 heuristic − real L1,yesline_C_bad,yes_line_C,False,-0.00421936620095163
+univ (US),L1 heuristic − real L1,yesline_C_badder,yes_line_C,False,-0.0019590140821891078
+univ (US),L1 heuristic − real L1,yesline_D_1cut,yes_line_D,False,-0.00039339046231958824
+univ (US),L1 heuristic − real L1,yesline_D_bad,yes_line_D,False,-0.0002759452792379978
+univ (US),L1 heuristic − real L1,yesline_D_badder,yes_line_D,True,0.0006083478639645635
+univ (US),L1 heuristic − real L1,yesline_E_1cut,yes_line_E,True,-0.018426890462354635
+univ (US),L1 heuristic − real L1,yesline_F_1cut,yes_line_F,True,0.003528437070964532
+univ (US),L2 heuristic − L1 heuristic,maybe_4_1cut,maybe_4,False,-0.0002596338790399336
+univ (US),L2 heuristic − L1 heuristic,maybe_5_1cut,maybe_5,False,0.00019001133696573282
+univ (US),L2 heuristic − L1 heuristic,maybe_6_1cut,maybe_6,False,-2.251321177009636e-05
+univ (US),L2 heuristic − L1 heuristic,new_maybe_1_1cut,new_maybe_1,False,0.00028446010853348135
+univ (US),L2 heuristic − L1 heuristic,new_maybe_2_1cut,new_maybe_2,False,0.0002854022236829874
+univ (US),L2 heuristic − L1 heuristic,new_maybe_3_1cut,new_maybe_3,True,-0.0008269597008644687
+univ (US),L2 heuristic − L1 heuristic,new_maybe_3_bad,new_maybe_3,False,-0.0012481536226076114
+univ (US),L2 heuristic − L1 heuristic,new_maybe_3_badder,new_maybe_3,True,-0.0013797767231523512
+univ (US),L2 heuristic − L1 heuristic,new_maybe_4_1cut,new_maybe_4,True,0.0063943753866316
+univ (US),L2 heuristic − L1 heuristic,new_maybe_4_bad,new_maybe_4,True,0.006053483956904384
+univ (US),L2 heuristic − L1 heuristic,new_maybe_5_1cut,new_maybe_5,True,-0.0026582106046690594
+univ (US),L2 heuristic − L1 heuristic,new_maybe_5_bad,new_maybe_5,True,-0.003130871495817205
+univ (US),L2 heuristic − L1 heuristic,new_maybe_6_1cut,new_maybe_6,True,0.0013799482707828983
+univ (US),L2 heuristic − L1 heuristic,new_no_1_1cut,no_line_1,True,0.00034376142003248426
+univ (US),L2 heuristic − L1 heuristic,new_no_2_1cut,no_line_2,True,-0.00011369438177635294
+univ (US),L2 heuristic − L1 heuristic,new_no_3_1cut,no_line_3,False,0.00013731686043248615
+univ (US),L2 heuristic − L1 heuristic,new_yes_10_1cut,yes_line_10,True,0.005310557424948027
+univ (US),L2 heuristic − L1 heuristic,new_yes_10_bad,yes_line_10,True,0.004062846313178044
+univ (US),L2 heuristic − L1 heuristic,new_yes_10mod_1cut,10esque,False,-0.0002148862984545304
+univ (US),L2 heuristic − L1 heuristic,new_yes_7_1cut,yes_line_7,True,-0.0021634919682522635
+univ (US),L2 heuristic − L1 heuristic,new_yes_7esque_1cut,7esque,False,-0.002258593229691807
+univ (US),L2 heuristic − L1 heuristic,new_yes_8_1cut,yes_line_8,False,0.0007013369152369696
+univ (US),L2 heuristic − L1 heuristic,new_yes_9_1cut,yes_line_9,True,0.0026833491306002656
+univ (US),L2 heuristic − L1 heuristic,new_yes_9esque_1cut,9esque,False,-5.56846499121685e-05
+univ (US),L2 heuristic − L1 heuristic,noline_A_1cut,no_line_A,True,0.00018164783071094624
+univ (US),L2 heuristic − L1 heuristic,noline_B_1cut,no_line_B,True,-0.0003437071500332918
+univ (US),L2 heuristic − L1 heuristic,noline_C_1cut,no_line_C,True,-0.0010498806372999255
+univ (US),L2 heuristic − L1 heuristic,noline_D_1cut,no_line_D,False,0.004612618900445085
+univ (US),L2 heuristic − L1 heuristic,yesline_B_1cut,yes_line_B,False,-8.629324027155703e-06
+univ (US),L2 heuristic − L1 heuristic,yesline_B_bad,yes_line_B,False,0.0002565569538979733
+univ (US),L2 heuristic − L1 heuristic,yesline_B_badder,yes_line_B,False,0.0002898946574085651
+univ (US),L2 heuristic − L1 heuristic,yesline_C_1cut,yes_line_C,True,0.00027550028555939544
+univ (US),L2 heuristic − L1 heuristic,yesline_C_bad,yes_line_C,False,0.0002743107516534303
+univ (US),L2 heuristic − L1 heuristic,yesline_C_badder,yes_line_C,False,0.00015833119582180053
+univ (US),L2 heuristic − L1 heuristic,yesline_D_1cut,yes_line_D,False,0.0002621334336948495
+univ (US),L2 heuristic − L1 heuristic,yesline_D_bad,yes_line_D,False,0.00021428284646710495
+univ (US),L2 heuristic − L1 heuristic,yesline_D_badder,yes_line_D,True,-0.00014600392795355898
+univ (US),L2 heuristic − L1 heuristic,yesline_E_1cut,yes_line_E,True,0.005469965327233518
+univ (US),L2 heuristic − L1 heuristic,yesline_F_1cut,yes_line_F,True,-0.0001468217898490531
+moral US,L1 heuristic − L0,maybe_4_1cut,maybe_4,False,0.0038776624744963134
+moral US,L1 heuristic − L0,maybe_5_1cut,maybe_5,False,0.005593298057019548
+moral US,L1 heuristic − L0,maybe_6_1cut,maybe_6,False,0.020623561308844154
+moral US,L1 heuristic − L0,new_maybe_1_1cut,new_maybe_1,False,0.00043629156211342503
+moral US,L1 heuristic − L0,new_maybe_2_1cut,new_maybe_2,False,0.003583001299186941
+moral US,L1 heuristic − L0,new_maybe_3_1cut,new_maybe_3,True,-0.0011384358060173713
+moral US,L1 heuristic − L0,new_maybe_3_bad,new_maybe_3,False,-0.002962450616586722
+moral US,L1 heuristic − L0,new_maybe_3_badder,new_maybe_3,True,0.001579060500297253
+moral US,L1 heuristic − L0,new_maybe_4_1cut,new_maybe_4,True,-0.0016220989686471033
+moral US,L1 heuristic − L0,new_maybe_4_bad,new_maybe_4,True,-0.0034466969069573074
+moral US,L1 heuristic − L0,new_maybe_5_1cut,new_maybe_5,True,0.015968685452389258
+moral US,L1 heuristic − L0,new_maybe_5_bad,new_maybe_5,True,0.018300029266617543
+moral US,L1 heuristic − L0,new_maybe_6_1cut,new_maybe_6,True,-0.010539450653998868
+moral US,L1 heuristic − L0,new_no_1_1cut,no_line_1,True,-0.00038802479854266987
+moral US,L1 heuristic − L0,new_no_2_1cut,no_line_2,True,0.003913639968845844
+moral US,L1 heuristic − L0,new_no_3_1cut,no_line_3,False,0.0040876467054807904
+moral US,L1 heuristic − L0,new_yes_10_1cut,yes_line_10,True,0.0044816183667565745
+moral US,L1 heuristic − L0,new_yes_10_bad,yes_line_10,True,0.003749122831228295
+moral US,L1 heuristic − L0,new_yes_10mod_1cut,10esque,False,0.003116059967380424
+moral US,L1 heuristic − L0,new_yes_7_1cut,yes_line_7,True,0.007187033845999105
+moral US,L1 heuristic − L0,new_yes_7esque_1cut,7esque,False,0.006676456218021912
+moral US,L1 heuristic − L0,new_yes_8_1cut,yes_line_8,False,0.007064996229727284
+moral US,L1 heuristic − L0,new_yes_9_1cut,yes_line_9,True,-0.0005812155212194441
+moral US,L1 heuristic − L0,new_yes_9esque_1cut,9esque,False,0.00011369151476188425
+moral US,L1 heuristic − L0,noline_A_1cut,no_line_A,True,0.011089165438061942
+moral US,L1 heuristic − L0,noline_B_1cut,no_line_B,True,0.012284143648075315
+moral US,L1 heuristic − L0,noline_C_1cut,no_line_C,True,0.001481858649501739
+moral US,L1 heuristic − L0,noline_D_1cut,no_line_D,False,0.002948039414059268
+moral US,L1 heuristic − L0,yesline_B_1cut,yes_line_B,False,-0.0067877101237121895
+moral US,L1 heuristic − L0,yesline_B_bad,yes_line_B,False,0.005328734289564453
+moral US,L1 heuristic − L0,yesline_B_badder,yes_line_B,False,0.005228192912433688
+moral US,L1 heuristic − L0,yesline_C_1cut,yes_line_C,True,0.001099895588428126
+moral US,L1 heuristic − L0,yesline_C_bad,yes_line_C,False,0.0005088135305048477
+moral US,L1 heuristic − L0,yesline_C_badder,yes_line_C,False,-0.005032813129959049
+moral US,L1 heuristic − L0,yesline_D_1cut,yes_line_D,False,2.727159000718962e-05
+moral US,L1 heuristic − L0,yesline_D_bad,yes_line_D,False,-0.0017757992002444556
+moral US,L1 heuristic − L0,yesline_D_badder,yes_line_D,True,-0.005384929804192006
+moral US,L1 heuristic − L0,yesline_E_1cut,yes_line_E,True,0.024978392528529063
+moral US,L1 heuristic − L0,yesline_F_1cut,yes_line_F,True,0.005841622936900185
+moral US,L1 heuristic − real L1,maybe_4_1cut,maybe_4,False,0.0002607326396137484
+moral US,L1 heuristic − real L1,maybe_5_1cut,maybe_5,False,0.0033430444996782396
+moral US,L1 heuristic − real L1,maybe_6_1cut,maybe_6,False,0.0037423545158419566
+moral US,L1 heuristic − real L1,new_maybe_1_1cut,new_maybe_1,False,0.0004835045139153539
+moral US,L1 heuristic − real L1,new_maybe_2_1cut,new_maybe_2,False,-0.0018614212405753516
+moral US,L1 heuristic − real L1,new_maybe_3_1cut,new_maybe_3,True,-0.001863116314670078
+moral US,L1 heuristic − real L1,new_maybe_3_bad,new_maybe_3,False,-0.005072075584573934
+moral US,L1 heuristic − real L1,new_maybe_3_badder,new_maybe_3,True,-0.000264091145618181
+moral US,L1 heuristic − real L1,new_maybe_4_1cut,new_maybe_4,True,-0.004201380005474682
+moral US,L1 heuristic − real L1,new_maybe_4_bad,new_maybe_4,True,-0.003739570371087788
+moral US,L1 heuristic − real L1,new_maybe_5_1cut,new_maybe_5,True,0.005526133375152616
+moral US,L1 heuristic − real L1,new_maybe_5_bad,new_maybe_5,True,0.010297735225121922
+moral US,L1 heuristic − real L1,new_maybe_6_1cut,new_maybe_6,True,-0.0024842423089308932
+moral US,L1 heuristic − real L1,new_no_1_1cut,no_line_1,True,-0.0007761408231424126
+moral US,L1 heuristic − real L1,new_no_2_1cut,no_line_2,True,0.0005135672249659159
+moral US,L1 heuristic − real L1,new_no_3_1cut,no_line_3,False,0.0006502541839761227
+moral US,L1 heuristic − real L1,new_yes_10_1cut,yes_line_10,True,0.00014094775196227754
+moral US,L1 heuristic − real L1,new_yes_10_bad,yes_line_10,True,0.00017075548318636952
+moral US,L1 heuristic − real L1,new_yes_10mod_1cut,10esque,False,-0.0008359175394685003
+moral US,L1 heuristic − real L1,new_yes_7_1cut,yes_line_7,True,0.0065590478044099286
+moral US,L1 heuristic − real L1,new_yes_7esque_1cut,7esque,False,0.01811907141158073
+moral US,L1 heuristic − real L1,new_yes_8_1cut,yes_line_8,False,0.00441016093760373
+moral US,L1 heuristic − real L1,new_yes_9_1cut,yes_line_9,True,-0.0017888679315747594
+moral US,L1 heuristic − real L1,new_yes_9esque_1cut,9esque,False,0.000804640386746774
+moral US,L1 heuristic − real L1,noline_A_1cut,no_line_A,True,0.003303680010821463
+moral US,L1 heuristic − real L1,noline_B_1cut,no_line_B,True,0.004437194651686196
+moral US,L1 heuristic − real L1,noline_C_1cut,no_line_C,True,-0.0010868870095111795
+moral US,L1 heuristic − real L1,noline_D_1cut,no_line_D,False,-0.002865154618120242
+moral US,L1 heuristic − real L1,yesline_B_1cut,yes_line_B,False,0.005406179239621682
+moral US,L1 heuristic − real L1,yesline_B_bad,yes_line_B,False,0.0008801832313535975
+moral US,L1 heuristic − real L1,yesline_B_badder,yes_line_B,False,0.0033137358473219573
+moral US,L1 heuristic − real L1,yesline_C_1cut,yes_line_C,True,-0.0008002723460499633
+moral US,L1 heuristic − real L1,yesline_C_bad,yes_line_C,False,0.004762453952183074
+moral US,L1 heuristic − real L1,yesline_C_badder,yes_line_C,False,0.004021705802800298
+moral US,L1 heuristic − real L1,yesline_D_1cut,yes_line_D,False,-5.667783250064765e-07
+moral US,L1 heuristic − real L1,yesline_D_bad,yes_line_D,False,-0.0002791151380333588
+moral US,L1 heuristic − real L1,yesline_D_badder,yes_line_D,True,-0.002834504431510906
+moral US,L1 heuristic − real L1,yesline_E_1cut,yes_line_E,True,0.009537337951157458
+moral US,L1 heuristic − real L1,yesline_F_1cut,yes_line_F,True,0.005943854996552044
+moral US,L2 heuristic − L1 heuristic,maybe_4_1cut,maybe_4,False,-0.00047021367644901305
+moral US,L2 heuristic − L1 heuristic,maybe_5_1cut,maybe_5,False,-0.0014082714469792507
+moral US,L2 heuristic − L1 heuristic,maybe_6_1cut,maybe_6,False,-0.00027156058723767186
+moral US,L2 heuristic − L1 heuristic,new_maybe_1_1cut,new_maybe_1,False,-7.202674028394922e-05
+moral US,L2 heuristic − L1 heuristic,new_maybe_2_1cut,new_maybe_2,False,-3.707208578288815e-05
+moral US,L2 heuristic − L1 heuristic,new_maybe_3_1cut,new_maybe_3,True,9.124951086794463e-05
+moral US,L2 heuristic − L1 heuristic,new_maybe_3_bad,new_maybe_3,False,0.000260211296880275
+moral US,L2 heuristic − L1 heuristic,new_maybe_3_badder,new_maybe_3,True,-0.0003697787139608506
+moral US,L2 heuristic − L1 heuristic,new_maybe_4_1cut,new_maybe_4,True,0.001467994631117536
+moral US,L2 heuristic − L1 heuristic,new_maybe_4_bad,new_maybe_4,True,0.0015548799875925276
+moral US,L2 heuristic − L1 heuristic,new_maybe_5_1cut,new_maybe_5,True,0.0001428198342713882
+moral US,L2 heuristic − L1 heuristic,new_maybe_5_bad,new_maybe_5,True,0.0012122692698467079
+moral US,L2 heuristic − L1 heuristic,new_maybe_6_1cut,new_maybe_6,True,0.0006828253009261536
+moral US,L2 heuristic − L1 heuristic,new_no_1_1cut,no_line_1,True,0.00022381206923986486
+moral US,L2 heuristic − L1 heuristic,new_no_2_1cut,no_line_2,True,1.805483304127536e-05
+moral US,L2 heuristic − L1 heuristic,new_no_3_1cut,no_line_3,False,-0.0002231859791092024
+moral US,L2 heuristic − L1 heuristic,new_yes_10_1cut,yes_line_10,True,0.001223058099383488
+moral US,L2 heuristic − L1 heuristic,new_yes_10_bad,yes_line_10,True,-0.000538008315491824
+moral US,L2 heuristic − L1 heuristic,new_yes_10mod_1cut,10esque,False,-0.0007875847009945769
+moral US,L2 heuristic − L1 heuristic,new_yes_7_1cut,yes_line_7,True,-0.0016469749468209084
+moral US,L2 heuristic − L1 heuristic,new_yes_7esque_1cut,7esque,False,-0.0022120967739238545
+moral US,L2 heuristic − L1 heuristic,new_yes_8_1cut,yes_line_8,False,-2.0860893714210324e-05
+moral US,L2 heuristic − L1 heuristic,new_yes_9_1cut,yes_line_9,True,0.0010733993090122418
+moral US,L2 heuristic − L1 heuristic,new_yes_9esque_1cut,9esque,False,-1.8995877067323974e-05
+moral US,L2 heuristic − L1 heuristic,noline_A_1cut,no_line_A,True,-0.0002092060662027974
+moral US,L2 heuristic − L1 heuristic,noline_B_1cut,no_line_B,True,-0.00021071742927294938
+moral US,L2 heuristic − L1 heuristic,noline_C_1cut,no_line_C,True,0.0002514592338093013
+moral US,L2 heuristic − L1 heuristic,noline_D_1cut,no_line_D,False,0.002161203164875062
+moral US,L2 heuristic − L1 heuristic,yesline_B_1cut,yes_line_B,False,-0.0009322538199738379
+moral US,L2 heuristic − L1 heuristic,yesline_B_bad,yes_line_B,False,0.0004234159779143928
+moral US,L2 heuristic − L1 heuristic,yesline_B_badder,yes_line_B,False,0.0002028546716998642
+moral US,L2 heuristic − L1 heuristic,yesline_C_1cut,yes_line_C,True,4.843811916521258e-05
+moral US,L2 heuristic − L1 heuristic,yesline_C_bad,yes_line_C,False,0.00041693004047660024
+moral US,L2 heuristic − L1 heuristic,yesline_C_badder,yes_line_C,False,-0.0004564773067286953
+moral US,L2 heuristic − L1 heuristic,yesline_D_1cut,yes_line_D,False,-2.184572368258041e-05
+moral US,L2 heuristic − L1 heuristic,yesline_D_bad,yes_line_D,False,-0.0006822991850838715
+moral US,L2 heuristic − L1 heuristic,yesline_D_badder,yes_line_D,True,-0.0012435647422367828
+moral US,L2 heuristic − L1 heuristic,yesline_E_1cut,yes_line_E,True,-0.0010741101323996712
+moral US,L2 heuristic − L1 heuristic,yesline_F_1cut,yes_line_F,True,0.0016531558483008422
+moral 20 countries,L1 heuristic − L0,maybe_4_1cut,maybe_4,False,0.002477071200367924
+moral 20 countries,L1 heuristic − L0,maybe_5_1cut,maybe_5,False,0.0021658526115775666
+moral 20 countries,L1 heuristic − L0,maybe_6_1cut,maybe_6,False,0.01018932633527295
+moral 20 countries,L1 heuristic − L0,new_maybe_1_1cut,new_maybe_1,False,0.0010345537486719646
+moral 20 countries,L1 heuristic − L0,new_maybe_2_1cut,new_maybe_2,False,0.002383979330463712
+moral 20 countries,L1 heuristic − L0,new_maybe_3_1cut,new_maybe_3,True,-0.0005137079756301964
+moral 20 countries,L1 heuristic − L0,new_maybe_3_bad,new_maybe_3,False,-0.0018496879533198886
+moral 20 countries,L1 heuristic − L0,new_maybe_3_badder,new_maybe_3,True,-0.002391312525901767
+moral 20 countries,L1 heuristic − L0,new_maybe_4_1cut,new_maybe_4,True,-0.0003717957752738477
+moral 20 countries,L1 heuristic − L0,new_maybe_4_bad,new_maybe_4,True,-0.0026151039975047716
+moral 20 countries,L1 heuristic − L0,new_maybe_5_1cut,new_maybe_5,True,-0.0043006651594192456
+moral 20 countries,L1 heuristic − L0,new_maybe_5_bad,new_maybe_5,True,0.013303260248784213
+moral 20 countries,L1 heuristic − L0,new_maybe_6_1cut,new_maybe_6,True,-0.009674037714345758
+moral 20 countries,L1 heuristic − L0,new_no_1_1cut,no_line_1,True,0.004166448464988899
+moral 20 countries,L1 heuristic − L0,new_no_2_1cut,no_line_2,True,0.0097508264569692
+moral 20 countries,L1 heuristic − L0,new_no_3_1cut,no_line_3,False,0.005836106952338441
+moral 20 countries,L1 heuristic − L0,new_yes_10_1cut,yes_line_10,True,0.00474572936474682
+moral 20 countries,L1 heuristic − L0,new_yes_10_bad,yes_line_10,True,0.004527737343623512
+moral 20 countries,L1 heuristic − L0,new_yes_10mod_1cut,10esque,False,0.0018234734216918166
+moral 20 countries,L1 heuristic − L0,new_yes_7_1cut,yes_line_7,True,0.005914115278157013
+moral 20 countries,L1 heuristic − L0,new_yes_7esque_1cut,7esque,False,0.004813111571116537
+moral 20 countries,L1 heuristic − L0,new_yes_8_1cut,yes_line_8,False,0.005410214418914049
+moral 20 countries,L1 heuristic − L0,new_yes_9_1cut,yes_line_9,True,-0.009192599441717028
+moral 20 countries,L1 heuristic − L0,new_yes_9esque_1cut,9esque,False,-1.0691076238746125e-05
+moral 20 countries,L1 heuristic − L0,noline_A_1cut,no_line_A,True,0.0060905207258410456
+moral 20 countries,L1 heuristic − L0,noline_B_1cut,no_line_B,True,0.009606596637531061
+moral 20 countries,L1 heuristic − L0,noline_C_1cut,no_line_C,True,0.0023828882580573976
+moral 20 countries,L1 heuristic − L0,noline_D_1cut,no_line_D,False,0.0010074219368354494
+moral 20 countries,L1 heuristic − L0,yesline_B_1cut,yes_line_B,False,-0.003184820798251148
+moral 20 countries,L1 heuristic − L0,yesline_B_bad,yes_line_B,False,0.0007646306889587314
+moral 20 countries,L1 heuristic − L0,yesline_B_badder,yes_line_B,False,0.002620488858829862
+moral 20 countries,L1 heuristic − L0,yesline_C_1cut,yes_line_C,True,0.00023240003113919407
+moral 20 countries,L1 heuristic − L0,yesline_C_bad,yes_line_C,False,0.0005439547402810345
+moral 20 countries,L1 heuristic − L0,yesline_C_badder,yes_line_C,False,-0.002202822451093431
+moral 20 countries,L1 heuristic − L0,yesline_D_1cut,yes_line_D,False,0.0006795958319134892
+moral 20 countries,L1 heuristic − L0,yesline_D_bad,yes_line_D,False,-0.0012012351597761952
+moral 20 countries,L1 heuristic − L0,yesline_D_badder,yes_line_D,True,-0.004045550237360158
+moral 20 countries,L1 heuristic − L0,yesline_E_1cut,yes_line_E,True,0.01450997276947279
+moral 20 countries,L1 heuristic − L0,yesline_F_1cut,yes_line_F,True,0.002494564442488224
+moral 20 countries,L1 heuristic − real L1,maybe_4_1cut,maybe_4,False,0.0001951027714442506
+moral 20 countries,L1 heuristic − real L1,maybe_5_1cut,maybe_5,False,0.0011932097064094116
+moral 20 countries,L1 heuristic − real L1,maybe_6_1cut,maybe_6,False,0.0020908947881986576
+moral 20 countries,L1 heuristic − real L1,new_maybe_1_1cut,new_maybe_1,False,0.0010013412411637812
+moral 20 countries,L1 heuristic − real L1,new_maybe_2_1cut,new_maybe_2,False,-0.001097747944959786
+moral 20 countries,L1 heuristic − real L1,new_maybe_3_1cut,new_maybe_3,True,-0.0007676955410610131
+moral 20 countries,L1 heuristic − real L1,new_maybe_3_bad,new_maybe_3,False,-0.0031404831175435763
+moral 20 countries,L1 heuristic − real L1,new_maybe_3_badder,new_maybe_3,True,-0.002181078396141192
+moral 20 countries,L1 heuristic − real L1,new_maybe_4_1cut,new_maybe_4,True,-0.0020290555122969927
+moral 20 countries,L1 heuristic − real L1,new_maybe_4_bad,new_maybe_4,True,-0.002462780809574031
+moral 20 countries,L1 heuristic − real L1,new_maybe_5_1cut,new_maybe_5,True,-0.004149947474423461
+moral 20 countries,L1 heuristic − real L1,new_maybe_5_bad,new_maybe_5,True,0.007904949747097881
+moral 20 countries,L1 heuristic − real L1,new_maybe_6_1cut,new_maybe_6,True,-0.002035374777711953
+moral 20 countries,L1 heuristic − real L1,new_no_1_1cut,no_line_1,True,0.0013406807005923735
+moral 20 countries,L1 heuristic − real L1,new_no_2_1cut,no_line_2,True,0.0039805518509766534
+moral 20 countries,L1 heuristic − real L1,new_no_3_1cut,no_line_3,False,0.0011552864117962975
+moral 20 countries,L1 heuristic − real L1,new_yes_10_1cut,yes_line_10,True,0.0002266468931289604
+moral 20 countries,L1 heuristic − real L1,new_yes_10_bad,yes_line_10,True,0.0002814645323572026
+moral 20 countries,L1 heuristic − real L1,new_yes_10mod_1cut,10esque,False,-0.0007089396037719178
+moral 20 countries,L1 heuristic − real L1,new_yes_7_1cut,yes_line_7,True,0.005958780348646988
+moral 20 countries,L1 heuristic − real L1,new_yes_7esque_1cut,7esque,False,0.014977160872818173
+moral 20 countries,L1 heuristic − real L1,new_yes_8_1cut,yes_line_8,False,0.0011232911852241396
+moral 20 countries,L1 heuristic − real L1,new_yes_9_1cut,yes_line_9,True,-0.005213152170942681
+moral 20 countries,L1 heuristic − real L1,new_yes_9esque_1cut,9esque,False,-8.95033752582461e-06
+moral 20 countries,L1 heuristic − real L1,noline_A_1cut,no_line_A,True,0.0017375858986855798
+moral 20 countries,L1 heuristic − real L1,noline_B_1cut,no_line_B,True,0.0036461713060868903
+moral 20 countries,L1 heuristic − real L1,noline_C_1cut,no_line_C,True,-2.8172416648629943e-06
+moral 20 countries,L1 heuristic − real L1,noline_D_1cut,no_line_D,False,-0.0007567190362807441
+moral 20 countries,L1 heuristic − real L1,yesline_B_1cut,yes_line_B,False,0.0024873427248978744
+moral 20 countries,L1 heuristic − real L1,yesline_B_bad,yes_line_B,False,2.3844881593442946e-05
+moral 20 countries,L1 heuristic − real L1,yesline_B_badder,yes_line_B,False,0.0018350106553155718
+moral 20 countries,L1 heuristic − real L1,yesline_C_1cut,yes_line_C,True,-0.0002725699934257128
+moral 20 countries,L1 heuristic − real L1,yesline_C_bad,yes_line_C,False,0.0015913939881626168
+moral 20 countries,L1 heuristic − real L1,yesline_C_badder,yes_line_C,False,0.0019047482640048951
+moral 20 countries,L1 heuristic − real L1,yesline_D_1cut,yes_line_D,False,1.9131740885235585e-05
+moral 20 countries,L1 heuristic − real L1,yesline_D_bad,yes_line_D,False,-0.0002011068839294767
+moral 20 countries,L1 heuristic − real L1,yesline_D_badder,yes_line_D,True,-0.0021411564502924153
+moral 20 countries,L1 heuristic − real L1,yesline_E_1cut,yes_line_E,True,0.0061742417874567435
+moral 20 countries,L1 heuristic − real L1,yesline_F_1cut,yes_line_F,True,0.003084322211868424
+moral 20 countries,L2 heuristic − L1 heuristic,maybe_4_1cut,maybe_4,False,-0.0003338118317996878
+moral 20 countries,L2 heuristic − L1 heuristic,maybe_5_1cut,maybe_5,False,-0.0005106761026301847
+moral 20 countries,L2 heuristic − L1 heuristic,maybe_6_1cut,maybe_6,False,-0.0002303357304089397
+moral 20 countries,L2 heuristic − L1 heuristic,new_maybe_1_1cut,new_maybe_1,False,-0.0002097878284307435
+moral 20 countries,L2 heuristic − L1 heuristic,new_maybe_2_1cut,new_maybe_2,False,-8.083461315890652e-05
+moral 20 countries,L2 heuristic − L1 heuristic,new_maybe_3_1cut,new_maybe_3,True,5.466675475744739e-05
+moral 20 countries,L2 heuristic − L1 heuristic,new_maybe_3_bad,new_maybe_3,False,0.00019640192537303367
+moral 20 countries,L2 heuristic − L1 heuristic,new_maybe_3_badder,new_maybe_3,True,-0.0003321411381874132
+moral 20 countries,L2 heuristic − L1 heuristic,new_maybe_4_1cut,new_maybe_4,True,0.0008688165033047411
+moral 20 countries,L2 heuristic − L1 heuristic,new_maybe_4_bad,new_maybe_4,True,0.0010655912394868978
+moral 20 countries,L2 heuristic − L1 heuristic,new_maybe_5_1cut,new_maybe_5,True,-0.0016374486372634554
+moral 20 countries,L2 heuristic − L1 heuristic,new_maybe_5_bad,new_maybe_5,True,0.001036107805092249
+moral 20 countries,L2 heuristic − L1 heuristic,new_maybe_6_1cut,new_maybe_6,True,0.0007923755226706911
+moral 20 countries,L2 heuristic − L1 heuristic,new_no_1_1cut,no_line_1,True,-0.000284015373771789
+moral 20 countries,L2 heuristic − L1 heuristic,new_no_2_1cut,no_line_2,True,-0.00020114631257562253
+moral 20 countries,L2 heuristic − L1 heuristic,new_no_3_1cut,no_line_3,False,-0.0004998158408863702
+moral 20 countries,L2 heuristic − L1 heuristic,new_yes_10_1cut,yes_line_10,True,0.0013120681768385965
+moral 20 countries,L2 heuristic − L1 heuristic,new_yes_10_bad,yes_line_10,True,-0.0007073100360384003
+moral 20 countries,L2 heuristic − L1 heuristic,new_yes_10mod_1cut,10esque,False,-0.0006087894854137089
+moral 20 countries,L2 heuristic − L1 heuristic,new_yes_7_1cut,yes_line_7,True,-0.0015660658126988556
+moral 20 countries,L2 heuristic − L1 heuristic,new_yes_7esque_1cut,7esque,False,-0.0018994181233850183
+moral 20 countries,L2 heuristic − L1 heuristic,new_yes_8_1cut,yes_line_8,False,6.567331037872238e-05
+moral 20 countries,L2 heuristic − L1 heuristic,new_yes_9_1cut,yes_line_9,True,0.0024943928616084376
+moral 20 countries,L2 heuristic − L1 heuristic,new_yes_9esque_1cut,9esque,False,2.037636091604501e-06
+moral 20 countries,L2 heuristic − L1 heuristic,noline_A_1cut,no_line_A,True,-0.00019136877927964353
+moral 20 countries,L2 heuristic − L1 heuristic,noline_B_1cut,no_line_B,True,-0.000336243027293791
+moral 20 countries,L2 heuristic − L1 heuristic,noline_C_1cut,no_line_C,True,0.00011052060425850699
+moral 20 countries,L2 heuristic − L1 heuristic,noline_D_1cut,no_line_D,False,0.0005602024161157395
+moral 20 countries,L2 heuristic − L1 heuristic,yesline_B_1cut,yes_line_B,False,-0.00036513367139658814
+moral 20 countries,L2 heuristic − L1 heuristic,yesline_B_bad,yes_line_B,False,-1.5181421415603067e-05
+moral 20 countries,L2 heuristic − L1 heuristic,yesline_B_badder,yes_line_B,False,8.681676665389037e-05
+moral 20 countries,L2 heuristic − L1 heuristic,yesline_C_1cut,yes_line_C,True,2.5488626663995615e-05
+moral 20 countries,L2 heuristic − L1 heuristic,yesline_C_bad,yes_line_C,False,8.59443638205012e-05
+moral 20 countries,L2 heuristic − L1 heuristic,yesline_C_badder,yes_line_C,False,-0.00018963594358850525
+moral 20 countries,L2 heuristic − L1 heuristic,yesline_D_1cut,yes_line_D,False,-0.00033770518407701523
+moral 20 countries,L2 heuristic − L1 heuristic,yesline_D_bad,yes_line_D,False,-0.0004209511679195298
+moral 20 countries,L2 heuristic − L1 heuristic,yesline_D_badder,yes_line_D,True,-0.000806112523465161
+moral 20 countries,L2 heuristic − L1 heuristic,yesline_E_1cut,yes_line_E,True,-0.0008397274408320157
+moral 20 countries,L2 heuristic − L1 heuristic,yesline_F_1cut,yes_line_F,True,0.0008532791193843862

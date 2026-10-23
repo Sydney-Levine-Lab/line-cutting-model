@@ -341,39 +341,45 @@ end
 # --------------------------------------------------------------------
 
 """
-    predict_step(state, agent_idx, domain, policies, order, idx_in_order, level)
+    predict_step(round_start, agent_idx, domain, policies, order,
+                 idx_in_order, level; execution_state=round_start)
 
 Predict one step for `agent_idx` at the given reasoning level.
 
-- level 0: L0 — project others to walls at current positions, pick action.
+- level 0: L0 — project others to walls at round-start positions, pick action.
 - level 1: L1 — predict L0 steps for agents before `agent_idx` in `order`,
   then project to walls, pick action.
 - level >= 2: recursive.
 
 `order` contains only ACTIVE agents; `idx_in_order` is the index of
-`agent_idx` within it. Returns the state after the predicted action.
+`agent_idx` within it. Choose using `round_start`, then apply only this
+agent's action to `execution_state`, where earlier actions have resolved.
+Private lower-level predictions always restart from `round_start`; they
+do not receive the already-executed prefix of the imagined round.
 """
-function predict_step(state::State, agent_idx::Int,
+function predict_step(round_start::State, agent_idx::Int,
                        domain::Domain,
                        policies::AbstractVector{<:BoltzmannPolicy},
                        order::Vector{Int}, idx_in_order::Int,
-                       level::Int)
+                       level::Int;
+                       execution_state::State=round_start)
     if level == 0
-        l0_view = project_others_to_walls(state, agent_idx, domain)
+        l0_view = project_others_to_walls(round_start, agent_idx, domain)
         act = SymbolicPlanners.get_action(policies[agent_idx], l0_view)
-        return safe_transition(domain, state, act)
+        return safe_transition(domain, execution_state, act)
     end
 
-    predicted_state = state
+    predicted_state = round_start
     for j_idx in 1:(idx_in_order - 1)
         j = order[j_idx]
-        predicted_state = predict_step(predicted_state, j, domain, policies,
-                                        order, j_idx, level - 1)
+        predicted_state = predict_step(round_start, j, domain, policies,
+                                        order, j_idx, level - 1;
+                                        execution_state=predicted_state)
     end
 
     planning_view = project_others_to_walls(predicted_state, agent_idx, domain)
     act = SymbolicPlanners.get_action(policies[agent_idx], planning_view)
-    return safe_transition(domain, state, act)
+    return safe_transition(domain, execution_state, act)
 end
 
 # --------------------------------------------------------------------
@@ -385,7 +391,8 @@ end
                              idx_in_order, level)
 
 Predict one step (at LEVEL) for each ACTIVE agent before k in the play
-order, then project everyone else to walls.
+order, then project everyone else to walls. All intentions use the same
+round-start snapshot; their execution still follows the priority order.
 """
 function build_planning_state_d1(initial_state::State, k::Int,
                                   domain::Domain,
@@ -395,8 +402,9 @@ function build_planning_state_d1(initial_state::State, k::Int,
     predicted_state = initial_state
     for j_idx in 1:(idx_in_order - 1)
         j = order[j_idx]
-        predicted_state = predict_step(predicted_state, j, domain, policies,
-                                        order, j_idx, level)
+        predicted_state = predict_step(initial_state, j, domain, policies,
+                                        order, j_idx, level;
+                                        execution_state=predicted_state)
     end
     return project_others_to_walls(predicted_state, k, domain)
 end
@@ -409,14 +417,17 @@ end
     simulate_round(state, domain, policies, order, level)
 
 Simulate one full round: each ACTIVE agent in `order` takes one step at
-the given reasoning LEVEL.
+the given reasoning LEVEL. Choices share the round-start snapshot;
+actions resolve in priority order in the execution state.
 """
 function simulate_round(state::State, domain::Domain,
                          policies::AbstractVector{<:BoltzmannPolicy},
                          order::Vector{Int}, level::Int)
+    round_start = state
     for idx in eachindex(order)
         n = order[idx]
-        state = predict_step(state, n, domain, policies, order, idx, level)
+        state = predict_step(round_start, n, domain, policies, order, idx, level;
+                             execution_state=state)
     end
     return state
 end
@@ -438,11 +449,14 @@ function evaluate_action(initial_state::State, k::Int,
                           steps_to_go)
     sim_state = initial_state
 
-    # Agents before k take their step
+    # All round-1 intentions use initial_state, including those after k.
+    # Resolve actions in sim_state without revealing k's candidate to the
+    # decision process of the other agents.
     for j_idx in 1:(idx_in_order - 1)
         j = order[j_idx]
-        sim_state = predict_step(sim_state, j, domain, policies,
-                                  order, j_idx, level)
+        sim_state = predict_step(initial_state, j, domain, policies,
+                                  order, j_idx, level;
+                                  execution_state=sim_state)
     end
 
     # Apply k's candidate first action
@@ -457,8 +471,9 @@ function evaluate_action(initial_state::State, k::Int,
     # Agents after k take their step (completing round 1)
     for j_idx in (idx_in_order + 1):length(order)
         j = order[j_idx]
-        sim_state = predict_step(sim_state, j, domain, policies,
-                                  order, j_idx, level)
+        sim_state = predict_step(initial_state, j, domain, policies,
+                                  order, j_idx, level;
+                                  execution_state=sim_state)
     end
 
     # Simulate additional full rounds
